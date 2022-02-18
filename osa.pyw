@@ -1,8 +1,6 @@
-import os
 import sys
 import dat
 import dev
-import time
 import PyQt5.QtGui as Qg
 import PyQt5.QtCore as Qc
 import PyQt5.QtWidgets as Qw

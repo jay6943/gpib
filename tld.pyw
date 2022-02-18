@@ -1,7 +1,6 @@
 import sys
 import dat
 import dev
-import serial
 import PyQt5.QtGui as Qg
 import PyQt5.QtWidgets as Qw
 

@@ -1,7 +1,5 @@
 import sys
 import dat
-import dev
-import serial
 import thorlabs_apt
 import PyQt5.QtGui as Qg
 import PyQt5.QtWidgets as Qw

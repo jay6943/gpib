@@ -1,4 +1,3 @@
-import sys
 import dat
 import dev
 import time

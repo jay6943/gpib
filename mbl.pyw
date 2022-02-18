@@ -2,7 +2,6 @@ import sys
 import dev
 import dat
 import time
-import serial
 import numpy as np
 import PyQt5.QtGui as Qg
 import PyQt5.QtWidgets as Qw
