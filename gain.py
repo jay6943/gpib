@@ -1,22 +1,18 @@
+import dat
 import dev
 import time
-import numpy as np
+import pandas as pd
 
 def spectral():
-
-    current = 400
 
     ldc = dev.ldc()
     att = dev.att()
     osa = dev.osa(False)
 
-    xmin, xmax, step = 5, 30, 1
+    x, y = dat.Arange(30, 5, -1)
 
-    x = np.arange(xmin, xmax + step * 0.1, step)
-    y = np.arange(xmin, xmax + step * 0.1, step)
-
-    ldc.value(int(current))
-    att.value(xmax)
+    ldc.value(400)
+    att.value(x[0])
     osa.write('INIT:CONT OFF')
     osa.write('INIT:IMM')
     time.sleep(2)
@@ -24,49 +20,48 @@ def spectral():
     pint = 6
 
     for i in range(len(x)):
-        attenuation = xmax - i * step
-        att.value(attenuation)
+
+        att.value(x[i])
         osa.write('INIT:IMM')
         osa.write('CALC:MARK:MAX')
         data = osa.query('CALC:MARK:Y?')
 
-        x[i] = pint - float(attenuation)
+        x[i] = pint - float(x[i])
         y[i] = float(data)
 
-        print(attenuation, x[i], y[i], round(y[i]-x[i], 2))
+        print(x[i], x[i], y[i], round(y[i]-x[i], 2))
 
     ldc.off()
-    att.value(xmax)
+    att.value(pint - x[0])
     osa.write('INIT:CONT ON')
 
     att.close()
     osa.close()
+
+    df = {'Input power (mW)':x}
+    df['Output power (mW)'] = y
+
+    return pd.DataFrame(df)
 
 def current():
 
     ldc = dev.ldc()
     osa = dev.osa(False)
 
-    xmin = 100
-    xmax = 500
-    step = 25
+    x, y = dat.Arange(100, 500, 25)
 
-    x = np.arange(xmin, xmax + 0.5 * step, step)
-    y = np.arange(xmin, xmax + 0.5 * step, step)
-
-    ldc.value(int(xmin))
+    ldc.value(int(x[0]))
     osa.write('INIT:CONT OFF')
     osa.write('INIT:IMM')
     time.sleep(2)
 
     for i in range(len(x)):
-        current = xmin + i * step
-        ldc.value(int(current))
+
+        ldc.value(int(x[i]))
         osa.write('INIT:IMM')
         osa.write('CALC:MARK:MAX')
         data = osa.query('CALC:MARK:Y?')
 
-        x[i] = current
         y[i] = round(float(data) + 24.0, 3)
 
         print(x[i], y[i])
@@ -78,37 +73,40 @@ def current():
     osa.close()
     ldc.close()
 
+    df = {'Current (mA)':x}
+    df['Power (mW)'] = y
+
+    return pd.DataFrame(df)
+
 def opm():
 
     att = dev.att()
     opm = dev.opm(15)
 
-    xmin = 10
-    xmax = 40
-    step = 1
-    pset = 14
-    loss = 3
+    pset, loss = 14, 3
 
-    x = np.arange(xmin, xmax + 0.5 * step, step)
-    y = np.arange(xmin, xmax + 0.5 * step, step)
+    x, y = dat.Arange(40, 10, -1)
 
     opm.dBm(1, 1)
-    att.value(xmax)
+    att.value(x[0])
     time.sleep(2)
 
     for i in range(len(x)):
-        attenuation = xmax - i * step
-        att.value(attenuation)
+
+        att.value(x[i])
         output = opm.query(1, 1)
 
-        x[i] = float(pset - loss - attenuation)
+        x[i] = float(pset - loss - x[i])
         y[i] = float(output)
 
         print(x[i], y[i], y[i]-x[i])
 
-    att.value(xmax)
+    att.value(x[0])
 
     att.close()
     opm.close()
 
-if __name__ == '__main__': spectral()
+    df = {'Input power (mW)':x}
+    df['Output power (mW)'] = y
+
+    return pd.DataFrame(df)

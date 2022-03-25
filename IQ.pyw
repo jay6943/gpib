@@ -3,6 +3,7 @@ import dev
 import dat
 import time
 import numpy as np
+import pandas as pd
 import PyQt5.QtGui as Qg
 import PyQt5.QtWidgets as Qw
 import matplotlib.pyplot as plt
@@ -114,16 +115,16 @@ class ExWindow(Qw.QMainWindow):
 
         self.GetData()
 
-        filename = Qw.QFileDialog.getSaveFileName(self, '', dat.getfolder(), '*.txt')[0]
+        filename = Qw.QFileDialog.getSaveFileName(self, '', dat.getfolder(), '*.csv')[0]
 
         if filename:
 
-            fp = open(filename, 'w')
-            for i in range(self.m):
-                fp.write(str(round(self.t[i], 6)) + '\t')
-                fp.write(str(round(self.x[i], 3)) + '\t')
-                fp.write(str(round(self.y[i], 3)) + '\n')
-            fp.close()
+            df = {}
+            df['Time (msec)'] = self.t
+            df['I'] = self.x
+            df['Q'] = self.y
+
+            pd.DataFrame(df).to_csv(filename)
             
             plt.savefig(filename[:len(filename)-4] + '.png')
 
