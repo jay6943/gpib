@@ -22,12 +22,8 @@ class App(Qw.QWidget):
         self.xmin, self.xmax = 0, 0
         self.ymin, self.ymax = 0, 0
         
-        self.init_ui()
-
-    def init_ui(self):
-
         self.setWindowTitle('Graph')
-        self.setWindowIcon(Qg.QIcon('ni.png'))
+        self.setWindowIcon(Qg.QIcon('jk.png'))
         self.setGeometry(100, 100, 540, 350)
 
         dat.Qbutton(self, self.onOpen, 'Open', 0, 0, 100)

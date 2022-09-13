@@ -1,173 +1,181 @@
+import os
 import sys
 import dev
 import dat
 import time
 import numpy as np
-import pandas as pd
 import PyQt5.QtGui as Qg
 import PyQt5.QtWidgets as Qw
 import matplotlib.pyplot as plt
 
 class ExWindow(Qw.QMainWindow):
+  
+  def __init__(self):
+
+    super().__init__()
+        
+    self.setGeometry(100, 500, 260, 390)
+    self.setWindowIcon(Qg.QIcon('jk.png'))
+    self.setWindowTitle('IQ')
+
+    dat.Qbutton(self, self.OnData, 'Get', 0, 0, 100)
+    dat.Qbutton(self, self.OnSave, 'Save', 120, 0, 100)
+    dat.Qbutton(self, self.OnRun, 'Run', 0, 80, 100)
+    dat.Qbutton(self, self.OnStop, 'Stop', 120, 80, 100)
+    dat.Qbutton(self, self.OnTY, 'TY-plot', 0, 120, 100)
+    dat.Qbutton(self, self.OnXY, 'XY-plot', 120, 120, 100)
     
-    def __init__(self):
+    dat.Qbutton(self, self.OnTime, 'Time (us)', 120, 160, 100)
+    dat.Qbutton(self, self.OnAmp1, 'Ch 1 (mV/Div)', 120, 200, 100)
+    dat.Qbutton(self, self.OnAmp2, 'Ch 2 (mV/Div)', 120, 240, 100)
+    dat.Qbutton(self, self.OnOff1, 'Offset 1 (mV)', 120, 280, 100)
+    dat.Qbutton(self, self.OnOff2, 'Offset 2 (mV)', 120, 320, 100)
 
-        super().__init__()
-            
-        self.init_ui()
-        
-    def init_ui(self):
-
-        self.setGeometry(300, 300, 260, 310)
-        self.setWindowIcon(Qg.QIcon('ni.png'))
-        self.setWindowTitle('IQ')
-
-        dat.Qbutton(self, self.OnSave, 'Get && Save', 0, 0, 100)
-        dat.Qbutton(self, self.OnData, 'Get I/Q', 0, 40, 100)
-        dat.Qbutton(self, self.OnFolder, 'Set Folder', 120, 40, 100)
-        dat.Qbutton(self, self.OnRun, 'Run', 0, 80, 100)
-        dat.Qbutton(self, self.OnStop, 'Stop', 120, 80, 100)
-        dat.Qbutton(self, self.OnTY, 'TY-plot', 0, 120, 100)
-        dat.Qbutton(self, self.OnXY, 'XY-plot', 120, 120, 100)
-        
-        dat.Qbutton(self, self.OnTime, 'Time (us)', 120, 160, 100)
-        dat.Qbutton(self, self.OnAmp, 'mV/Div', 120, 200, 100)
-        dat.Qbutton(self, self.OnOff, 'Offset (mV)', 120, 240, 100)
-
-        self.var = dat.Qedit(self, '', 0, 160, 100)
-        self.amp = dat.Qedit(self, '', 0, 200, 100)
-        self.off = dat.Qedit(self, '', 0, 240, 100)
-        self.fit = dat.Qedit(self, '', 120, 0, 100)
-        
-        self.m = 4096
-
-        dso = dev.dso(False)
-        dso.write('CHAN1:COUP DC')
-        dso.write('CHAN2:COUP DC')
-        dso.write('WAV:POINTS:MODE RAW')
-        dso.write('WAV:FORM ASCII')
-        dso.write('WAV:POINTS ' + str(self.m))
-        self.var.setText(str(round(dso.query('TIM:SCAL?') * 1e6, 3)))
-        self.amp.setText(str(round(dso.query('CHAN1:SCAL?') * 1e3, 3)))
-        self.off.setText(str(round(dso.query('CHAN1:OFFS?') * 1e3, 3)))
-        dso.close()
-
-    def GetData(self):
-
-        dso = dev.dso(False)
-        dso.write('TIM:FORM YT')
-        dso.write('TIM:SCAL ' + str(float(self.var.text()) * 1e-6))
-        dso.write('SINGLE')
-
-        time.sleep(2)
-
-        self.t = np.arange(self.m) * float(self.var.text()) * 0.04
-        self.x = dso.getwave(1)
-        self.y = dso.getwave(2)
-
-        A = np.arange(float(self.m * 5)).reshape(5, self.m)
-        B = -self.x * self.x
+    self.var = dat.Qedit(self, '', 0, 160, 100)
+    self.amp1 = dat.Qedit(self, '', 0, 200, 100)
+    self.amp2 = dat.Qedit(self, '', 0, 240, 100)
+    self.off1 = dat.Qedit(self, '', 0, 280, 100)
+    self.off2 = dat.Qedit(self, '', 0, 320, 100)
+    self.fit = dat.Qedit(self, '', 80, 40, 100)
     
-        A[0] = self.x * self.y * 2
-        A[1] = self.y * self.y
-        A[2] = self.x * 2
-        A[3] = self.y * 2
-        A[4] = 1
+    dat.Qlabel(self, 'Phase error', 0, 30)
+    dat.Qlabel(self, 'deg.', 190, 30)
+    
+    self.m = 4096
 
-        k = np.dot(B, np.linalg.pinv(A))
-        p = np.arcsin(np.sqrt(1 - k[0] * k[0] / k[1])) * 180 / np.pi
-        
-        if k[0] > 0: p = 180 - p
-        
-        self.phase = str(round(p, 1))
-        self.fit.setText(self.phase)
-        self.OnDraw()
+    dso = dev.dso(False)
+    dso.write('CHAN1:COUP DC')
+    dso.write('CHAN2:COUP DC')
+    dso.write('WAV:POINTS:MODE RAW')
+    dso.write('WAV:FORM ASCII')
+    dso.write('WAV:POINTS ' + str(self.m))
+    self.var.setText(str(round(dso.query('TIM:SCAL?') * 1e6, 3)))
+    self.amp1.setText(str(round(dso.query('CHAN1:SCAL?') * 1e3, 3)))
+    self.amp2.setText(str(round(dso.query('CHAN2:SCAL?') * 1e3, 3)))
+    self.off1.setText(str(round(dso.query('CHAN1:OFFS?') * 1e3, 3)))
+    self.off2.setText(str(round(dso.query('CHAN2:OFFS?') * 1e3, 3)))
+    dso.close()
 
-        dso.write('RUN')
-        dso.write('TIM:FORM XY')
-        dso.close()
+  def OnRun(self):
+    dev.dso('RUN')
+      
+  def OnStop(self):
+    dev.dso('SINGLE')
+      
+  def OnTY(self):        
+    dev.dso('TIM:FORM YT')
+      
+  def OnXY(self):        
+    dev.dso('TIM:FORM XY')
+      
+  def OnTime(self):
+    dev.dso('TIM:SCAL ' + str(float(self.var.text()) * 1e-6))
+      
+  def OnAmp1(self):
+    dso = dev.dso(False)
+    dso.write('TIM:FORM YT')
+    dso.write('CHAN1:SCAL ' + str(float(self.amp1.text()) * 1e-3))
+    dso.write('TIM:FORM XY')
+    dso.close()
+      
+  def OnAmp2(self):
+    dso = dev.dso(False)
+    dso.write('TIM:FORM YT')
+    dso.write('CHAN2:SCAL ' + str(float(self.amp2.text()) * 1e-3))
+    dso.write('TIM:FORM XY')
+    dso.close()
 
-    def OnDraw(self):
+  def OnOff1(self):
+    dso = dev.dso(False)
+    dso.write('TIM:FORM YT')
+    dso.write('CHAN1:OFFS ' + str(float(self.off1.text()) * 1e-3))
+    dso.write('TIM:FORM XY')
+    dso.close()
 
-        xtop = np.amax(self.x)
-        xbas = np.amin(self.x)
-        ytop = np.amax(self.y)
-        ybas = np.amin(self.y)
+  def OnOff2(self):
+    dso = dev.dso(False)
+    dso.write('TIM:FORM YT')
+    dso.write('CHAN2:OFFS ' + str(float(self.off2.text()) * 1e-3))
+    dso.write('TIM:FORM XY')
+    dso.close()
 
-        self.x = self.x - (xtop + xbas) * 0.5
-        self.y = self.y - (ytop + ybas) * 0.5
+  def OnData(self):
 
-        plt.close()
-        plt.scatter(self.x, self.y, c='b', s=5)
-        plt.axis('square')
-        plt.title(self.phase + '$^o$')
-        plt.xlabel('I (mV)', size=14)
-        plt.ylabel('Q (mV)', size=14)
-        plt.grid(True)
+    dso = dev.dso(False)
+    dso.write('TIM:FORM YT')
+    dso.write('TIM:SCAL ' + str(float(self.var.text()) * 1e-6))
+    dso.write('SINGLE')
 
-    def OnData(self):
+    time.sleep(2)
 
-        self.GetData()
+    self.t = np.arange(self.m) * float(self.var.text()) * 0.04
+    self.x = dso.getwave(1)
+    self.y = dso.getwave(2)
 
-        plt.show()
+    A = np.arange(float(self.m * 5)).reshape(5, self.m)
+    B = -self.x * self.x
 
-    def OnSave(self):
+    A[0] = self.x * self.y * 2
+    A[1] = self.y * self.y
+    A[2] = self.x * 2
+    A[3] = self.y * 2
+    A[4] = 1
 
-        self.GetData()
+    k = np.dot(B, np.linalg.pinv(A))
+    p = np.arcsin(np.sqrt(1 - k[0] * k[0] / k[1])) * 180 / np.pi
+    
+    if k[0] > 0: p = 180 - p
+    
+    self.phase = str(round(p, 1))
+    self.fit.setText(self.phase)
+    self.OnDraw()
 
-        filename = Qw.QFileDialog.getSaveFileName(self, '', dat.getfolder(), '*.csv')[0]
+    dso.write('RUN')
+    dso.write('TIM:FORM XY')
+    dso.close()
 
-        if filename:
+  def OnDraw(self):
 
-            df = {}
-            df['Time (msec)'] = self.t
-            df['I'] = self.x
-            df['Q'] = self.y
+    self.x = self.x * 0.001
+    self.y = self.y * 0.001
 
-            pd.DataFrame(df).to_csv(filename)
-            
-            plt.savefig(filename[:len(filename)-4] + '.png')
+    xtop = np.amax(self.x)
+    xbas = np.amin(self.x)
+    ytop = np.amax(self.y)
+    ybas = np.amin(self.y)
 
-    def OnFolder(self):
+    self.x = self.x - (xtop + xbas) * 0.5
+    self.y = self.y - (ytop + ybas) * 0.5
 
-        folder = Qw.QFileDialog.getExistingDirectory(self, "Select Folder", dat.getfolder())
+    lim = 0.3
 
-        if folder != '': dat.setfolder(folder)
+    plt.close()
+    plt.figure(dpi=150)
+    plt.scatter(self.x, self.y, c='b', s=5)
+    plt.axis('square')
+    plt.title(self.phase + '$^{\circ}$')
+    plt.xlabel('I (V)')
+    plt.ylabel('Q (V)')
+    plt.xlim(-lim, lim)
+    plt.ylim(-lim, lim)
+    plt.grid(True)
+    plt.show()
 
-    def OnRun(self):
-        dev.dso('RUN')
-        
-    def OnStop(self):
-        dev.dso('SINGLE')
-        
-    def OnTY(self):        
-        dev.dso('TIM:FORM YT')
-        
-    def OnXY(self):        
-        dev.dso('TIM:FORM XY')
-        
-    def OnTime(self):
-        dev.dso('TIM:SCAL ' + str(float(self.var.text()) * 1e-6))
-        
-    def OnAmp(self):
-        dso = dev.dso(False)
-        dev.dso('TIM:FORM YT')
-        dso.write('CHAN1:SCAL ' + str(float(self.amp.text()) * 1e-3))
-        dso.write('CHAN2:SCAL ' + str(float(self.amp.text()) * 1e-3))
-        dev.dso('TIM:FORM XY')
-        dso.close()
+  def OnSave(self):
 
-    def OnOff(self):
-        dso = dev.dso(False)
-        dev.dso('TIM:FORM YT')
-        dso.write('CHAN1:OFFS ' + str(float(self.off.text()) * 1e-3))
-        dso.write('CHAN2:OFFS ' + str(float(self.off.text()) * 1e-3))
-        dev.dso('TIM:FORM XY')
-        dso.close()
+    fp = Qw.QFileDialog.getSaveFileName(self, '', dat.getfolder(), '*.txt')[0]
+
+    if fp:
+      data = [self.t, self.x, self.y]
+      np.savetxt(fp, np.array(data).transpose(), fmt='%.3f')
+      plt.savefig(fp[:len(fp)-4] + '.png')
+
+      folder = os.path.dirname(fp)
+      if folder != dat.getfolder(): dat.setfolder(folder)
 
 if __name__ == '__main__':
 
-    app = Qw.QApplication(sys.argv)
-    ex = ExWindow()
-    ex.show()
-    sys.exit(app.exec_())
+  app = Qw.QApplication(sys.argv)
+  ex = ExWindow()
+  ex.show()
+  sys.exit(app.exec_())

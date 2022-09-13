@@ -1,4 +1,4 @@
-D:/data/ICR/SiPh/V1.3.1/
+D:/data/ICR/SiN/EI-ICR-WG-R1-TV22-004/polished/PBS/
 X
 Wavelength (nm)
 Length ($\mu$m)
