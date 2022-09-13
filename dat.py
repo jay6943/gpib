@@ -5,7 +5,7 @@ import PyQt5.QtCore as Qc
 import PyQt5.QtWidgets as Qw
 import matplotlib.pyplot as plt
 
-config = 'dat.txt'
+config = '../cd.txt'
 
 def Qlabel(self, text, x, y):
 
@@ -107,7 +107,7 @@ def getdata(filename):
 
 def save(filename, x, y):
 
-  np.savetxt(filename, np.array([x,y]).transpose())
+  np.savetxt(filename, np.array([x,y]).transpose(), fmt='%.3f')
 
 def aranges(start, stop, step):
 
@@ -117,43 +117,3 @@ def aranges(start, stop, step):
   y = [0 for i in range(m)]
 
   return x, y
-
-def plot(filename, x, y, xtitle, ytitle, xmin, xmax, ymin, ymax, style, on):
-
-  plt.plot(x, y, style)
-  plt.xlabel(title(xtitle))
-  plt.ylabel(title(ytitle))
-  plt.xlim(xmin, xmax)
-  plt.ylim(ymin, ymax)
-  plt.grid()
-  plt.savefig(filename)
-  if on: plt.show()
-  plt.close()
-
-def tcpn():
-
-  legend = []
-
-  folder = getfolder()
-
-  for i in range(1, 5):
-    for j in range(1, 5):
-      for k in range(1, 3):
-        filename = str(i) + str(j) + str(k) + '-I'
-        isfile = os.path.isfile(folder + filename + '.txt')
-        if isfile:
-          x, y = getdata(folder + filename + '.txt')
-          plt.plot(x, y)
-          legend.append(filename)
-
-  plt.legend(legend)
-  plt.xlabel('Current (mA)')
-  plt.ylabel('Voltage (V)')
-  plt.xlim(0, 10)
-  plt.ylim(1.1, 1.6)
-  plt.grid()
-  plt.savefig(folder + '/IV.png')
-  plt.close()
-
-if __name__ == "__main__": tcpn()
-  
