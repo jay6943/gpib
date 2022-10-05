@@ -17,19 +17,19 @@ class ExWindow(Qw.QMainWindow):
     self.setWindowIcon(Qg.QIcon('jk.png'))
     self.setGeometry(100, 400, 290, 450)
 
-    # self.center = dat.Qedit(self, '1547.5', 130, 60, 120)
-    # self.span = dat.Qedit(self, '35', 130, 100, 120)
-    self.start = dat.Qedit(self, '1530', 0, 60, 120)
-    self.stop = dat.Qedit(self, '1570', 0, 100, 120)
+    self.center = dat.Qedit(self, '1550', 0, 60, 120)
+    self.span = dat.Qedit(self, '40', 0, 100, 120)
+    # self.start = dat.Qedit(self, '1530', 0, 60, 120)
+    # self.stop = dat.Qedit(self, '1570', 0, 100, 120)
     self.bandwidth = dat.Qedit(self, '1', 0, 140, 120)
     self.sensitivity = dat.Qedit(self, '10', 0, 180, 120)
     self.reference = dat.Qedit(self, '0', 0, 220, 120)
     self.division = dat.Qedit(self, '10', 0, 260, 120)
 
-    # dat.Qbutton(self, self.OnCenter, 'Center (nm)', 0, 60, 120)
-    # dat.Qbutton(self, self.OnSpan, 'Span (nm)', 0, 100, 120)
-    dat.Qbutton(self, self.OnStart, 'Start (nm)', 130, 60, 120)
-    dat.Qbutton(self, self.OnStop, 'Stop (nm)', 130, 100, 120)
+    dat.Qbutton(self, self.OnCenter, 'Center (nm)', 130, 60, 120)
+    dat.Qbutton(self, self.OnSpan, 'Span (nm)', 130, 100, 120)
+    # dat.Qbutton(self, self.OnStart, 'Start (nm)', 130, 60, 120)
+    # dat.Qbutton(self, self.OnStop, 'Stop (nm)', 130, 100, 120)
     dat.Qbutton(self, self.OnBandwidth, 'Bandwidth (nm)', 130, 140, 120)
     dat.Qbutton(self, self.OnSensitivity, 'Sensitivity (dBm)', 130, 180, 120)
     dat.Qbutton(self, self.OnReference, 'Reference (dBm)', 130, 220, 120)
@@ -49,10 +49,10 @@ class ExWindow(Qw.QMainWindow):
     self.figure = dat.Qcheck(self, 'Save figure', 150, 30, 120)
 
     osa = dev.osa(False)
-    # osa.write(':SENS:WAV:CENT ' + self.start.text() + 'NM')
-    # osa.write(':SENS:WAV:SPAN ' + self.stop.text() + 'NM')
-    osa.write(':SENS:WAV:STAR ' + self.start.text() + 'NM')
-    osa.write(':SENS:WAV:STOP ' + self.stop.text() + 'NM')
+    osa.write(':SENS:WAV:CENT ' + self.center.text() + 'NM')
+    osa.write(':SENS:WAV:SPAN ' + self.span.text() + 'NM')
+    # osa.write(':SENS:WAV:STAR ' + self.start.text() + 'NM')
+    # osa.write(':SENS:WAV:STOP ' + self.stop.text() + 'NM')
     osa.write(':SENS:BAND:RES ' + self.bandwidth.text() + 'NM')
     osa.write(':DISP:TRAC:Y1:RLEV ' + self.reference.text() + 'DBM')
     osa.write(':DISP:TRAC:Y1:PDIV ' + self.division.text() + 'DB')
@@ -65,24 +65,26 @@ class ExWindow(Qw.QMainWindow):
 
   def OnPoints(self):
 
-    a = float(self.start.text())
-    b = float(self.stop.text())
-    c = float(self.bandwidth.text())
-    m = int(round((b - a) / c, 0)) * 10 + 1
+    # a = float(self.start.text())
+    # b = float(self.stop.text())
+    # c = b - a
+    c = float(self.span.text())
+    d = float(self.bandwidth.text())
+    m = int(round(c / d, 0)) * 10 + 1
 
     dev.osa(':SENS:SWE:POIN ' + str(m))
 
-  # def OnCenter(self):
-  #   dev.osa(':SENS:WAV:SPAN ' + self.center.text() + 'NM')
+  def OnCenter(self):
+    dev.osa(':SENS:WAV:CENT ' + self.center.text() + 'NM')
 
-  # def OnSpan(self):
-  #   dev.osa(':SENS:WAV:CENT ' + self.span.text() + 'NM')
+  def OnSpan(self):
+    dev.osa(':SENS:WAV:SPAN ' + self.span.text() + 'NM')
 
-  def OnStart(self):
-    dev.osa(':SENS:WAV:STAR ' + self.start.text() + 'NM')
+  # def OnStart(self):
+  #   dev.osa(':SENS:WAV:STAR ' + self.start.text() + 'NM')
 
-  def OnStop(self):
-    dev.osa(':SENS:WAV:STOP ' + self.stop.text() + 'NM')
+  # def OnStop(self):
+  #   dev.osa(':SENS:WAV:STOP ' + self.stop.text() + 'NM')
 
   def OnBandwidth(self):
     dev.osa(':SENS:BAND:RES ' + self.bandwidth.text() + 'NM')
