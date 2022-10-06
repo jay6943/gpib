@@ -147,7 +147,7 @@ class ExWindow(Qw.QMainWindow):
     self.x = self.x - (xtop + xbas) * 0.5
     self.y = self.y - (ytop + ybas) * 0.5
 
-    lim = 0.3
+    ticks = np.linspace(-1,1,3) * 0.1
 
     plt.close()
     plt.figure(dpi=150)
@@ -156,8 +156,10 @@ class ExWindow(Qw.QMainWindow):
     plt.title(self.phase + '$^{\circ}$')
     plt.xlabel('I (V)')
     plt.ylabel('Q (V)')
-    plt.xlim(-lim, lim)
-    plt.ylim(-lim, lim)
+    plt.xticks(ticks)
+    plt.yticks(ticks)
+    plt.xlim(ticks[0], ticks[-1])
+    plt.ylim(ticks[0], ticks[-1])
     plt.grid(True)
     plt.show()
 
