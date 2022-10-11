@@ -25,7 +25,7 @@ class ExWindow(Qw.QMainWindow):
     dat.Qbutton(self, self.OnTY, 'TY-plot', 0, 120, 100)
     dat.Qbutton(self, self.OnXY, 'XY-plot', 120, 120, 100)
     
-    dat.Qbutton(self, self.OnTime, 'Time (us)', 120, 160, 100)
+    dat.Qbutton(self, self.OnTime, 'Time (ms)', 120, 160, 100)
     dat.Qbutton(self, self.OnAmp1, 'Ch 1 (mV/Div)', 120, 200, 100)
     dat.Qbutton(self, self.OnAmp2, 'Ch 2 (mV/Div)', 120, 240, 100)
     dat.Qbutton(self, self.OnOff1, 'Offset 1 (mV)', 120, 280, 100)
@@ -49,7 +49,7 @@ class ExWindow(Qw.QMainWindow):
     dso.write('WAV:POINTS:MODE RAW')
     dso.write('WAV:FORM ASCII')
     dso.write('WAV:POINTS ' + str(self.m))
-    self.var.setText(str(round(dso.query('TIM:SCAL?') * 1e6, 3)))
+    self.var.setText(str(round(dso.query('TIM:SCAL?') * 1e3, 3)))
     self.amp1.setText(str(round(dso.query('CHAN1:SCAL?') * 1e3, 3)))
     self.amp2.setText(str(round(dso.query('CHAN2:SCAL?') * 1e3, 3)))
     self.off1.setText(str(round(dso.query('CHAN1:OFFS?') * 1e3, 3)))
@@ -69,7 +69,7 @@ class ExWindow(Qw.QMainWindow):
     dev.dso('TIM:FORM XY')
       
   def OnTime(self):
-    dev.dso('TIM:SCAL ' + str(float(self.var.text()) * 1e-6))
+    dev.dso('TIM:SCAL ' + str(float(self.var.text()) * 1e-3))
       
   def OnAmp1(self):
     dso = dev.dso(False)
@@ -103,12 +103,12 @@ class ExWindow(Qw.QMainWindow):
 
     dso = dev.dso(False)
     dso.write('TIM:FORM YT')
-    dso.write('TIM:SCAL ' + str(float(self.var.text()) * 1e-6))
+    dso.write('TIM:SCAL ' + str(float(self.var.text()) * 1e-3))
     dso.write('SINGLE')
 
     time.sleep(2)
 
-    self.t = np.arange(self.m) * float(self.var.text()) * 0.04
+    self.t = np.arange(self.m) * float(self.var.text()) * 4e-5
     self.x = dso.getwave(1)
     self.y = dso.getwave(2)
 
