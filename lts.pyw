@@ -1,6 +1,5 @@
 import sys
 import dat
-import time
 import PyQt5.QtGui as Qg
 import PyQt5.QtWidgets as Qw
 import thorlabs_apt as apt
@@ -43,19 +42,14 @@ class App(Qw.QWidget):
 
     apt.list_available_devices()
     self.stage = apt.Motor(45151484)
-    time.sleep(1)
-    print('Found it, ready.')
 
   def OnStep(self, text, sign):
-    time.sleep(0.5)
-    self.stage.move_by(round(sign * float(text) * 0.001, 6))
+    self.stage.move_by(round(sign * float(text) * 0.001, 3))
 
   def OnMove(self):
-    time.sleep(0.5)
     self.OnStep(self.txt.text(), 1)
 
   def OnHome(self):
-    time.sleep(0.5)
     self.stage.move_home(True)
 
   def On1p(self):
