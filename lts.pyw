@@ -47,12 +47,15 @@ class App(Qw.QWidget):
     print('Found it, ready.')
 
   def OnStep(self, text, sign):
+    time.sleep(0.5)
     self.stage.move_by(round(sign * float(text) * 0.001, 6))
 
   def OnMove(self):
+    time.sleep(0.5)
     self.OnStep(self.txt.text(), 1)
 
   def OnHome(self):
+    time.sleep(0.5)
     self.stage.move_home(True)
 
   def On1p(self):
