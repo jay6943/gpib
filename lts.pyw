@@ -44,7 +44,7 @@ class App(Qw.QWidget):
     self.stage = apt.Motor(45151484)
 
   def OnStep(self, text, sign):
-    self.stage.move_by(round(sign * float(text) * 0.001, 3))
+    self.stage.move_by(round(sign * float(text) * 0.001, 6))
 
   def OnMove(self):
     self.OnStep(self.txt.text(), 1)
