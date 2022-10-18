@@ -31,20 +31,22 @@ class App(Qw.QWidget):
     dat.Qbutton(self, self.On7p, '+', 0, 280, 50)
     dat.Qbutton(self, self.On7n, '-', 60, 280, 50)
 
-    self.txt = dat.Qedit(self, '10000', 60, 0, 50)
-    self.On1 = dat.Qedit(self, '10', 120, 40, 50)
-    self.On2 = dat.Qedit(self, '50', 120, 80, 50)
-    self.On3 = dat.Qedit(self, '250', 120, 120, 50)
-    self.On4 = dat.Qedit(self, '500', 120, 160, 50)
-    self.On5 = dat.Qedit(self, '1400', 120, 200, 50)
-    self.On6 = dat.Qedit(self, '10400', 120, 240, 50)
-    self.On7 = dat.Qedit(self, '20000', 120, 280, 50)
+    self.txt = dat.Qedit(self, '10', 60, 0, 50)
+    self.On1 = dat.Qedit(self, '0.01', 120, 40, 50)
+    self.On2 = dat.Qedit(self, '0.05', 120, 80, 50)
+    self.On3 = dat.Qedit(self, '0.25', 120, 120, 50)
+    self.On4 = dat.Qedit(self, '0.5', 120, 160, 50)
+    self.On5 = dat.Qedit(self, '1.4', 120, 200, 50)
+    self.On6 = dat.Qedit(self, '10.4', 120, 240, 50)
+    self.On7 = dat.Qedit(self, '20', 120, 280, 50)
 
     apt.list_available_devices()
     self.stage = apt.Motor(45151484)
+    self.x = 80
 
   def OnStep(self, text, sign):
-    self.stage.move_by(round(sign * float(text) * 0.001, 6))
+    self.x = self.x + sign * float(text)
+    self.stage.move_to(round(self.x, 3))
 
   def OnMove(self):
     self.OnStep(self.txt.text(), 1)

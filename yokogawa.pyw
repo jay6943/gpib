@@ -15,7 +15,7 @@ class ExWindow(Qw.QMainWindow):
 
     self.setWindowTitle('OSA')
     self.setWindowIcon(Qg.QIcon('jk.png'))
-    self.setGeometry(100, 400, 290, 450)
+    self.setGeometry(100, 500, 290, 450)
 
     self.center = dat.Qedit(self, '1550', 0, 60, 120)
     self.span = dat.Qedit(self, '40', 0, 100, 120)
@@ -62,6 +62,7 @@ class ExWindow(Qw.QMainWindow):
     osa.close()
 
     self.setSwitch = 1
+    self.figure.setChecked(True)
 
   def OnPoints(self):
 
