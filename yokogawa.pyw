@@ -56,7 +56,7 @@ class ExWindow(Qw.QMainWindow):
     osa.write(':SENS:BAND:RES ' + self.bandwidth.text() + 'NM')
     osa.write(':DISP:TRAC:Y1:RLEV ' + self.reference.text() + 'DBM')
     osa.write(':DISP:TRAC:Y1:PDIV ' + self.division.text() + 'DB')
-    osa.write(':SENS:SWE:POIN ' + str(self.OnPoints()))
+    # osa.write(':SENS:SWE:POIN ' + str(self.OnPoints()))
     osa.write(':INIT:SMOD REP')
     osa.write(':INIT:IMM')
     osa.close()
@@ -69,6 +69,7 @@ class ExWindow(Qw.QMainWindow):
     # a = float(self.start.text())
     # b = float(self.stop.text())
     # c = b - a
+
     c = float(self.span.text())
     d = float(self.bandwidth.text())
     m = int(round(c / d, 0)) * 10 + 1
@@ -89,7 +90,7 @@ class ExWindow(Qw.QMainWindow):
 
   def OnBandwidth(self):
     dev.osa(':SENS:BAND:RES ' + self.bandwidth.text() + 'NM')
-    self.OnPoints()
+    # self.OnPoints()
 
   def OnSensitivity(self):
     dev.osa(':DISP:TRAC:Y1:RPOS ' + self.sensitivity.text() + 'DIV')
