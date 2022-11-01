@@ -26,7 +26,7 @@ class App(Qw.QWidget):
     self.checkB = dat.Qcheck(self, 'B', 220, 40, 100)
 
     self.checkA.setChecked(True)
-    self.checkB.setChecked(True)
+    self.checkB.setChecked(False)
 
     opm = dev.ando()
     opm.write('AA')
@@ -42,6 +42,8 @@ class App(Qw.QWidget):
     opm.close()
 
     self.getData = 1
+
+    self.OnSave()
 
   def OnSave(self):
 
