@@ -18,7 +18,7 @@ class ExWindow(Qw.QMainWindow):
     self.setGeometry(100, 500, 290, 450)
 
     self.center = dat.Qedit(self, '1550', 0, 60, 120)
-    self.span = dat.Qedit(self, '40', 0, 100, 120)
+    self.span = dat.Qedit(self, '80', 0, 100, 120)
     # self.start = dat.Qedit(self, '1530', 0, 60, 120)
     # self.stop = dat.Qedit(self, '1570', 0, 100, 120)
     self.bandwidth = dat.Qedit(self, '1', 0, 140, 120)
