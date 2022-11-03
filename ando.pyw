@@ -43,8 +43,6 @@ class App(Qw.QWidget):
 
     self.getData = 1
 
-    self.OnSave()
-
   def OnSave(self):
 
     fp = Qw.QFileDialog.getSaveFileName(self, '', dat.getfolder(), '*.txt')[0]

@@ -204,11 +204,11 @@ class tld():
   def __init__(self):
     rm = visa.ResourceManager()
     self.device = rm.open_resource('GPIB1::20::INSTR')
-
-    print('KEYSIGHT 81898A TLD')
+    # print('KEYSIGHT 81898A TLD')
 
   def write(self, command):
     self.device.write(command)
+    print(command)
 
   def wavelength(self, k):
     self.write('SOUR1:WAV ' + str(k) + 'NM')
@@ -225,17 +225,18 @@ class tld81640A():
   def __init__(self):
     rm = visa.ResourceManager()
     self.device = rm.open_resource('GPIB1::20::INSTR')
+    # print('Agilent 81640A TLD')
 
   def write(self, command):
     self.device.write(command)
-    print('Agilent 81640A TLD' + command)
+    # print(command)
 
   def wavelength(self, k):
-    self.write('SOUR1:WAV ' + str(k) + 'NM')
+    self.write('SOUR0:WAV ' + str(k) + 'NM')
     time.sleep(1)
 
   def power(self, p):
-    self.write('SOUR1:POW ' + str(p) + 'DBM')
+    self.write('SOUR0:POW ' + str(p) + 'DBM')
 
   def close(self):
     self.device.close()
