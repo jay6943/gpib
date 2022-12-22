@@ -19,7 +19,7 @@ def search():
 def switch(channel):
 
   rm = visa.ResourceManager()
-  device = rm.open_resource('GPIB1::17::INSTR')
+  device = rm.open_resource('GPIB0::17::INSTR')
   device.write('ROUT1:CHAN1 A,' + str(channel))
   device.close()
 
@@ -27,7 +27,7 @@ class ando():
 
   def __init__(self):
     rm = visa.ResourceManager()
-    self.device = rm.open_resource('GPIB1::19::INSTR')
+    self.device = rm.open_resource('GPIB0::19::INSTR')
 
   def write(self, command):
     self.device.write(command)
@@ -50,7 +50,7 @@ class att():
 
   def __init__(self):
     rm = visa.ResourceManager()
-    self.device = rm.open_resource('GPIB1::6::INSTR')
+    self.device = rm.open_resource('GPIB0::6::INSTR')
 
   def write(self, command):
     self.device.write(command)
@@ -103,7 +103,7 @@ class ldc():
 
   def __init__(self):
     rm = visa.ResourceManager()
-    self.device = rm.open_resource('GPIB1::4::INSTR')
+    self.device = rm.open_resource('GPIB0::4::INSTR')
 
   def write(self, command):
     self.device.write(command + ';')
@@ -140,7 +140,7 @@ class opm():
 
   def __init__(self, gpib):
     rm = visa.ResourceManager()
-    self.device = rm.open_resource('GPIB1::' + str(gpib) + '::INSTR')
+    self.device = rm.open_resource('GPIB0::' + str(gpib) + '::INSTR')
 
   def write(self, command):
     self.device.write(command)
@@ -162,8 +162,7 @@ class osa():
 
   def __init__(self, command):
     rm = visa.ResourceManager()
-    # Yokogawa GPIB #5
-    self.device = rm.open_resource('GPIB1::5::INSTR')
+    self.device = rm.open_resource('GPIB0::5::INSTR')
     self.device.timeout = 50000
 
     if command:
@@ -183,7 +182,7 @@ class pdl():
 
   def __init__(self):
     rm = visa.ResourceManager()
-    self.device = rm.open_resource('GPIB1::2::INSTR')
+    self.device = rm.open_resource('GPIB0::2::INSTR')
     self.device.write_termination = '\n'
     self.write('WAV 1550')
 
@@ -203,7 +202,7 @@ class tld():
 
   def __init__(self):
     rm = visa.ResourceManager()
-    self.device = rm.open_resource('GPIB1::20::INSTR')
+    self.device = rm.open_resource('GPIB0::20::INSTR')
     # print('KEYSIGHT 81898A TLD')
 
   def write(self, command):
@@ -224,7 +223,7 @@ class tld81640A():
 
   def __init__(self):
     rm = visa.ResourceManager()
-    self.device = rm.open_resource('GPIB1::20::INSTR')
+    self.device = rm.open_resource('GPIB0::20::INSTR')
     # print('Agilent 81640A TLD')
 
   def write(self, command):
@@ -245,7 +244,7 @@ class N7711A():
 
   def __init__(self):
     rm = visa.ResourceManager()
-    self.device = rm.open_resource('GPIB1::20::INSTR')
+    self.device = rm.open_resource('GPIB0::20::INSTR')
     self.write('OUTP1:POW:UN DBM')
 
     print('KEYSIGHT N7711A TLD')
@@ -260,7 +259,7 @@ class ivs():
 
   def __init__(self):
     rm = visa.ResourceManager()
-    self.device = rm.open_resource('GPIB1::10::INSTR')
+    self.device = rm.open_resource('GPIB0::10::INSTR')
     self.device.timeout = 50000
 
   def write(self, command):
@@ -308,7 +307,7 @@ class dcp():
 
   def __init__(self):
     rm = visa.ResourceManager()
-    self.device = rm.open_resource('GPIB1::6::INSTR')
+    self.device = rm.open_resource('GPIB0::6::INSTR')
     self.device.timeout = 50000
 
   def write(self, command):
