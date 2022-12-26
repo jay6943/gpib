@@ -1,5 +1,6 @@
 import sys
 import dat
+import numpy as np
 import PyQt5.QtGui as Qg
 import PyQt5.QtWidgets as Qw
 import matplotlib.pyplot as plt
@@ -112,7 +113,10 @@ class App(Qw.QWidget):
             self.x.append([])
             self.y.append([])
 
-            self.x[self.i], self.y[self.i] = dat.getdata(fileName)
+            # self.x[self.i], self.y[self.i] = dat.getdata(fileName)
+
+            data = np.loadtxt(fileName).transpose()
+            self.x[self.i], self.y[self.i] = data[0], data[1]
 
             self.onSearch()
 
@@ -131,7 +135,10 @@ class App(Qw.QWidget):
             self.x.append([])
             self.y.append([])
 
-            self.x[i], self.y[i] = dat.getdata(files[i])
+            # self.x[i], self.y[i] = dat.getdata(files[i])
+
+            data = np.loadtxt(files[i]).transpose()
+            self.x[i], self.y[i] = data[0], data[1]
 
             title = files[i][:-4].split('/')
             self.legend.append(title[-1])
@@ -147,8 +154,8 @@ class App(Qw.QWidget):
 
         plt.xlabel(self.xlabel.text())
         plt.ylabel(self.ylabel.text())
-        plt.xlim(float(self.xmins.text()), float(self.xmaxs.text()))
-        plt.ylim(float(self.ymins.text()), float(self.ymaxs.text()))
+        # plt.xlim(float(self.xmins.text()), float(self.xmaxs.text()))
+        # plt.ylim(float(self.ymins.text()), float(self.ymaxs.text()))
         if self.checkTitle.isChecked(): plt.title(self.title.text())
         if self.checkLegend.isChecked(): plt.legend(self.legend)
         plt.grid()
