@@ -3,7 +3,7 @@ import PyQt5.QtGui as Qg
 import PyQt5.QtCore as Qc
 import PyQt5.QtWidgets as Qw
 
-config = '../gpib-dat.txt'
+config = '../data/gpib.txt'
 
 def Qlabel(self, text, x, y):
 
