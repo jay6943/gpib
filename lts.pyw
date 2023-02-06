@@ -36,7 +36,7 @@ class App(Qw.QWidget):
 
     # 45151484, 45288094
     self.con = dat.Qedit(self, '45288094', 0, y-80, 80)
-    self.prt = dat.Qedit(self, '', 0, y-40, 170)
+    self.prt = dat.Qedit(self, 'LTS150', 0, y-40, 170)
     self.txt = dat.Qedit(self, '10', 60, y, dy)
     self.On1 = dat.Qedit(self, '0.01', 120, y+40, dy)
     self.On2 = dat.Qedit(self, '0.05', 120, y+80, dy)
@@ -47,8 +47,9 @@ class App(Qw.QWidget):
     self.On7 = dat.Qedit(self, '20', 120, y+280, dy)
 
   def OnConn(self):
+    self.prt.setText('')
     self.stage = apt.Motor(45288094)
-    self.prt.setText(str(self.stage))
+    self.prt.setText('LTS150')
 
   def OnStep(self, text, sign):
     self.x = self.x + sign * float(text)
