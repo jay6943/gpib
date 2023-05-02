@@ -27,8 +27,6 @@ class ExWindow(Qw.QMainWindow):
 
     self.center = dat.Qedit(self, str(center), 0, 60, 120)
     self.span = dat.Qedit(self, str(span), 0, 100, 120)
-    # self.start = dat.Qedit(self, '1530', 0, 60, 120)
-    # self.stop = dat.Qedit(self, '1570', 0, 100, 120)
     self.bandwidth = dat.Qedit(self, str(res), 0, 140, 120)
     self.sensitivity = dat.Qedit(self, '10', 0, 180, 120)
     self.reference = dat.Qedit(self, str(rlev), 0, 220, 120)
@@ -36,8 +34,6 @@ class ExWindow(Qw.QMainWindow):
 
     dat.Qbutton(self, self.OnCenter, 'Center (nm)', 130, 60, 120)
     dat.Qbutton(self, self.OnSpan, 'Span (nm)', 130, 100, 120)
-    # dat.Qbutton(self, self.OnStart, 'Start (nm)', 130, 60, 120)
-    # dat.Qbutton(self, self.OnStop, 'Stop (nm)', 130, 100, 120)
     dat.Qbutton(self, self.OnBandwidth, 'Bandwidth (nm)', 130, 140, 120)
     dat.Qbutton(self, self.OnSensitivity, 'Sensitivity (dBm)', 130, 180, 120)
     dat.Qbutton(self, self.OnReference, 'Reference (dBm)', 130, 220, 120)
@@ -56,28 +52,10 @@ class ExWindow(Qw.QMainWindow):
     self.saving = dat.Qcheck(self, 'Save w/o show', 10, 30, 120)
     self.figure = dat.Qcheck(self, 'Save figure', 150, 30, 120)
 
-    # osa = dev.osa(False)
-    # osa.write(':SENS:WAV:CENT ' + self.center.text() + 'NM')
-    # print(osa.query(':SENS:WAV:CENT?'))
-    # osa.write(':SENS:WAV:SPAN ' + self.span.text() + 'NM')
-    # # osa.write(':SENS:WAV:STAR ' + self.start.text() + 'NM')
-    # # osa.write(':SENS:WAV:STOP ' + self.stop.text() + 'NM')
-    # osa.write(':SENS:BAND:RES ' + self.bandwidth.text() + 'NM')
-    # osa.write(':DISP:TRAC:Y1:RLEV ' + self.reference.text() + 'DBM')
-    # osa.write(':DISP:TRAC:Y1:PDIV ' + self.division.text() + 'DB')
-    # # osa.write(':SENS:SWE:POIN ' + str(self.OnPoints()))
-    # osa.write(':INIT:SMOD REP')
-    # osa.write(':INIT:IMM')
-    # osa.close()
-
     self.setSwitch = 1
     self.figure.setChecked(True)
 
   def OnPoints(self):
-
-    # a = float(self.start.text())
-    # b = float(self.stop.text())
-    # c = b - a
 
     c = float(self.span.text())
     d = float(self.bandwidth.text())
@@ -91,15 +69,8 @@ class ExWindow(Qw.QMainWindow):
   def OnSpan(self):
     dev.osa(':SENS:WAV:SPAN ' + self.span.text() + 'NM')
 
-  # def OnStart(self):
-  #   dev.osa(':SENS:WAV:STAR ' + self.start.text() + 'NM')
-
-  # def OnStop(self):
-  #   dev.osa(':SENS:WAV:STOP ' + self.stop.text() + 'NM')
-
   def OnBandwidth(self):
     dev.osa(':SENS:BAND:RES ' + self.bandwidth.text() + 'NM')
-    # self.OnPoints()
 
   def OnSensitivity(self):
     dev.osa(':DISP:TRAC:Y1:RPOS ' + self.sensitivity.text() + 'DIV')
@@ -141,7 +112,6 @@ class ExWindow(Qw.QMainWindow):
     osa.close()
 
   def OnGet(self):
-    
     osa = dev.osa(False)
     osa.timeout = 50000
     self.OnSingle()
@@ -175,16 +145,17 @@ class ExWindow(Qw.QMainWindow):
     if self.saving.isChecked(): self.OnSave()
 
   def OnSave(self):
+    filename = Qw.QFileDialog.getSaveFileName(self, '', dat.get_folder(), '*.txt')[0]
+    folder = os.path.dirname(filename)
 
-    fp = Qw.QFileDialog.getSaveFileName(self, '', dat.getfolder(), '*.txt')[0]
-
-    if fp:
-      data = [self.x, self.y]
-      np.savetxt(fp, np.array(data).transpose(), fmt='%.3f')
-      if self.figure.isChecked(): plt.savefig(fp[:len(fp)-4] + '.png')
-
-      folder = os.path.dirname(fp)
-      if folder != dat.getfolder(): dat.setfolder(folder)
+    if filename:
+      data = np.array([self.x, self.y])
+      np.savetxt(filename, data.transpose(), fmt='%.3f')
+      dat.set_folder(folder)
+      if self.figure.isChecked():
+        fp = os.path.splitext(filename)
+        print(fp[0])
+        plt.savefig(fp[0] + '.png')
 
 if __name__ == '__main__':
 

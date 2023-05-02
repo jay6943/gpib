@@ -1,19 +1,22 @@
+import os
 import numpy as np
 import PyQt5.QtGui as Qg
 import PyQt5.QtCore as Qc
 import PyQt5.QtWidgets as Qw
 
-config = '../data/gpib.txt'
+config_file = '../../data/cfg.txt'
 
-def Qlabel(self, text, x, y):
+def QMessage(self, text):
+  Qw.QMessageBox.about(self, 'Receiver', text)
 
+def Qlabel(self, text, x, y, size):
   label = Qw.QLabel(self)
+  label.resize(size, 30)
   label.move(x + 20, y + 30)
   label.setText(text)
   label.setFont(Qg.QFont('Calibri'))
 
 def Qbutton(self, event, text, x, y, size):
-
   button = Qw.QPushButton(text, self)
   button.clicked.connect(event)
   button.resize(size, 30)
@@ -21,18 +24,16 @@ def Qbutton(self, event, text, x, y, size):
   button.setFont(Qg.QFont('Calibri'))
 
 def Qedit(self, text, x, y, size):
-
   edit = Qw.QLineEdit(self)
   edit.resize(size, 30)
   edit.move(x + 20, y + 20)
   edit.setText(text)
-  edit.setAlignment(Qc.Qt.AlignLeft)
+  edit.setAlignment(Qc.Qt.AlignCenter)
   edit.setFont(Qg.QFont('Consolas'))
 
   return edit
 
 def Qcheck(self, text, x, y, size):
-
   check = Qw.QCheckBox(text, self)
   check.resize(size, 30)
   check.move(x + 20, y + 20)
@@ -41,7 +42,6 @@ def Qcheck(self, text, x, y, size):
   return check
 
 def Qcombo(self, x, y, size):
-
   combo = Qw.QComboBox(self)
   combo.resize(size, 30)
   combo.move(x + 20, y + 20)
@@ -49,69 +49,19 @@ def Qcombo(self, x, y, size):
 
   return combo
 
-def getfolder():
-
-  fp = open(config, 'r')
-  data = fp.read().split('\n')
+def get_folder():
+  fp = open(config_file, 'r')
+  data = fp.read()
+  data = data.replace('\n','')
   fp.close()
 
-  return data[0]
+  return data
 
-def setfolder(foldername):
-
-  fp = open(config, 'r')
-  data = fp.read().split('\n')
+def set_folder(folder):
+  fp = open(config_file, 'w')
+  fp.write(folder)
   fp.close()
 
-  data[0] = foldername + '/'
+if __name__ == '__main__':
 
-  fp = open(config, 'w')
-  for i in range(len(data)-1): fp.write(data[i] + '\n')
-  fp.close()
-
-def titles():
-
-  fp = open(config, 'r')
-  data = fp.read().split('\n')
-  fp.close()
-
-  i = data.index('Y')
-
-  return data[2:i], data[i+1:len(data)-1]
-
-def title(i):
-
-  fp = open(config, 'r')
-  data = fp.read().split('\n')
-  fp.close()
-
-  return data[i]
-
-def getdata(filename):
-
-  fp = open(filename, 'r')
-  data = fp.read().split('\n')
-  data = data[:len(data)-1]
-  fp.close()
-
-  x, y = [], []
-
-  for i in range(len(data)):
-    var = data[i].split('\t')
-    x.append(float(var[0]))
-    y.append(float(var[1]))
-
-  return x, y
-
-def save(filename, x, y):
-
-  np.savetxt(filename, np.array([x,y]).transpose(), fmt='%.3f')
-
-def aranges(start, stop, step):
-
-  m = int(round((stop - start) / step, 1)) + 1
-
-  x = [start + step * i for i in range(m)]
-  y = [0 for i in range(m)]
-
-  return x, y
+  print(os.listdir(get_folder()))

@@ -19,15 +19,15 @@ def search():
 def switch(channel):
 
   rm = visa.ResourceManager()
-  device = rm.open_resource('GPIB1::17::INSTR')
+  device = rm.open_resource('GPIB0::17::INSTR')
   device.write('ROUT1:CHAN1 A,' + str(channel))
   device.close()
 
-class ando():
+class ando:
 
   def __init__(self):
     rm = visa.ResourceManager()
-    self.device = rm.open_resource('GPIB1::19::INSTR')
+    self.device = rm.open_resource('GPIB0::19::INSTR')
 
   def write(self, command):
     self.device.write(command)
@@ -46,11 +46,11 @@ class ando():
   def close(self):
     self.device.close()
 
-class att():
+class att:
 
   def __init__(self):
     rm = visa.ResourceManager()
-    self.device = rm.open_resource('GPIB1::6::INSTR')
+    self.device = rm.open_resource('GPIB0::6::INSTR')
 
   def write(self, command):
     self.device.write(command)
@@ -62,7 +62,7 @@ class att():
   def close(self):
     self.device.close()
 
-class dso():
+class dso:
 
   def __init__(self, command):
     rm = visa.ResourceManager()
@@ -99,11 +99,11 @@ class dso():
     self.write('RUN')
     time.sleep(1)
 
-class ldc():
+class ldc:
 
   def __init__(self):
     rm = visa.ResourceManager()
-    self.device = rm.open_resource('GPIB1::4::INSTR')
+    self.device = rm.open_resource('GPIB0::4::INSTR')
 
   def write(self, command):
     self.device.write(command + ';')
@@ -136,11 +136,11 @@ class ldc():
   def close(self):
     self.device.close()
 
-class opm():
+class opm:
 
   def __init__(self, gpib):
     rm = visa.ResourceManager()
-    self.device = rm.open_resource('GPIB1::' + str(gpib) + '::INSTR')
+    self.device = rm.open_resource('GPIB0::' + str(gpib) + '::INSTR')
 
   def write(self, command):
     self.device.write(command)
@@ -158,11 +158,11 @@ class opm():
   def close(self):
     self.device.close()
 
-class osa():
+class osa:
 
   def __init__(self, command):
     rm = visa.ResourceManager()
-    self.device = rm.open_resource('GPIB1::5::INSTR')
+    self.device = rm.open_resource('GPIB0::5::INSTR')
     self.device.timeout = 50000
 
     if command:
@@ -178,11 +178,11 @@ class osa():
   def close(self):
     self.device.close()
 
-class pdl():
+class pdl:
 
   def __init__(self):
     rm = visa.ResourceManager()
-    self.device = rm.open_resource('GPIB1::2::INSTR')
+    self.device = rm.open_resource('GPIB0::2::INSTR')
     self.device.write_termination = '\n'
     self.write('WAV 1550')
 
@@ -198,11 +198,11 @@ class pdl():
   def close(self):
     self.device.close()
 
-class tld():
+class tld:
 
   def __init__(self):
     rm = visa.ResourceManager()
-    self.device = rm.open_resource('GPIB1::20::INSTR')
+    self.device = rm.open_resource('GPIB0::20::INSTR')
     # print('KEYSIGHT 81898A TLD')
 
   def write(self, command):
@@ -219,11 +219,11 @@ class tld():
   def close(self):
     self.device.close()
 
-class tld81640A():
+class tld81640A:
 
   def __init__(self):
     rm = visa.ResourceManager()
-    self.device = rm.open_resource('GPIB1::20::INSTR')
+    self.device = rm.open_resource('GPIB0::20::INSTR')
     # print('Agilent 81640A TLD')
 
   def write(self, command):
@@ -240,11 +240,11 @@ class tld81640A():
   def close(self):
     self.device.close()
 
-class N7711A():
+class N7711A:
 
   def __init__(self):
     rm = visa.ResourceManager()
-    self.device = rm.open_resource('GPIB1::20::INSTR')
+    self.device = rm.open_resource('GPIB0::20::INSTR')
     self.write('OUTP1:POW:UN DBM')
 
     print('KEYSIGHT N7711A TLD')
@@ -255,11 +255,11 @@ class N7711A():
   def close(self):
     self.device.close()
 
-class ivs():
+class ivs:
 
   def __init__(self):
     rm = visa.ResourceManager()
-    self.device = rm.open_resource('GPIB1::10::INSTR')
+    self.device = rm.open_resource('GPIB0::10::INSTR')
     self.device.timeout = 50000
 
   def write(self, command):
@@ -303,11 +303,11 @@ class ivs():
   def close(self):
     self.device.close()
 
-class dcp():
+class dcp:
 
   def __init__(self):
     rm = visa.ResourceManager()
-    self.device = rm.open_resource('GPIB1::6::INSTR')
+    self.device = rm.open_resource('GPIB0::6::INSTR')
     self.device.timeout = 50000
 
   def write(self, command):
@@ -321,7 +321,7 @@ class dcp():
   def close(self):
     self.device.close()
 
-class usbserial():
+class usbserial:
 
   def __init__(self, port):
     self.device = serial.Serial(port, 115200)
