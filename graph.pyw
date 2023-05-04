@@ -40,12 +40,12 @@ class App(Qw.QWidget):
     dat.Qlabel(self, 'Line style', 10, 265, 60)
 
     self.title = dat.Qedit(self, 'filename', 0, 40, 500)
-    self.xmins = dat.Qedit(self, '', 100, 200, 120)
-    self.xmaxs = dat.Qedit(self, '', 240, 200, 120)
-    self.xmids = dat.Qedit(self, '', 380, 200, 120)
-    self.ymins = dat.Qedit(self, '', 100, 240, 120)
-    self.ymaxs = dat.Qedit(self, '', 240, 240, 120)
-    self.ymids = dat.Qedit(self, '', 380, 240, 120)
+    self.xmin = dat.Qedit(self, '', 100, 200, 120)
+    self.xmax = dat.Qedit(self, '', 240, 200, 120)
+    self.xstep = dat.Qedit(self, '', 380, 200, 120)
+    self.ymin = dat.Qedit(self, '', 100, 240, 120)
+    self.ymax = dat.Qedit(self, '', 240, 240, 120)
+    self.ystep = dat.Qedit(self, '', 380, 240, 120)
     self.marks = dat.Qedit(self, '-',100, 280, 120)
     self.xlabel = dat.Qedit(self, 'X', 0, 80, 240)
     self.ylabel = dat.Qedit(self, 'Y', 260, 80, 240)
@@ -62,36 +62,9 @@ class App(Qw.QWidget):
   def onYtitle(self, text):
     self.ylabel.setText(text)
 
-  def OnFolder(self):
-    folder = Qw.QFileDialog.getExistingDirectory(self, "Select Folder", dat.get_folder())
-
-    if folder != '': dat.set_folder(folder)
-
-  def onSearch(self):
-    for i in range(len(self.x)):
-
-      xmin, xmax = min(self.x[i]), max(self.x[i])
-      ymin, ymax = min(self.y[i]), max(self.y[i])
-
-      if i < 1:
-        self.xmin, self.xmax = xmin, xmax
-        self.ymin, self.ymax = ymin, ymax
-      else:
-        if xmin < self.xmin: self.xmin = xmin
-        if xmax > self.xmax: self.xmax = xmax
-        if ymin < self.ymin: self.ymin = ymin
-        if ymax > self.ymax: self.ymax = ymax
-
-    self.xmins.setText(str(round(self.xmin, 6)))
-    self.xmaxs.setText(str(round(self.xmax, 6)))
-    self.ymins.setText(str(round(self.ymin, 6)))
-    self.ymaxs.setText(str(round(self.ymax, 6)))
-
   def onOpen(self):
     fileName = Qw.QFileDialog.getOpenFileName(self, '', dat.get_folder(), '*.txt;;*.dat')[0]
-    print(fileName)
     folder = os.path.dirname(fileName)
-    print(folder)
 
     if fileName:
       dat.set_folder(folder)
@@ -100,15 +73,26 @@ class App(Qw.QWidget):
       self.y.append([])
 
       data = np.loadtxt(fileName).transpose()
-      self.x[self.i], self.y[self.i] = data[0], data[1]
+      self.x[self.i] = data[0]
+      self.y[self.i] = data[1]
 
-      self.onSearch()
-
-      title = fileName[:-4].split('/')
+      title = fileName.split('/')
       self.title.setText(title[-1])
       self.legend.append(title[-1])
 
       self.i += 1
+
+      xmax, xmin = np.max(self.x), np.min(self.x)
+      ymax, ymin = np.max(self.y), np.min(self.y)
+      xstep = (xmax - xmin) / 5
+      ystep = (ymax - ymin) / 5
+
+      self.xmin.setText(str(xmin))
+      self.xmax.setText(str(xmax))
+      self.ymin.setText(str(ymin))
+      self.ymax.setText(str(ymax))
+      self.xstep.setText(str(xstep))
+      self.ystep.setText(str(ystep))
 
   def onOpenFiles(self):
     files = Qw.QFileDialog.getOpenFileNames(self, '', dat.get_folder(), '*.txt;;*.dat')[0]
@@ -120,21 +104,28 @@ class App(Qw.QWidget):
       self.y.append([])
 
       data = np.loadtxt(files[i]).transpose()
-      self.x[i], self.y[i] = data[0], data[1]
+      self.x[i] = data[0]
+      self.y[i] = data[1]
 
-      title = files[i][:-4].split('/')
+      title = files[i].split('/')
       self.legend.append(title[-1])
-
-    if len(files) > 0: self.onSearch()
 
     self.i += len(files)
 
   def onPlot(self, fileName):
-    for i in range(self.i): plt.plot(self.x[i], self.y[i], self.marks.text())
-    plt.xlabel(self.xlabel.text())
-    plt.ylabel(self.ylabel.text())
+    for i in range(self.i):
+      plt.plot(self.x[i], self.y[i], self.marks.text())
     if self.checkTitle.isChecked(): plt.title(self.title.text())
     if self.checkLegend.isChecked(): plt.legend(self.legend)
+    plt.xlabel(self.xlabel.text())
+    plt.ylabel(self.ylabel.text())
+    xmin, xmax = float(self.xmin.text()), float(self.xmax.text())
+    ymin, ymax = float(self.ymin.text()), float(self.ymax.text())
+    xstep, ystep = float(self.xstep.text()), float(self.ystep.text())
+    plt.xticks(np.arange(xmin, xmax + xstep * 0.5, xstep))
+    plt.yticks(np.arange(ymin, ymax + ystep * 0.5, ystep))
+    plt.xlim(xmin, xmax)
+    plt.ylim(ymin, ymax)
     plt.grid()
     if len(fileName) > 0: plt.savefig(fileName)
     else: plt.show()
