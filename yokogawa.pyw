@@ -15,7 +15,7 @@ class ExWindow(Qw.QMainWindow):
 
     self.setWindowTitle('OSA')
     self.setWindowIcon(Qg.QIcon('jk.png'))
-    self.setGeometry(100, 500, 290, 450)
+    self.setGeometry(500, 500, 290, 450)
 
     osa = dev.osa(False)
     center = float(osa.query(':SENS:WAV:CENT?')) * 1e9

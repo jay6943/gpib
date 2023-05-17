@@ -14,7 +14,7 @@ class ExWindow(Qw.QMainWindow):
 
     super().__init__()
         
-    self.setGeometry(100, 500, 260, 390)
+    self.setGeometry(500, 500, 260, 390)
     self.setWindowIcon(Qg.QIcon('jk.png'))
     self.setWindowTitle('IQ')
 
@@ -31,15 +31,15 @@ class ExWindow(Qw.QMainWindow):
     dat.Qbutton(self, self.OnOff1, 'Offset 1 (mV)', 120, 280, 100)
     dat.Qbutton(self, self.OnOff2, 'Offset 2 (mV)', 120, 320, 100)
 
-    self.var = dat.Qedit(self, '1E-3', 0, 160, 100)
+    self.var = dat.Qedit(self, '0.01', 0, 160, 100)
     self.amp1 = dat.Qedit(self, '', 0, 200, 100)
     self.amp2 = dat.Qedit(self, '', 0, 240, 100)
-    self.off1 = dat.Qedit(self, '', 0, 280, 100)
-    self.off2 = dat.Qedit(self, '', 0, 320, 100)
+    self.off1 = dat.Qedit(self, '0', 0, 280, 100)
+    self.off2 = dat.Qedit(self, '0', 0, 320, 100)
     self.fit = dat.Qedit(self, '', 80, 40, 100)
     
-    dat.Qlabel(self, 'Phase error', 0, 30)
-    dat.Qlabel(self, 'deg.', 190, 30)
+    dat.Qlabel(self, 'Phase error', 0, 30, 80)
+    dat.Qlabel(self, 'deg.', 190, 30, 40)
     
     self.OnCH1 = dat.Qcheck(self, '', 104, 200, 15)
     self.OnCH2 = dat.Qcheck(self, '', 104, 240, 15)
@@ -59,23 +59,24 @@ class ExWindow(Qw.QMainWindow):
     dso.write('WAV:POINTS ' + str(self.m))
     self.amp1.setText(str(round(dso.query('CHAN1:SCAL?') * 1e3, 3)))
     self.amp2.setText(str(round(dso.query('CHAN2:SCAL?') * 1e3, 3)))
+    self.off1.setText(str(round(dso.query('CHAN1:OFFS?') * 1e3, 3)))
+    self.off2.setText(str(round(dso.query('CHAN2:OFFS?') * 1e3, 3)))
     dso.close()
-
-    self.OnXY()
 
   def OnRun(self):
     dev.dso('RUN')
-    
+
   def OnStop(self):
     dev.dso('SINGLE')
     
   def OnTY(self):
-
     dso = dev.dso(False)
     dso.write('TIM:FORM YT')
     dso.write('CHAN1:DISP 1')
     dso.write('CHAN2:DISP 1')
-    dso.write('TIM:SCAL 10E-3')
+    dso.write('TIM:SCAL ' + self.var.text())
+    dso.write('CHAN1:SCAL ' + str(float(self.amp1.text()) * 1e-3))
+    dso.write('CHAN2:SCAL ' + str(float(self.amp2.text()) * 1e-3))
     dso.write('SINGLE')
 
     time.sleep(2)
@@ -97,64 +98,61 @@ class ExWindow(Qw.QMainWindow):
     dso.close()
 
   def OnXY(self):
-
     self.OnTY()
     dev.dso('TIM:FORM XY')
     
   def OnTime(self):
-
     dev.dso('TIM:SCAL ' + self.var.text())
     
   def OnAmp1(self):
-
     dso = dev.dso(False)
     if self.OnCH1.isChecked():
       dso.write('CHAN1:DISP 1')
       dso.write('TIM:FORM YT')
       dso.write('CHAN1:SCAL ' + str(float(self.amp1.text()) * 1e-3))
-      dso.write('CHAN2:SCAL ' + str(float(self.amp1.text()) * 1e-3))
+      dso.write('TIM:SCAL ' + self.var.text())
       dso.write('TIM:FORM XY')
     else:
       dso.write('CHAN1:DISP 0')
-    
     dso.close()
-      
-  def OnAmp2(self):
 
+  def OnAmp2(self):
     dso = dev.dso(False)
     if self.OnCH2.isChecked():
+      dso.write('CHAN2:DISP 1')
       dso.write('TIM:FORM YT')
       dso.write('CHAN2:SCAL ' + str(float(self.amp2.text()) * 1e-3))
+      dso.write('TIM:SCAL ' + self.var.text())
       dso.write('TIM:FORM XY')
     else:
       dso.write('CHAN2:DISP 0')
     dso.close()
 
   def OnOff1(self):
-
     dso = dev.dso(False)
     dso.write('TIM:FORM YT')
     dso.write('CHAN1:OFFS ' + str(float(self.off1.text()) * 1e-3))
+    dso.write('TIM:SCAL ' + self.var.text())
     dso.write('TIM:FORM XY')
     dso.close()
 
   def OnOff2(self):
-
     dso = dev.dso(False)
     dso.write('TIM:FORM YT')
     dso.write('CHAN2:OFFS ' + str(float(self.off2.text()) * 1e-3))
+    dso.write('TIM:SCAL ' + self.var.text())
     dso.write('TIM:FORM XY')
     dso.close()
 
   def OnData(self):
-
     dso = dev.dso(False)
     dso.write('TIM:FORM YT')
+    dso.write('TIM:SCAL ' + self.var.text())
     dso.write('SINGLE')
 
     time.sleep(2)
 
-    self.t = np.arange(self.m) * float(self.var.text()) * 4e-5
+    self.t = np.arange(self.m) * float(self.var.text())
     self.x = dso.getwave(1)
     self.y = dso.getwave(2)
 
@@ -181,7 +179,6 @@ class ExWindow(Qw.QMainWindow):
     self.OnDraw()
 
   def OnDraw(self):
-
     xmin = np.amin(self.x)
     xmax = np.amax(self.x)
     ymin = np.amin(self.y)
@@ -206,16 +203,15 @@ class ExWindow(Qw.QMainWindow):
     plt.show()
 
   def OnSave(self):
-
-    fp = Qw.QFileDialog.getSaveFileName(self, '', dat.getfolder(), '*.txt')[0]
+    fp = Qw.QFileDialog.getSaveFileName(self, '', dat.get_folder(), '*.txt')[0]
+    folder = os.path.dirname(fp)
 
     if fp:
-      data = [self.t, self.x, self.y]
-      np.savetxt(fp, np.array(data).transpose(), fmt='%.3f')
-      plt.savefig(fp[:len(fp)-4] + '.png')
-
-      folder = os.path.dirname(fp)
-      if folder != dat.getfolder(): dat.setfolder(folder)
+      data = np.array([self.t, self.x, self.y])
+      np.savetxt(fp, data.transpose(), fmt='%.3f')
+      filename = os.path.splitext(fp)
+      plt.savefig(filename[0] + '.png')
+      dat.set_folder(folder)
 
 if __name__ == '__main__':
 
