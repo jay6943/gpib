@@ -8,6 +8,12 @@ import PyQt5.QtGui as Qg
 import PyQt5.QtWidgets as Qw
 import matplotlib.pyplot as plt
 
+def OnRun():
+  dev.dso('RUN')
+
+def OnStop():
+  dev.dso('SINGLE')
+
 class ExWindow(Qw.QMainWindow):
   
   def __init__(self):
@@ -20,8 +26,8 @@ class ExWindow(Qw.QMainWindow):
 
     dat.Qbutton(self, self.OnData, 'Get', 0, 0, 100)
     dat.Qbutton(self, self.OnSave, 'Save', 120, 0, 100)
-    dat.Qbutton(self, self.OnRun, 'Run', 0, 80, 100)
-    dat.Qbutton(self, self.OnStop, 'Stop', 120, 80, 100)
+    dat.Qbutton(self, OnRun, 'Run', 0, 80, 100)
+    dat.Qbutton(self, OnStop, 'Stop', 120, 80, 100)
     dat.Qbutton(self, self.OnTY, 'TY-plot', 0, 120, 100)
     dat.Qbutton(self, self.OnXY, 'XY-plot', 120, 120, 100)
     
@@ -63,12 +69,6 @@ class ExWindow(Qw.QMainWindow):
     self.off2.setText(str(round(dso.query('CHAN2:OFFS?') * 1e3, 3)))
     dso.close()
 
-  def OnRun(self):
-    dev.dso('RUN')
-
-  def OnStop(self):
-    dev.dso('SINGLE')
-    
   def OnTY(self):
     dso = dev.dso(False)
     dso.write('TIM:FORM YT')

@@ -1,5 +1,4 @@
 import os
-import numpy as np
 import PyQt5.QtGui as Qg
 import PyQt5.QtCore as Qc
 import PyQt5.QtWidgets as Qw
