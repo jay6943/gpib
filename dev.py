@@ -339,7 +339,6 @@ class usbserial:
     self.device.close()
 
 if __name__ == '__main__':
-  
   search()
 
   '''

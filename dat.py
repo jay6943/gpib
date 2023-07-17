@@ -62,5 +62,4 @@ def set_folder(folder):
   fp.close()
 
 if __name__ == '__main__':
-
   print(os.listdir(get_folder()))

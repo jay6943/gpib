@@ -19,7 +19,12 @@ class ExWindow(Qw.QMainWindow):
   def __init__(self):
 
     super().__init__()
-        
+
+    self.y = None
+    self.x = None
+    self.t = None
+    self.phase = None
+
     self.setGeometry(500, 500, 260, 390)
     self.setWindowIcon(Qg.QIcon('jk.png'))
     self.setWindowTitle('IQ')
@@ -214,7 +219,6 @@ class ExWindow(Qw.QMainWindow):
       dat.set_folder(folder)
 
 if __name__ == '__main__':
-
   app = Qw.QApplication(sys.argv)
   ex = ExWindow()
   ex.show()

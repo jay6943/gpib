@@ -7,11 +7,35 @@ import PyQt5.QtGui as Qg
 import PyQt5.QtWidgets as Qw
 import matplotlib.pyplot as plt
 
+def OnMax():
+  dev.osa(':CALC:MARK:MAX')
+
+def OnMin():
+  dev.osa(':CALC:MARK:MIN')
+
+def OnMarkCenter():
+  dev.osa(':CALC:MARK:SCEN')
+
+def OnContinuous():
+  osa = dev.osa(False)
+  osa.write(':INIT:SMOD REP')
+  osa.write(':INIT:IMM')
+  osa.close()
+
+def OnSingle():
+  osa = dev.osa(False)
+  osa.write(':INIT:SMOD SING')
+  osa.write(':INIT:IMM')
+  osa.close()
+
 class ExWindow(Qw.QMainWindow):
   
   def __init__(self):
 
     super().__init__()
+
+    self.y = None
+    self.x = None
 
     self.setWindowTitle('OSA')
     self.setWindowIcon(Qg.QIcon('jk.png'))
@@ -41,12 +65,12 @@ class ExWindow(Qw.QMainWindow):
 
     dat.Qbutton(self, self.OnGet, 'Get', 0, 0, 120)
     dat.Qbutton(self, self.OnSave, 'Save', 130, 0, 120)
-    dat.Qbutton(self, self.OnContinuous, 'Continuous', 0, 300, 120)
-    dat.Qbutton(self, self.OnSingle, 'Stop', 130, 300, 120)
+    dat.Qbutton(self, OnContinuous, 'Continuous', 0, 300, 120)
+    dat.Qbutton(self, OnSingle, 'Stop', 130, 300, 120)
 
-    dat.Qbutton(self, self.OnMax, 'Max', 0, 340, 120)
-    dat.Qbutton(self, self.OnMin, 'Min', 130, 340, 120)
-    dat.Qbutton(self, self.OnMarkCenter, 'Mark to Center', 0, 380, 120)
+    dat.Qbutton(self, OnMax, 'Max', 0, 340, 120)
+    dat.Qbutton(self, OnMin, 'Min', 130, 340, 120)
+    dat.Qbutton(self, OnMarkCenter, 'Mark to Center', 0, 380, 120)
     dat.Qbutton(self, self.OnLevel, 'Ref. to Peak', 130, 380, 120)
     
     self.saving = dat.Qcheck(self, 'Save w/o show', 10, 30, 120)
@@ -81,12 +105,6 @@ class ExWindow(Qw.QMainWindow):
   def OnDivision(self):
     dev.osa(':DISP:TRAC:Y1:PDIV ' + self.division.text() + 'DB')
 
-  def OnMax(self):
-    dev.osa(':CALC:MARK:MAX')
-
-  def OnMin(self):
-    dev.osa(':CALC:MARK:MIN')
-
   def OnLevel(self):
     osa = dev.osa(False)
     osa.write(':CALC:MARK:MAX')
@@ -96,28 +114,13 @@ class ExWindow(Qw.QMainWindow):
     self.reference.setText(str(round(y, 0)))
     self.OnReference()
 
-  def OnMarkCenter(self):
-    dev.osa(':CALC:MARK:SCEN')
-      
-  def OnContinuous(self):
-    osa = dev.osa(False)
-    osa.write(':INIT:SMOD REP')
-    osa.write(':INIT:IMM')
-    osa.close()
-  
-  def OnSingle(self):
-    osa = dev.osa(False)
-    osa.write(':INIT:SMOD SING')
-    osa.write(':INIT:IMM')
-    osa.close()
-
   def OnGet(self):
     osa = dev.osa(False)
     osa.timeout = 50000
-    self.OnSingle()
+    OnSingle()
     self.x = osa.query(':TRAC:DATA:X? TRA')
     self.y = osa.query(':TRAC:DATA:Y? TRA')
-    self.OnContinuous()
+    OnContinuous()
     osa.close()
 
     self.x = self.x.replace('\n', '').split(',')
@@ -158,7 +161,6 @@ class ExWindow(Qw.QMainWindow):
         plt.savefig(fp[0] + '.png')
 
 if __name__ == '__main__':
-
   app = Qw.QApplication(sys.argv)
   ex = ExWindow()
   ex.show()

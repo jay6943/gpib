@@ -1,15 +1,32 @@
+import os
 import sys
 import dat
 import dev
+import numpy as np
 import PyQt5.QtGui as Qg
 import PyQt5.QtWidgets as Qw
 import matplotlib.pyplot as plt
+
+def OnMarkCenter():
+  dev.osa('CALC:MARK:SCEN')
+
+def OnContinuous():
+  dev.osa('INIT:CONT ON')
+
+def OnSingle():
+  osa = dev.osa(False)
+  osa.write('INIT:CONT OFF')
+  osa.write('INIT:IMM')
+  osa.close()
 
 class ExWindow(Qw.QMainWindow):
   
   def __init__(self):
 
     super().__init__()
+
+    self.y = None
+    self.x = None
 
     self.setWindowTitle('OSA')
     self.setWindowIcon(Qg.QIcon('jk.png'))
@@ -34,9 +51,9 @@ class ExWindow(Qw.QMainWindow):
     dat.Qbutton(self, self.OnGetMax, 'Max', 260, 40, 120)
     dat.Qbutton(self, self.OnGetMin, 'Min', 260, 80, 120)
     dat.Qbutton(self, self.OnToPeak, 'Ref. to Peak', 260, 160, 120)
-    dat.Qbutton(self, self.OnMarkCenter, 'Mark to Center', 260, 0, 120)
-    dat.Qbutton(self, self.OnContinuous, 'Continuous', 0, 240, 120)
-    dat.Qbutton(self, self.OnSingle, 'Stop', 130, 240, 120)
+    dat.Qbutton(self, OnMarkCenter, 'Mark to Center', 260, 0, 120)
+    dat.Qbutton(self, OnContinuous, 'Continuous', 0, 240, 120)
+    dat.Qbutton(self, OnSingle, 'Stop', 130, 240, 120)
     dat.Qbutton(self, self.OnSwitch, 'Switch', 260, 240, 120)
     
     osa = dev.osa(False)
@@ -102,28 +119,15 @@ class ExWindow(Qw.QMainWindow):
     self.reference.setText(str(round(y, 0)))
     self.OnReference()
 
-  def OnMarkCenter(self):
-    dev.osa('CALC:MARK:SCEN')
-      
-  def OnContinuous(self):
-    dev.osa('INIT:CONT ON')
-  
-  def OnSingle(self):
-    osa = dev.osa(False)
-    osa.write('INIT:CONT OFF')
-    osa.write('INIT:IMM')
-    osa.close()
-
   def OnSwitch(self):
     dev.switch(self.setSwitch)
     self.setSwitch = 2 if self.setSwitch > 2 else 4
 
   def OnScan(self):
-
     osa = dev.osa(False)
     osa.timeout = 50000
     
-    self.OnSingle()
+    OnSingle()
 
     m = int(osa.query('SENS:SWE:POIN?'))
 
@@ -133,7 +137,7 @@ class ExWindow(Qw.QMainWindow):
     dx  = (xmax - xmin) / float(m - 1)
 
     self.x = [xmin + i * dx for i in range(m)]
-    self.y = [0 for i in range(m)]
+    self.y = [0 for _ in range(m)]
 
     data = osa.query('TRAC:DATA:Y? TRA')
     data = data.replace('\n', '')
@@ -141,7 +145,7 @@ class ExWindow(Qw.QMainWindow):
 
     for i in range(len(data)): self.y[i] = float(data[i]) 
 
-    self.OnContinuous()
+    OnContinuous()
 
     osa.close()
 
@@ -155,10 +159,13 @@ class ExWindow(Qw.QMainWindow):
     self.getData = 1
 
   def OnSave(self):
+    filename = Qw.QFileDialog.getSaveFileName(self, '', dat.get_folder(), '*.txt')[0]
+    folder = os.path.dirname(filename)
 
-    filename = Qw.QFileDialog.getSaveFileName(self, '', dat.getfolder(), '*.txt')[0]
-
-    if self.getData and filename: dat.save(filename, self.x, self.y)
+    if filename:
+      data = np.array([self.x, self.y])
+      np.savetxt(filename, data.transpose(), fmt='%.3f')
+      dat.set_folder(folder)
 
 if __name__ == '__main__':
 
