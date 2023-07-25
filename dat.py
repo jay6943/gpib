@@ -4,7 +4,7 @@ import PyQt5.QtGui as Qg
 import PyQt5.QtCore as Qc
 import PyQt5.QtWidgets as Qw
 
-config_file = '../../data/cfg.txt'
+config_file = '../data/cfg.txt'
 
 def QMessage(self, text):
   Qw.QMessageBox.about(self, 'Receiver', text)
@@ -61,6 +61,9 @@ def set_folder(folder):
   fp = open(config_file, 'w')
   fp.write(folder)
   fp.close()
+
+def arange(xmin, xmax, step):
+  return np.arange(xmin, xmax + step * 0.5, step)
 
 if __name__ == '__main__':
 

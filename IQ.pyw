@@ -26,7 +26,7 @@ class ExWindow(Qw.QMainWindow):
     dat.Qbutton(self, self.OnXY, 'XY-plot', 120, 120, 100)
     
     dat.Qbutton(self, self.OnTime, 'Time', 120, 160, 100)
-    dat.Qbutton(self, self.OnAmp1, 'Ch 1 (mV/Div)', 120, 200, 100)
+    dat.Qbutton(self, self.OnAmp, 'Ch 1 (mV/Div)', 120, 200, 100)
     dat.Qbutton(self, self.OnAmp2, 'Ch 2 (mV/Div)', 120, 240, 100)
     dat.Qbutton(self, self.OnOff1, 'Offset 1 (mV)', 120, 280, 100)
     dat.Qbutton(self, self.OnOff2, 'Offset 2 (mV)', 120, 320, 100)
@@ -74,7 +74,6 @@ class ExWindow(Qw.QMainWindow):
     dso.write('TIM:FORM YT')
     dso.write('CHAN1:DISP 1')
     dso.write('CHAN2:DISP 1')
-    dso.write('TIM:SCAL ' + self.var.text())
     dso.write('CHAN1:SCAL ' + str(float(self.amp1.text()) * 1e-3))
     dso.write('CHAN2:SCAL ' + str(float(self.amp2.text()) * 1e-3))
     dso.write('SINGLE')
@@ -90,7 +89,6 @@ class ExWindow(Qw.QMainWindow):
     self.off1.setText(str(rf1))
     self.off2.setText(str(rf2))
 
-    dso.write('TIM:SCAL ' + self.var.text())
     dso.write('CHAN1:OFFS ' + str(rf1) + 'E-3')
     dso.write('CHAN2:OFFS ' + str(rf2) + 'E-3')
 
@@ -103,15 +101,12 @@ class ExWindow(Qw.QMainWindow):
     
   def OnTime(self):
     dev.dso('TIM:SCAL ' + self.var.text())
-    
+
   def OnAmp1(self):
     dso = dev.dso(False)
     if self.OnCH1.isChecked():
       dso.write('CHAN1:DISP 1')
-      dso.write('TIM:FORM YT')
       dso.write('CHAN1:SCAL ' + str(float(self.amp1.text()) * 1e-3))
-      dso.write('TIM:SCAL ' + self.var.text())
-      dso.write('TIM:FORM XY')
     else:
       dso.write('CHAN1:DISP 0')
     dso.close()
@@ -120,37 +115,31 @@ class ExWindow(Qw.QMainWindow):
     dso = dev.dso(False)
     if self.OnCH2.isChecked():
       dso.write('CHAN2:DISP 1')
-      dso.write('TIM:FORM YT')
       dso.write('CHAN2:SCAL ' + str(float(self.amp2.text()) * 1e-3))
-      dso.write('TIM:SCAL ' + self.var.text())
-      dso.write('TIM:FORM XY')
     else:
       dso.write('CHAN2:DISP 0')
     dso.close()
 
-  def OnOff1(self):
+  def OnAmp(self):
+    self.OnAmp1()
     dso = dev.dso(False)
-    dso.write('TIM:FORM YT')
-    dso.write('CHAN1:OFFS ' + str(float(self.off1.text()) * 1e-3))
-    dso.write('TIM:SCAL ' + self.var.text())
-    dso.write('TIM:FORM XY')
+    self.amp2.setText(str(round(dso.query('CHAN1:SCAL?') * 1e3, 3)))
     dso.close()
+    self.OnAmp2()
+    self.OnXY()
+
+  def OnOff1(self):
+    dev.dso('CHAN1:OFFS ' + str(float(self.off1.text()) * 1e-3))
 
   def OnOff2(self):
-    dso = dev.dso(False)
-    dso.write('TIM:FORM YT')
-    dso.write('CHAN2:OFFS ' + str(float(self.off2.text()) * 1e-3))
-    dso.write('TIM:SCAL ' + self.var.text())
-    dso.write('TIM:FORM XY')
-    dso.close()
+    dev.dso('CHAN2:OFFS ' + str(float(self.off2.text()) * 1e-3))
 
   def OnData(self):
     dso = dev.dso(False)
     dso.write('TIM:FORM YT')
-    dso.write('TIM:SCAL ' + self.var.text())
     dso.write('SINGLE')
 
-    time.sleep(2)
+    time.sleep(3)
 
     self.t = np.arange(self.m) * float(self.var.text())
     self.x = dso.getwave(1)

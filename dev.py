@@ -8,16 +8,13 @@ def search():
   devices = rm.list_resources()
 
   for idn in devices:
-    
     print(idn)
-    
     if idn[0] == 'G':
       device = rm.open_resource(idn)
       print(device.query('*IDN?'))
       device.close()
 
 def switch(channel):
-
   rm = visa.ResourceManager()
   device = rm.open_resource('GPIB0::17::INSTR')
   device.write('ROUT1:CHAN1 A,' + str(channel))
@@ -145,15 +142,19 @@ class opm:
   def write(self, command):
     self.device.write(command)
 
-  def query(self, fetc, ch):
-    command = 'FETC' + str(fetc) + ':CHAN' + str(ch) + ':POW?'
+  def query(self, slot, ch):
+    command = 'FETCH' + str(slot) + ':CHAN' + str(ch) + ':POW?'
     return float(self.device.query(command))
 
-  def dBm(self, fetc, ch):
-    self.write('FETC' + str(fetc) + ':CHAN' + str(ch) + ':POW:UNIT 0')
+  def read(self, slot, ch):
+    command = 'READ' + str(slot) + ':CHAN' + str(ch) + ':POW?'
+    return float(self.device.query(command))
 
-  def mW(self, fetc, ch):
-    self.write('FETC' + str(fetc) + ':CHAN' + str(ch) + ':POW:UNIT 1')
+  def dBm(self, slot, ch):
+    self.write('SENS' + str(slot) + ':CHAN' + str(ch) + ':POW:UNIT 0')
+
+  def mW(self, slot, ch):
+    self.write('SENS' + str(slot) + ':CHAN' + str(ch) + ':POW:UNIT 1')
       
   def close(self):
     self.device.close()
@@ -203,7 +204,6 @@ class tld:
   def __init__(self):
     rm = visa.ResourceManager()
     self.device = rm.open_resource('GPIB0::20::INSTR')
-    # print('KEYSIGHT 81898A TLD')
 
   def write(self, command):
     self.device.write(command)
@@ -219,16 +219,14 @@ class tld:
   def close(self):
     self.device.close()
 
-class tld81640A:
+class Agilent_81640A_tunalble_laser:
 
   def __init__(self):
     rm = visa.ResourceManager()
     self.device = rm.open_resource('GPIB0::20::INSTR')
-    # print('Agilent 81640A TLD')
 
   def write(self, command):
     self.device.write(command)
-    # print(command)
 
   def wavelength(self, k):
     self.write('SOUR0:WAV ' + str(k) + 'NM')
@@ -251,6 +249,22 @@ class N7711A:
 
   def write(self, command):
     self.device.write(command)
+
+  def close(self):
+    self.device.close()
+
+class Agilent_E3831A_power_supply:
+
+  def __init__(self):
+    rm = visa.ResourceManager()
+    self.device = rm.open_resource('GPIB0::6::INSTR')
+    self.device.timeout = 5000
+
+  def write(self, command):
+    self.device.write(command)
+
+  def query(self, command):
+    return self.device.query(command)
 
   def close(self):
     self.device.close()
