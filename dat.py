@@ -1,5 +1,4 @@
 import os
-import numpy as np
 import PyQt5.QtGui as Qg
 import PyQt5.QtCore as Qc
 import PyQt5.QtWidgets as Qw
@@ -66,5 +65,4 @@ def arange(xmin, xmax, step):
   return np.arange(xmin, xmax + step * 0.5, step)
 
 if __name__ == '__main__':
-
   print(os.listdir(get_folder()))
