@@ -1,4 +1,4 @@
-import sys
+import cfg
 import dev
 import dat
 import time
@@ -35,12 +35,14 @@ def pd():
   opm.close()
 
 def voa(folder):
-  vmin, vmax, vstep = 0, 4, 0.1
+  vmin, vmax, vstep = 0, 2, 0.1
   v = dat.arange(vmin, vmax, vstep)
   p = np.zeros_like(v)
 
   vir = dev.Agilent_E3831A_power_supply()
   opm = dev.opm(20)
+
+  print(vir.query('*IDN?'))
 
   vir.write('*RST')
   vir.write('INST P6V')
@@ -64,8 +66,9 @@ def voa(folder):
   vir.close()
   opm.close()
 
-  filename = folder + dt.datetime.now().strftime('%H%M%S')
-  np.savetxt(filename + '.txt', np.array([v, p]).transpose(), fmt='%.3f')
+  fp = folder + dt.datetime.now().strftime('%H%M%S')
+  df = np.array([v, p]).transpose()
+  np.savetxt(fp + '.dat', df, fmt='%.3f')
 
   xt = np.linspace(v[0], v[-1], 5)
   yt = np.linspace(-30, 0, 7)
@@ -77,9 +80,9 @@ def voa(folder):
   plt.xticks(xt)
   plt.yticks(yt)
   plt.grid()
-  plt.savefig(filename + '.png')
+  plt.savefig(fp + '.png')
 
   return v, p
 
 if __name__ == '__main__':
-  voa('../../data/SIN/EI-ICR-WG-R1-TV22-012/voa/')
+  voa(cfg.works + 'EI-ICR-WG-R1-TV23-002/voa/')

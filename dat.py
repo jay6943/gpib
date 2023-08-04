@@ -1,9 +1,9 @@
 import os
+import cfg
+import numpy as np
 import PyQt5.QtGui as Qg
 import PyQt5.QtCore as Qc
 import PyQt5.QtWidgets as Qw
-
-config_file = '../data/cfg.txt'
 
 def QMessage(self, text):
   Qw.QMessageBox.about(self, 'Receiver', text)
@@ -49,7 +49,7 @@ def Qcombo(self, x, y, size):
   return combo
 
 def get_folder():
-  fp = open(config_file, 'r')
+  fp = open(cfg.temps)
   data = fp.read()
   data = data.replace('\n','')
   fp.close()
@@ -57,7 +57,7 @@ def get_folder():
   return data
 
 def set_folder(folder):
-  fp = open(config_file, 'w')
+  fp = open(cfg.temps, 'w')
   fp.write(folder)
   fp.close()
 

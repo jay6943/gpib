@@ -23,22 +23,22 @@ class App(Qw.QWidget):
     dat.Qbutton(self, self.Off, 'OFF', 160, 80, 100)
 
   def OnPower(self):
-    tld = dev.N7711A()
+    tld = dev.Keysight_N7711A_tunalble_laser()
     tld.write('OUTP1:POW ' + self.power.text())
     tld.close()
 
   def OnWavelength(self):
-    tld = dev.N7711A()
+    tld = dev.Keysight_N7711A_tunalble_laser()
     tld.write('SOUR1:WAV ' + self.wavelength.text() + 'NM')
     tld.close()
 
   def On(self):
-    tld = dev.N7711A()
+    tld = dev.Keysight_N7711A_tunalble_laser()
     tld.write('OUTP1 ON')
     tld.close()
 
   def Off(self):
-    tld = dev.N7711A()
+    tld = dev.Keysight_N7711A_tunalble_laser()
     tld.write('OUTP1 OFF')
     tld.close()
 

@@ -9,10 +9,10 @@ import PyQt5.QtWidgets as Qw
 import matplotlib.pyplot as plt
 
 def OnRun():
-  dev.dso('RUN')
+  dev.Agilent_DSO1014A_oscilloscope('RUN')
 
 def OnStop():
-  dev.dso('SINGLE')
+  dev.Agilent_DSO1014A_oscilloscope('SINGLE')
 
 class ExWindow(Qw.QMainWindow):
   
@@ -60,7 +60,7 @@ class ExWindow(Qw.QMainWindow):
 
     self.m = 4096
 
-    dso = dev.dso(False)
+    dso = dev.Agilent_DSO1014A_oscilloscope(False)
     dso.write('AUT:DIS')
     dso.write('TIM:SCAL ' + self.var.text())
     dso.write('CHAN1:COUP DC')
@@ -75,7 +75,7 @@ class ExWindow(Qw.QMainWindow):
     dso.close()
 
   def OnTY(self):
-    dso = dev.dso(False)
+    dso = dev.Agilent_DSO1014A_oscilloscope(False)
     dso.write('TIM:FORM YT')
     dso.write('CHAN1:DISP 1')
     dso.write('CHAN2:DISP 1')
@@ -102,13 +102,13 @@ class ExWindow(Qw.QMainWindow):
 
   def OnXY(self):
     self.OnTY()
-    dev.dso('TIM:FORM XY')
+    dev.Agilent_DSO1014A_oscilloscope('TIM:FORM XY')
     
   def OnTime(self):
-    dev.dso('TIM:SCAL ' + self.var.text())
+    dev.Agilent_DSO1014A_oscilloscope('TIM:SCAL ' + self.var.text())
 
   def OnAmp1(self):
-    dso = dev.dso(False)
+    dso = dev.Agilent_DSO1014A_oscilloscope(False)
     if self.OnCH1.isChecked():
       dso.write('CHAN1:DISP 1')
       dso.write('CHAN1:SCAL ' + str(float(self.amp1.text()) * 1e-3))
@@ -117,7 +117,7 @@ class ExWindow(Qw.QMainWindow):
     dso.close()
 
   def OnAmp2(self):
-    dso = dev.dso(False)
+    dso = dev.Agilent_DSO1014A_oscilloscope(False)
     if self.OnCH2.isChecked():
       dso.write('CHAN2:DISP 1')
       dso.write('CHAN2:SCAL ' + str(float(self.amp2.text()) * 1e-3))
@@ -127,20 +127,22 @@ class ExWindow(Qw.QMainWindow):
 
   def OnAmp(self):
     self.OnAmp1()
-    dso = dev.dso(False)
+    dso = dev.Agilent_DSO1014A_oscilloscope(False)
     self.amp2.setText(str(round(dso.query('CHAN1:SCAL?') * 1e3, 3)))
     dso.close()
     self.OnAmp2()
     self.OnXY()
 
   def OnOff1(self):
-    dev.dso('CHAN1:OFFS ' + str(float(self.off1.text()) * 1e-3))
+    ostr = str(float(self.off1.text()) * 1e-3)
+    dev.Agilent_DSO1014A_oscilloscope('CHAN1:OFFS ' + ostr)
 
   def OnOff2(self):
-    dev.dso('CHAN2:OFFS ' + str(float(self.off2.text()) * 1e-3))
+    ostr = str(float(self.off2.text()) * 1e-3)
+    dev.Agilent_DSO1014A_oscilloscope('CHAN2:OFFS ' + ostr)
 
   def OnData(self):
-    dso = dev.dso(False)
+    dso = dev.Agilent_DSO1014A_oscilloscope(False)
     dso.write('TIM:FORM YT')
     dso.write('SINGLE')
 

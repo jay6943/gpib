@@ -39,7 +39,7 @@ class ExWindow(Qw.QMainWindow):
 
     self.setWindowTitle('OSA')
     self.setWindowIcon(Qg.QIcon('jk.png'))
-    self.setGeometry(500, 500, 290, 450)
+    self.setGeometry(500, 500, 290, 490)
 
     osa = dev.osa(False)
     center = float(osa.query(':SENS:WAV:CENT?')) * 1e9
@@ -49,29 +49,31 @@ class ExWindow(Qw.QMainWindow):
     pdiv = float(osa.query(':DISP:TRAC:Y1:PDIV?'))
     osa.close()
 
-    self.center = dat.Qedit(self, str(center), 0, 60, 120)
-    self.span = dat.Qedit(self, str(span), 0, 100, 120)
-    self.bandwidth = dat.Qedit(self, str(res), 0, 140, 120)
-    self.sensitivity = dat.Qedit(self, '10', 0, 180, 120)
-    self.reference = dat.Qedit(self, str(rlev), 0, 220, 120)
-    self.division = dat.Qedit(self, str(pdiv), 0, 260, 120)
+    dat.Qlabel(self, 'Number of Points', 20, 50, 110)
+    self.m = dat.Qedit(self, '1001', 130, 60, 120)
+    self.center = dat.Qedit(self, str(center), 0, 100, 120)
+    self.span = dat.Qedit(self, str(span), 0, 140, 120)
+    self.bandwidth = dat.Qedit(self, str(res), 0, 180, 120)
+    self.sensitivity = dat.Qedit(self, '10', 0, 220, 120)
+    self.reference = dat.Qedit(self, str(rlev), 0, 260, 120)
+    self.division = dat.Qedit(self, str(pdiv), 0, 300, 120)
 
-    dat.Qbutton(self, self.OnCenter, 'Center (nm)', 130, 60, 120)
-    dat.Qbutton(self, self.OnSpan, 'Span (nm)', 130, 100, 120)
-    dat.Qbutton(self, self.OnBandwidth, 'Bandwidth (nm)', 130, 140, 120)
-    dat.Qbutton(self, self.OnSensitivity, 'Sensitivity (dBm)', 130, 180, 120)
-    dat.Qbutton(self, self.OnReference, 'Reference (dBm)', 130, 220, 120)
-    dat.Qbutton(self, self.OnDivision, 'Division (dB)', 130, 260, 120)
+    dat.Qbutton(self, self.OnCenter, 'Center (nm)', 130, 100, 120)
+    dat.Qbutton(self, self.OnSpan, 'Span (nm)', 130, 140, 120)
+    dat.Qbutton(self, self.OnBandwidth, 'Bandwidth (nm)', 130, 180, 120)
+    dat.Qbutton(self, self.OnSensitivity, 'Sensitivity (dBm)', 130, 220, 120)
+    dat.Qbutton(self, self.OnReference, 'Reference (dBm)', 130, 260, 120)
+    dat.Qbutton(self, self.OnDivision, 'Division (dB)', 130, 300, 120)
 
     dat.Qbutton(self, self.OnGet, 'Get', 0, 0, 120)
     dat.Qbutton(self, self.OnSave, 'Save', 130, 0, 120)
-    dat.Qbutton(self, OnContinuous, 'Continuous', 0, 300, 120)
-    dat.Qbutton(self, OnSingle, 'Stop', 130, 300, 120)
+    dat.Qbutton(self, OnContinuous, 'Continuous', 0, 340, 120)
+    dat.Qbutton(self, OnSingle, 'Stop', 130, 340, 120)
 
-    dat.Qbutton(self, OnMax, 'Max', 0, 340, 120)
-    dat.Qbutton(self, OnMin, 'Min', 130, 340, 120)
-    dat.Qbutton(self, OnMarkCenter, 'Mark to Center', 0, 380, 120)
-    dat.Qbutton(self, self.OnLevel, 'Ref. to Peak', 130, 380, 120)
+    dat.Qbutton(self, OnMax, 'Max', 0, 380, 120)
+    dat.Qbutton(self, OnMin, 'Min', 130, 380, 120)
+    dat.Qbutton(self, OnMarkCenter, 'Mark to Center', 0, 420, 120)
+    dat.Qbutton(self, self.OnLevel, 'Ref. to Peak', 130, 420, 120)
     
     self.saving = dat.Qcheck(self, 'Save w/o show', 10, 30, 120)
     self.figure = dat.Qcheck(self, 'Save figure', 150, 30, 120)
@@ -79,13 +81,7 @@ class ExWindow(Qw.QMainWindow):
     self.setSwitch = 1
     self.figure.setChecked(True)
 
-  def OnPoints(self):
-
-    c = float(self.span.text())
-    d = float(self.bandwidth.text())
-    m = int(round(c / d, 0)) * 10 + 1
-
-    dev.osa(':SENS:SWE:POIN ' + str(m))
+    dev.osa(':SENS:SWE:POIN ' + self.m.text())
 
   def OnCenter(self):
     dev.osa(':SENS:WAV:CENT ' + self.center.text() + 'NM')
@@ -117,6 +113,7 @@ class ExWindow(Qw.QMainWindow):
   def OnGet(self):
     osa = dev.osa(False)
     osa.timeout = 50000
+    osa.write(':SENS:SWE:POIN ' + self.m.text())
     OnSingle()
     self.x = osa.query(':TRAC:DATA:X? TRA')
     self.y = osa.query(':TRAC:DATA:Y? TRA')

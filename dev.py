@@ -20,7 +20,7 @@ def switch(channel):
   device.write('ROUT1:CHAN1 A,' + str(channel))
   device.close()
 
-class ando:
+class Ando_AQ2105B_photodiode:
 
   def __init__(self):
     rm = visa.ResourceManager()
@@ -59,7 +59,7 @@ class att:
   def close(self):
     self.device.close()
 
-class dso:
+class Agilent_DSO1014A_oscilloscope:
 
   def __init__(self, command):
     rm = visa.ResourceManager()
@@ -199,7 +199,7 @@ class pdl:
   def close(self):
     self.device.close()
 
-class tld:
+class Keysight_N7711A_tunalble_laser:
 
   def __init__(self):
     rm = visa.ResourceManager()
@@ -207,7 +207,10 @@ class tld:
 
   def write(self, command):
     self.device.write(command)
-    print(command)
+
+  def query(self, command):
+    self.device.clear()
+    return self.device.query(command)
 
   def wavelength(self, k):
     self.write('SOUR1:WAV ' + str(k) + 'NM')
@@ -238,17 +241,21 @@ class Agilent_81640A_tunalble_laser:
   def close(self):
     self.device.close()
 
-class N7711A:
+class Santec_WSL_tunalble_laser:
 
   def __init__(self):
     rm = visa.ResourceManager()
-    self.device = rm.open_resource('GPIB0::20::INSTR')
-    self.write('OUTP1:POW:UN DBM')
-
-    print('KEYSIGHT N7711A TLD')
+    self.device = rm.open_resource('GPIB0::1::INSTR')
 
   def write(self, command):
     self.device.write(command)
+
+  def wavelength(self, k):
+    self.write('SOUR0:WAV ' + str(k) + 'NM')
+    time.sleep(1)
+
+  def power(self, p):
+    self.write('SOUR0:POW ' + str(p) + 'DBM')
 
   def close(self):
     self.device.close()
