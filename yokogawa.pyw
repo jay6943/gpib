@@ -29,7 +29,7 @@ def OnSingle():
   osa.close()
 
 class ExWindow(Qw.QMainWindow):
-  
+
   def __init__(self):
 
     super().__init__()
@@ -74,7 +74,7 @@ class ExWindow(Qw.QMainWindow):
     dat.Qbutton(self, OnMin, 'Min', 130, 380, 120)
     dat.Qbutton(self, OnMarkCenter, 'Mark to Center', 0, 420, 120)
     dat.Qbutton(self, self.OnLevel, 'Ref. to Peak', 130, 420, 120)
-    
+
     self.saving = dat.Qcheck(self, 'Save w/o show', 10, 30, 120)
     self.figure = dat.Qcheck(self, 'Save figure', 150, 30, 120)
 
@@ -106,7 +106,7 @@ class ExWindow(Qw.QMainWindow):
     osa.write(':CALC:MARK:MAX')
     y = float(osa.query(':CALC:MARK:Y?'))
     osa.close()
-    
+
     self.reference.setText(str(round(y, 0)))
     self.OnReference()
 

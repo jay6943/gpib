@@ -203,7 +203,10 @@ class Keysight_N7711A_tunalble_laser:
 
   def __init__(self):
     rm = visa.ResourceManager()
-    self.device = rm.open_resource('GPIB0::20::INSTR')
+    # self.device = rm.open_resource('GPIB0::20::INSTR')
+    self.device = rm.open_resource('TCPIP0::192.168.0.101::inst0::INSTR')
+    self.device.timeout = 1000
+    self.device.clear()
 
   def write(self, command):
     self.device.write(command)
