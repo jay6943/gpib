@@ -215,13 +215,6 @@ class Keysight_N7711A_tunalble_laser:
     self.device.clear()
     return self.device.query(command)
 
-  def wavelength(self, k):
-    self.write('WAV ' + str(k) + 'NM')
-    time.sleep(1)
-
-  def power(self, p):
-    self.write('POW ' + str(p) + 'DBM')
-
   def close(self):
     self.device.close()
 
