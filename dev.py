@@ -216,11 +216,11 @@ class Keysight_N7711A_tunalble_laser:
     return self.device.query(command)
 
   def wavelength(self, k):
-    self.write('SOUR1:WAV ' + str(k) + 'NM')
+    self.write('WAV ' + str(k) + 'NM')
     time.sleep(1)
 
   def power(self, p):
-    self.write('SOUR1:POW ' + str(p) + 'DBM')
+    self.write('POW ' + str(p) + 'DBM')
 
   def close(self):
     self.device.close()
@@ -249,16 +249,15 @@ class Santec_WSL_tunalble_laser:
   def __init__(self):
     rm = visa.ResourceManager()
     self.device = rm.open_resource('GPIB0::1::INSTR')
+    self.device.timeout = 1000
+    self.device.clear()
 
   def write(self, command):
     self.device.write(command)
 
-  def wavelength(self, k):
-    self.write('SOUR0:WAV ' + str(k) + 'NM')
-    time.sleep(1)
-
-  def power(self, p):
-    self.write('SOUR0:POW ' + str(p) + 'DBM')
+  def query(self, command):
+    self.device.clear()
+    return self.device.query(command)
 
   def close(self):
     self.device.close()
