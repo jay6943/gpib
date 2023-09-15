@@ -4,11 +4,10 @@ import dev
 import PyQt5.QtGui as Qg
 import PyQt5.QtWidgets as Qw
 
-class App(Qw.QWidget):
+class Keysight_N7711A(Qw.QWidget):
 
   def __init__(self):
-
-    super().__init__()
+    super(Keysight_N7711A, self).__init__()
 
     self.setWindowTitle('Keysight N7711A')
     self.setWindowIcon(Qg.QIcon('jk.png'))
@@ -52,8 +51,7 @@ class App(Qw.QWidget):
     tld.close()
 
 if __name__ == '__main__':
-  
   app = Qw.QApplication(sys.argv)
-  MyWindow = App()
-  MyWindow.show()
+  window = Keysight_N7711A()
+  window.show()
   sys.exit(app.exec_())

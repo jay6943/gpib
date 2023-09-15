@@ -14,11 +14,10 @@ def OnRun():
 def OnStop():
   dev.Agilent_DSO1014A_oscilloscope('SINGLE')
 
-class ExWindow(Qw.QMainWindow):
+class IQ_measurement(Qw.QMainWindow):
   
   def __init__(self):
-
-    super().__init__()
+    super(IQ_measurement, self).__init__()
 
     self.y = None
     self.x = None
@@ -183,7 +182,7 @@ class ExWindow(Qw.QMainWindow):
     self.x = self.x - (xmax + xmin) * 0.5
     self.y = self.y - (ymax + ymin) * 0.5
 
-    l = np.max(np.abs(np.array([xmax - xmin, ymax - ymin]))) * 0.6
+    lim = np.max(np.abs(np.array([xmax - xmin, ymax - ymin]))) * 0.6
 
     plt.close()
     plt.figure(dpi=150)
@@ -192,10 +191,10 @@ class ExWindow(Qw.QMainWindow):
     plt.title(self.phase + '$^{\circ}$')
     plt.gca().axes.xaxis.set_visible(False)
     plt.gca().axes.yaxis.set_visible(False)
-    plt.plot([0, 0], [-l, l], 'k:', linewidth='1')
-    plt.plot([-l, l], [0, 0], 'k:', linewidth='1')
-    plt.xlim(-l, l)
-    plt.ylim(-l, l)
+    plt.plot([0, 0], [-lim, lim], 'k:', linewidth='1')
+    plt.plot([-lim, lim], [0, 0], 'k:', linewidth='1')
+    plt.xlim(-lim, lim)
+    plt.ylim(-lim, lim)
     plt.show()
 
   def OnSave(self):
@@ -211,6 +210,6 @@ class ExWindow(Qw.QMainWindow):
 
 if __name__ == '__main__':
   app = Qw.QApplication(sys.argv)
-  ex = ExWindow()
-  ex.show()
+  window = IQ_measurement()
+  window.show()
   sys.exit(app.exec_())

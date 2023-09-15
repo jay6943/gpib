@@ -159,7 +159,7 @@ class opm:
   def close(self):
     self.device.close()
 
-class osa:
+class Yokogawa_AQ6370D_oscilloscope:
 
   def __init__(self, command):
     rm = visa.ResourceManager()

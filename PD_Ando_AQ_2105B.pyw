@@ -6,11 +6,10 @@ import numpy as np
 import PyQt5.QtGui as Qg
 import PyQt5.QtWidgets as Qw
 
-class App(Qw.QWidget):
+class Ando_AQ_2105B(Qw.QWidget):
 
   def __init__(self):
-
-    super().__init__()
+    super(Ando_AQ_2105B, self).__init__()
     
     self.setWindowTitle('ANDO')
     self.setWindowIcon(Qg.QIcon('jk.png'))
@@ -28,39 +27,39 @@ class App(Qw.QWidget):
     self.checkA.setChecked(True)
     self.checkB.setChecked(False)
 
-    opm = dev.ando()
+    opm = dev.Ando_AQ2105B_photodiode()
     opm.write('AA')
     opm.close()
 
     self.getData = 0
 
   def OnGet(self):
-    opm = dev.ando()
-    self.Ap, self.Bp = opm.query()
-    self.A.setText(str(self.Ap))
-    self.B.setText(str(self.Bp))
+    opm = dev.Ando_AQ2105B_photodiode()
+    Ap, Bp = opm.query()
+    self.A.setText(str(Ap))
+    self.B.setText(str(Bp))
     opm.close()
 
     self.getData = 1
 
   def OnSave(self):
 
-    fp = Qw.QFileDialog.getSaveFileName(self, '', dat.getfolder(), '*.txt')[0]
+    fp = Qw.QFileDialog.getSaveFileName(self, '', dat.get_folder(), '*.txt')[0]
 
     data = []
 
     if self.getData and fp:
-      if self.checkA.isChecked(): data = data + [self.Ap]
-      if self.checkB.isChecked(): data = data + [self.Bp]
+      if self.checkA.isChecked(): data += [self.Ap]
+      if self.checkB.isChecked(): data += [self.Bp]
 
       np.savetxt(fp, np.array(data), fmt='%.3f')
 
       folder = os.path.dirname(fp)
-      if folder != dat.getfolder(): dat.setfolder(folder)
+      if folder != dat.get_folder(): dat.get_folder()
 
-if __name__ ==  '__main__':
+if __name__ == '__main__':
   
   app = Qw.QApplication(sys.argv)
-  MyWindow = App()
-  MyWindow.show()
+  window = Ando_AQ_2105B()
+  window.show()
   sys.exit(app.exec_())

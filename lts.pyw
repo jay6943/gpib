@@ -7,7 +7,6 @@ import thorlabs_apt as apt
 class App(Qw.QWidget):
 
   def __init__(self):
-
     super().__init__()
     
     y, dy = 80, 50

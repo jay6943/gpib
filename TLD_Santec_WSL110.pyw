@@ -4,10 +4,10 @@ import dev
 import PyQt5.QtGui as Qg
 import PyQt5.QtWidgets as Qw
 
-class App(Qw.QWidget):
+class Santec_WSL_110(Qw.QWidget):
 
   def __init__(self):
-    super().__init__()
+    super(Santec_WSL_110, self).__init__()
 
     self.setWindowTitle('Santec WSL-110')
     self.setWindowIcon(Qg.QIcon('jk.png'))
@@ -23,7 +23,7 @@ class App(Qw.QWidget):
 
   def OnPower(self):
     tld = dev.Santec_WSL_tunalble_laser()
-    tld.write('POW ' + self.power.text() + 'DBM')
+    tld.write('POW ' + self.power.text())
     tld.close()
 
   def OnWavelength(self):
@@ -34,19 +34,19 @@ class App(Qw.QWidget):
   def Power_On(self):
     tld = dev.Santec_WSL_tunalble_laser()
     tld.write('WAV ' + self.wavelength.text() + 'NM')
-    tld.write('POW ' + self.power.text() + 'DBM')
+    tld.write('POW ' + self.power.text())
     tld.write('POW:STAT 1')
     tld.close()
 
   def Power_Off(self):
     tld = dev.Santec_WSL_tunalble_laser()
     tld.write('WAV ' + self.wavelength.text() + 'NM')
-    tld.write('POW ' + self.power.text() + 'DBM')
+    tld.write('POW ' + self.power.text())
     tld.write('POW:STAT 0')
     tld.close()
 
 if __name__ == '__main__':
   app = Qw.QApplication(sys.argv)
-  MyWindow = App()
-  MyWindow.show()
+  window = Santec_WSL_110()
+  window.show()
   sys.exit(app.exec_())

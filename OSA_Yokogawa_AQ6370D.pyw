@@ -8,40 +8,39 @@ import PyQt5.QtWidgets as Qw
 import matplotlib.pyplot as plt
 
 def OnMax():
-  dev.osa(':CALC:MARK:MAX')
+  dev.Yokogawa_AQ6370D_oscilloscope(':CALC:MARK:MAX')
 
 def OnMin():
-  dev.osa(':CALC:MARK:MIN')
+  dev.Yokogawa_AQ6370D_oscilloscope(':CALC:MARK:MIN')
 
 def OnMarkCenter():
-  dev.osa(':CALC:MARK:SCEN')
+  dev.Yokogawa_AQ6370D_oscilloscope(':CALC:MARK:SCEN')
 
 def OnContinuous():
-  osa = dev.osa(False)
+  osa = dev.Yokogawa_AQ6370D_oscilloscope(False)
   osa.write(':INIT:SMOD REP')
   osa.write(':INIT:IMM')
   osa.close()
 
 def OnSingle():
-  osa = dev.osa(False)
+  osa = dev.Yokogawa_AQ6370D_oscilloscope(False)
   osa.write(':INIT:SMOD SING')
   osa.write(':INIT:IMM')
   osa.close()
 
-class ExWindow(Qw.QMainWindow):
+class Yokogawa_AQ6370D(Qw.QMainWindow):
 
   def __init__(self):
-
-    super().__init__()
+    super(Yokogawa_AQ6370D, self).__init__()
 
     self.y = None
     self.x = None
 
-    self.setWindowTitle('OSA')
+    self.setWindowTitle('Yokogawa AQ6370D')
     self.setWindowIcon(Qg.QIcon('jk.png'))
     self.setGeometry(500, 500, 290, 490)
 
-    osa = dev.osa(False)
+    osa = dev.Yokogawa_AQ6370D_oscilloscope(False)
     center = float(osa.query(':SENS:WAV:CENT?')) * 1e9
     span = float(osa.query(':SENS:WAV:SPAN?')) * 1e9
     res = float(osa.query(':SENS:BAND:RES?')) * 1e9
@@ -81,28 +80,40 @@ class ExWindow(Qw.QMainWindow):
     self.setSwitch = 1
     self.figure.setChecked(True)
 
-    dev.osa(':SENS:SWE:POIN ' + self.m.text())
+    dev.Yokogawa_AQ6370D_oscilloscope(':SENS:SWE:POIN ' + self.m.text())
 
   def OnCenter(self):
-    dev.osa(':SENS:WAV:CENT ' + self.center.text() + 'NM')
+    osa = dev.Yokogawa_AQ6370D_oscilloscope(False)
+    osa.write(':SENS:WAV:CENT ' + self.center.text() + 'NM')
+    osa.close()
 
   def OnSpan(self):
-    dev.osa(':SENS:WAV:SPAN ' + self.span.text() + 'NM')
+    osa = dev.Yokogawa_AQ6370D_oscilloscope(False)
+    osa.write(':SENS:WAV:SPAN ' + self.span.text() + 'NM')
+    osa.close()
 
   def OnBandwidth(self):
-    dev.osa(':SENS:BAND:RES ' + self.bandwidth.text() + 'NM')
+    osa = dev.Yokogawa_AQ6370D_oscilloscope(False)
+    osa.write(':SENS:BAND:RES ' + self.bandwidth.text() + 'NM')
+    osa.close()
 
   def OnSensitivity(self):
-    dev.osa(':DISP:TRAC:Y1:RPOS ' + self.sensitivity.text() + 'DIV')
+    osa = dev.Yokogawa_AQ6370D_oscilloscope(False)
+    osa.write(':DISP:TRAC:Y1:RPOS ' + self.sensitivity.text() + 'DIV')
+    osa.close()
 
   def OnReference(self):
-    dev.osa(':DISP:TRAC:Y1:RLEV ' + self.reference.text() + 'DBM')
+    osa = dev.Yokogawa_AQ6370D_oscilloscope(False)
+    osa.write(':DISP:TRAC:Y1:RLEV ' + self.reference.text() + 'DBM')
+    osa.close()
 
   def OnDivision(self):
-    dev.osa(':DISP:TRAC:Y1:PDIV ' + self.division.text() + 'DB')
+    osa = dev.Yokogawa_AQ6370D_oscilloscope(False)
+    osa.write(':DISP:TRAC:Y1:PDIV ' + self.division.text() + 'DB')
+    osa.close()
 
   def OnLevel(self):
-    osa = dev.osa(False)
+    osa = dev.Yokogawa_AQ6370D_oscilloscope(False)
     osa.write(':CALC:MARK:MAX')
     y = float(osa.query(':CALC:MARK:Y?'))
     osa.close()
@@ -111,7 +122,7 @@ class ExWindow(Qw.QMainWindow):
     self.OnReference()
 
   def OnGet(self):
-    osa = dev.osa(False)
+    osa = dev.Yokogawa_AQ6370D_oscilloscope(False)
     osa.timeout = 50000
     osa.write(':SENS:SWE:POIN ' + self.m.text())
     OnSingle()
@@ -159,6 +170,6 @@ class ExWindow(Qw.QMainWindow):
 
 if __name__ == '__main__':
   app = Qw.QApplication(sys.argv)
-  ex = ExWindow()
-  ex.show()
+  window = Yokogawa_AQ6370D()
+  window.show()
   sys.exit(app.exec_())
