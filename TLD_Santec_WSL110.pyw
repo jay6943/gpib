@@ -15,7 +15,7 @@ class Santec_WSL_110(Qw.QWidget):
 
     dat.Qbutton(self, self.OnPower, 'Power (dBm)', 0, 0, 150)
     dat.Qbutton(self, self.OnWavelength, 'Wavelength (nm)', 0, 40, 150)
-    self.power = dat.Qedit(self, '13', 160, 0, 100)
+    self.power = dat.Qedit(self, '14', 160, 0, 100)
     self.wavelength = dat.Qedit(self, '1550', 160, 40, 100)
 
     dat.Qbutton(self, self.Power_On, 'ON', 0, 80, 100)
