@@ -7,7 +7,7 @@ import PyQt5.QtWidgets as Qw
 class Keysight_N7711A(Qw.QWidget):
 
   def __init__(self):
-    super(Keysight_N7711A, self).__init__()
+    super().__init__()
 
     self.setWindowTitle('Keysight N7711A')
     self.setWindowIcon(Qg.QIcon('jk.png'))

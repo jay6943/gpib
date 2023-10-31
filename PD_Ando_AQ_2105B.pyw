@@ -9,7 +9,7 @@ import PyQt5.QtWidgets as Qw
 class Ando_AQ_2105B(Qw.QWidget):
 
   def __init__(self):
-    super(Ando_AQ_2105B, self).__init__()
+    super().__init__()
     
     self.setWindowTitle('ANDO')
     self.setWindowIcon(Qg.QIcon('jk.png'))

@@ -32,7 +32,7 @@ class Ando_AQ2105B_photodiode:
   def query(self):
     data = self.device.query('OD3')
 
-    a = float(data[ 6:14])
+    a = float(data[6:14])
     b = float(data[21:29])
 
     return a, b
@@ -290,13 +290,13 @@ class ivs:
     data = self.device.query(':READ?')
     data = data.split(',')
     
-    V, I = [], []
+    volt, curr = [], []
     
     for i in range(len(data)):
-      if i % 5 == 0: V.append(float(data[i]))
-      if i % 5 == 1: I.append(float(data[i]))
+      if i % 5 == 0: volt.append(float(data[i]))
+      if i % 5 == 1: curr.append(float(data[i]))
 
-    return V, I
+    return volt, curr
 
   def Iread(self, n, ch):
     strs = 'printbuffer(1,' + str(n) + ',' + ch + '.nvbuffer1.readings)'

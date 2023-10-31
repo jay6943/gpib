@@ -7,7 +7,7 @@ import PyQt5.QtWidgets as Qw
 class Santec_WSL_110(Qw.QWidget):
 
   def __init__(self):
-    super(Santec_WSL_110, self).__init__()
+    super().__init__()
 
     self.setWindowTitle('Santec WSL-110')
     self.setWindowIcon(Qg.QIcon('jk.png'))

@@ -51,7 +51,7 @@ def Qcombo(self, x, y, size):
 def get_folder():
   fp = open(cfg.temps)
   data = fp.read()
-  data = data.replace('\n','')
+  data = data.replace('\n', '')
   fp.close()
 
   return data

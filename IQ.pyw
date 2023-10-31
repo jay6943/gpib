@@ -17,7 +17,7 @@ def OnStop():
 class IQ_measurement(Qw.QMainWindow):
   
   def __init__(self):
-    super(IQ_measurement, self).__init__()
+    super().__init__()
 
     self.y = None
     self.x = None
