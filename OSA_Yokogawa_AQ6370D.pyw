@@ -31,7 +31,7 @@ def OnSingle():
 class Yokogawa_AQ6370D(Qw.QMainWindow):
 
   def __init__(self):
-    super(Yokogawa_AQ6370D, self).__init__()
+    super().__init__()
 
     self.y = None
     self.x = None
