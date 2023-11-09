@@ -23,7 +23,7 @@ def switch(channel):
   device.close()
 
 
-class DLDC_1002:
+class Digital_Laser_Diode_Controller_1002:
   def __init__(self):
     rm = visa.ResourceManager()
     self.device = rm.open_resource('GPIB9::27::INSTR')
@@ -38,6 +38,9 @@ class DLDC_1002:
     text = str(text, 'utf-8')
 
     return text
+
+  def close(self):
+    self.device.close()
 
 
 class Ando_AQ2105B_photodiode:
@@ -377,7 +380,7 @@ class usbserial:
 if __name__ == '__main__':
   # search()
 
-  ld = DLDC_1002()
+  ld = Digital_Laser_Diode_Controller_1002()
   print(ld.query('*IDN?'))
 
   '''
