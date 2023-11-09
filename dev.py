@@ -3,6 +3,7 @@ import serial
 import numpy as np
 import pyvisa as visa
 
+
 def search():
   rm = visa.ResourceManager()
   devices = rm.list_resources()
@@ -13,6 +14,7 @@ def search():
       device = rm.open_resource(idn)
       print(device.query('*IDN?'))
       device.close()
+
 
 def switch(channel):
   rm = visa.ResourceManager()
@@ -31,7 +33,12 @@ class DLDC_1002:
 
   def query(self, command):
     self.device.clear()
-    return self.device.query(command)
+    text = self.device.query(command)
+    text = text.encode('utf-8')
+    text = str(text, 'utf-8')
+
+    return text
+
 
 class Ando_AQ2105B_photodiode:
   def __init__(self):
@@ -55,8 +62,8 @@ class Ando_AQ2105B_photodiode:
   def close(self):
     self.device.close()
 
-class att:
 
+class att:
   def __init__(self):
     rm = visa.ResourceManager()
     self.device = rm.open_resource('GPIB0::6::INSTR')
@@ -71,8 +78,8 @@ class att:
   def close(self):
     self.device.close()
 
-class Agilent_DSO1014A_oscilloscope:
 
+class Agilent_DSO1014A_oscilloscope:
   def __init__(self, command):
     rm = visa.ResourceManager()
     self.device = rm.open_resource('USB0::0x0957::0x0588::CN50483638::INSTR')
@@ -108,8 +115,8 @@ class Agilent_DSO1014A_oscilloscope:
     self.write('RUN')
     time.sleep(1)
 
-class ldc:
 
+class ldc:
   def __init__(self):
     rm = visa.ResourceManager()
     self.device = rm.open_resource('GPIB0::4::INSTR')
@@ -145,8 +152,8 @@ class ldc:
   def close(self):
     self.device.close()
 
-class opm:
 
+class opm:
   def __init__(self, gpib):
     rm = visa.ResourceManager()
     self.device = rm.open_resource('GPIB0::' + str(gpib) + '::INSTR')
@@ -171,8 +178,8 @@ class opm:
   def close(self):
     self.device.close()
 
-class Yokogawa_AQ6370D_oscilloscope:
 
+class Yokogawa_AQ6370D_oscilloscope:
   def __init__(self, command):
     rm = visa.ResourceManager()
     self.device = rm.open_resource('GPIB0::5::INSTR')
@@ -191,8 +198,8 @@ class Yokogawa_AQ6370D_oscilloscope:
   def close(self):
     self.device.close()
 
-class pdl:
 
+class pdl:
   def __init__(self):
     rm = visa.ResourceManager()
     self.device = rm.open_resource('GPIB0::2::INSTR')
@@ -211,8 +218,8 @@ class pdl:
   def close(self):
     self.device.close()
 
-class Keysight_N7711A_tunalble_laser:
 
+class Keysight_N7711A_tunalble_laser:
   def __init__(self):
     rm = visa.ResourceManager()
     # self.device = rm.open_resource('GPIB0::20::INSTR')
@@ -230,8 +237,8 @@ class Keysight_N7711A_tunalble_laser:
   def close(self):
     self.device.close()
 
-class Agilent_81640A_tunalble_laser:
 
+class Agilent_81640A_tunalble_laser:
   def __init__(self):
     rm = visa.ResourceManager()
     self.device = rm.open_resource('GPIB0::20::INSTR')
@@ -249,8 +256,8 @@ class Agilent_81640A_tunalble_laser:
   def close(self):
     self.device.close()
 
-class Santec_WSL_tunalble_laser:
 
+class Santec_WSL_tunalble_laser:
   def __init__(self):
     rm = visa.ResourceManager()
     self.device = rm.open_resource('GPIB0::1::INSTR')
@@ -267,8 +274,8 @@ class Santec_WSL_tunalble_laser:
   def close(self):
     self.device.close()
 
-class Agilent_E3831A_power_supply:
 
+class Agilent_E3831A_power_supply:
   def __init__(self):
     rm = visa.ResourceManager()
     self.device = rm.open_resource('GPIB0::6::INSTR')
@@ -283,8 +290,8 @@ class Agilent_E3831A_power_supply:
   def close(self):
     self.device.close()
 
-class ivs:
 
+class ivs:
   def __init__(self):
     rm = visa.ResourceManager()
     self.device = rm.open_resource('GPIB0::10::INSTR')
@@ -331,8 +338,8 @@ class ivs:
   def close(self):
     self.device.close()
 
-class dcp:
 
+class dcp:
   def __init__(self):
     rm = visa.ResourceManager()
     self.device = rm.open_resource('GPIB0::6::INSTR')
@@ -349,8 +356,8 @@ class dcp:
   def close(self):
     self.device.close()
 
-class usbserial:
 
+class usbserial:
   def __init__(self, port):
     self.device = serial.Serial(port, 115200)
   
@@ -365,6 +372,7 @@ class usbserial:
 
   def close(self):
     self.device.close()
+
 
 if __name__ == '__main__':
   # search()
