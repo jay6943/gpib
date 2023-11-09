@@ -20,8 +20,20 @@ def switch(channel):
   device.write('ROUT1:CHAN1 A,' + str(channel))
   device.close()
 
-class Ando_AQ2105B_photodiode:
 
+class DLDC_1002:
+  def __init__(self):
+    rm = visa.ResourceManager()
+    self.device = rm.open_resource('GPIB9::27::INSTR')
+
+  def write(self, command):
+    self.device.write(command)
+
+  def query(self, command):
+    self.device.clear()
+    return self.device.query(command)
+
+class Ando_AQ2105B_photodiode:
   def __init__(self):
     rm = visa.ResourceManager()
     self.device = rm.open_resource('GPIB0::19::INSTR')
@@ -355,7 +367,10 @@ class usbserial:
     self.device.close()
 
 if __name__ == '__main__':
-  search()
+  # search()
+
+  ld = DLDC_1002()
+  print(ld.query('*IDN?'))
 
   '''
   iq = dso(False)
