@@ -156,6 +156,35 @@ class ldc:
     self.device.close()
 
 
+class Keysight_81630B_photodiode:
+  def __init__(self):
+    rm = visa.ResourceManager()
+    self.device = rm.open_resource('TCPIP0::192.168.0.25::inst0::INSTR')
+
+  def write(self, command):
+    self.device.write(command)
+
+  def query(self, command):
+    return self.device.query(command)
+
+  def fetch(self, slot, ch):
+    command = 'FETCH' + str(slot) + ':CHAN' + str(ch) + ':POW?'
+    return float(self.device.query(command))
+
+  def read(self, slot, ch):
+    command = 'READ' + str(slot) + ':CHAN' + str(ch) + ':POW?'
+    return float(self.device.query(command))
+
+  def dBm(self, slot, ch):
+    self.write('SENS' + str(slot) + ':CHAN' + str(ch) + ':POW:UNIT 0')
+
+  def mW(self, slot, ch):
+    self.write('SENS' + str(slot) + ':CHAN' + str(ch) + ':POW:UNIT 1')
+
+  def close(self):
+    self.device.close()
+
+
 class opm:
   def __init__(self, gpib):
     rm = visa.ResourceManager()

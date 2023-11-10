@@ -6,15 +6,17 @@ import numpy as np
 import datetime as dt
 import matplotlib.pyplot as plt
 
-def volt():
+
+def voltage():
   vir = dev.Agilent_E3831A_power_supply()
+  print(vir.query('*IDN?'))
 
   vir.write('*RST')
   vir.write('INST:COUP:TRIG ALL')
   vir.write('TRIG:SOUR BUS')
   vir.write('TRIG:DEL 5')
   vir.write('INST:SEL P6V')
-  vir.write('VOLT:TRIG 1')
+  vir.write('VOLT:TRIG 0')
   vir.write('OUTP ON')
   vir.write('INIT')
   vir.write('*TRG')
@@ -22,51 +24,57 @@ def volt():
 
   vir.close()
 
-def pd():
-  opm = dev.opm(20)
+
+def photodide():
+  opm = dev.Keysight_81630B_photodiode()
 
   opm.write('*CLS')
   opm.write('INIT1:CHAN1:CONT 0')
   opm.write('INIT1:CHAN1:IMM')
 
-  for _ in range(10): print(opm.query(1, 1))
+  for _ in range(10): print(opm.fetch(1, 1))
   for _ in range(10): print(opm.read(1, 1))
 
   opm.close()
 
+
 def voa(folder):
-  vmin, vmax, vstep = 0, 2, 0.1
+  tp = dt.datetime.now()
+  fp = cfg.mkdir(folder) + tp.strftime('%H%M%S')
+  print(fp)
+
+  vmin, vmax, vstep = 0, 1.5, 0.02
   v = dat.arange(vmin, vmax, vstep)
   p = np.zeros_like(v)
 
   vir = dev.Agilent_E3831A_power_supply()
-  opm = dev.opm(20)
+  opm = dev.Keysight_81630B_photodiode()
 
   print(vir.query('*IDN?'))
+  print(opm.query('*IDN?'))
 
   vir.write('*RST')
   vir.write('INST P6V')
-  vir.write('VOLT ' + str(round(vmin,1)))
+  vir.write('VOLT ' + str(round(vmin, 3)))
   vir.write('OUTP ON')
   vir.write('INIT')
   opm.write('INIT1:CHAN1:CONT 0')
   opm.write('INIT1:CHAN1:IMM')
 
   for i in range(len(v)):
-    v[i] = round(v[i],1)
+    v[i] = round(v[i], 3)
     vir.write('VOLT ' + str(v[i]))
     time.sleep(1)
     p[i] = opm.read(1, 1)
-    print(v[i], ',', p[i])
+    print(v[i], p[i])
 
   opm.write('INIT1:CHAN1:CONT 1')
-  vir.write('VOLT ' + str(round(vmin,1)))
+  vir.write('VOLT ' + str(round(vmin, 3)))
   vir.write('OUTP OFF')
 
   vir.close()
   opm.close()
 
-  fp = folder + dt.datetime.now().strftime('%H%M%S')
   df = np.array([v, p]).transpose()
   np.savetxt(fp + '.dat', df, fmt='%.3f')
 
@@ -84,5 +92,6 @@ def voa(folder):
 
   return v, p
 
+
 if __name__ == '__main__':
-  voa(cfg.works + 'EI-ICR-WG-R1-TV23-002/voa/')
+  voa('EI-ICR-WG-R1-TV23-004/voa/t1/')
