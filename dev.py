@@ -371,24 +371,6 @@ class ivs:
     self.device.close()
 
 
-class dcp:
-  def __init__(self):
-    rm = visa.ResourceManager()
-    self.device = rm.open_resource('GPIB0::6::INSTR')
-    self.device.timeout = 50000
-
-  def write(self, command):
-    self.device.write(command)
-
-  def query(self, command):
-    data = self.device.query(command)
-    data = data.split(',')
-    return float(data[0]), float(data[1])
-
-  def close(self):
-    self.device.close()
-
-
 class usbserial:
   def __init__(self, port):
     self.device = serial.Serial(port, 115200)
