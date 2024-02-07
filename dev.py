@@ -307,6 +307,22 @@ class Santec_WSL_tunalble_laser:
     self.device.close()
 
 
+class Keysight_E3648A_power_supply:
+  def __init__(self, address):
+    rm = visa.ResourceManager()
+    self.device = rm.open_resource('GPIB0::' + str(address) + '::INSTR')
+    self.device.timeout = 5000
+
+  def write(self, command):
+    self.device.write(command)
+
+  def query(self, command):
+    return self.device.query(command)
+
+  def close(self):
+    self.device.close()
+
+
 class Agilent_E3831A_power_supply:
   def __init__(self):
     rm = visa.ResourceManager()
