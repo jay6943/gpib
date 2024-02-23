@@ -45,17 +45,17 @@ def Standa_8MT200_100():
 def Standa_8MVT70_13_1():
   axis = ximc.Axis(dev_vertical)
   axis.open_device()
-  # axis.command_home()
-  # axis.command_wait_for_stop(500)
-  axis.command_right()
-  time.sleep(3)
+  axis.command_home()
+  axis.command_wait_for_stop(500)
+  # axis.command_right()
+  # time.sleep(1)
   axis.command_stop()
   axis.close_device()
 
 
 if __name__ == '__main__':
-  # Standa_8MT200_100()
+  Standa_8MT200_100()
+  Standa_8MVT70_13_1()
 
-  get_info(dev_linear)
-  get_info(dev_vertical)
-  # Standa_8MVT70_13_1()
+  # get_info(dev_linear)
+  # get_info(dev_vertical)
