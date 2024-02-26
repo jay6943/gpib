@@ -20,7 +20,8 @@ time.sleep(3)
 print('Stop movement')
 axis.command_stop()
 
+# It's also called automatically by garbage collector, so explicit closing is optional
 print('Disconnect device')
-axis.close_device()  # It's also called automatically by garbage collector, so explicit closing is optional
+axis.close_device()
 
 print('Done')

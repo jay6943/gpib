@@ -13,12 +13,15 @@ def get_info(device):
   axis = ximc.Axis(device)
   axis.open_device()
   sn = str(axis.get_serial_number())
-  df = str(axis.get_engine_settings())
-  print(df)
+  sf = 'Status\n\n' + str(axis.get_status()) + '\n'
+  df = 'Move settings\n\n' + str(axis.get_move_settings()) + '\n'
+  cf = 'Control settings\n\n' + str(axis.get_engine_settings()) + '\n'
+  mf = 'Motor settings\n\n' + str(axis.get_engine_settings()) + '\n'
   axis.close_device()
 
   fp = open('../data/Standa_' + sn + '.txt', 'w')
-  fp.write(str(device) + '\n' + str(df))
+  data = str(device) + '\n' + sn + '\n\n' + sf + df + cf + mf
+  fp.write(data)
   fp.close()
 
 
@@ -34,9 +37,9 @@ def Standa_time():
 def Standa_8MT200_100():
   axis = ximc.Axis(dev_linear)
   axis.open_device()
-  axis.command_movr(20, 0)
+  axis.command_movr(5000, 0)
   axis.command_wait_for_stop(500)
-  axis.command_movr(-20, 0)
+  axis.command_movr(-5000, 0)
   axis.command_wait_for_stop(500)
   axis.command_stop()
   axis.close_device()
@@ -54,8 +57,8 @@ def Standa_8MVT70_13_1():
 
 
 if __name__ == '__main__':
-  Standa_8MT200_100()
-  Standa_8MVT70_13_1()
+  # Standa_8MT200_100()
+  # Standa_8MVT70_13_1()
 
-  # get_info(dev_linear)
+  get_info(dev_linear)
   # get_info(dev_vertical)
