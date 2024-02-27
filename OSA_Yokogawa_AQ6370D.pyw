@@ -7,14 +7,18 @@ import PyQt5.QtGui as Qg
 import PyQt5.QtWidgets as Qw
 import matplotlib.pyplot as plt
 
+
 def OnMax():
   dev.Yokogawa_AQ6370D_oscilloscope(':CALC:MARK:MAX')
+
 
 def OnMin():
   dev.Yokogawa_AQ6370D_oscilloscope(':CALC:MARK:MIN')
 
+
 def OnMarkCenter():
   dev.Yokogawa_AQ6370D_oscilloscope(':CALC:MARK:SCEN')
+
 
 def OnContinuous():
   osa = dev.Yokogawa_AQ6370D_oscilloscope(False)
@@ -22,11 +26,13 @@ def OnContinuous():
   osa.write(':INIT:IMM')
   osa.close()
 
+
 def OnSingle():
   osa = dev.Yokogawa_AQ6370D_oscilloscope(False)
   osa.write(':INIT:SMOD SING')
   osa.write(':INIT:IMM')
   osa.close()
+
 
 class Yokogawa_AQ6370D(Qw.QMainWindow):
 
@@ -167,6 +173,7 @@ class Yokogawa_AQ6370D(Qw.QMainWindow):
         fp = os.path.splitext(filename)
         print(fp[0])
         plt.savefig(fp[0] + '.png')
+
 
 if __name__ == '__main__':
   app = Qw.QApplication(sys.argv)

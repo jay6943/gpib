@@ -37,12 +37,17 @@ def Standa_time():
 def Standa_8MT200_100():
   axis = ximc.Axis(dev_linear)
   axis.open_device()
-  axis.command_movr(5000, 0)
+  axis.command_movr(10, 0)
   axis.command_wait_for_stop(500)
-  axis.command_movr(-5000, 0)
-  axis.command_wait_for_stop(500)
+  # axis.command_movr(-100, 0)
+  # axis.command_wait_for_stop(500)
+  df = str(axis.get_position())
   axis.command_stop()
   axis.close_device()
+
+  df = df.split()
+
+  print(df)
 
 
 def Standa_8MVT70_13_1():
@@ -57,8 +62,8 @@ def Standa_8MVT70_13_1():
 
 
 if __name__ == '__main__':
-  # Standa_8MT200_100()
+  Standa_8MT200_100()
   # Standa_8MVT70_13_1()
 
-  get_info(dev_linear)
+  # get_info(dev_linear)
   # get_info(dev_vertical)
