@@ -26,8 +26,8 @@ def get_edges(stage):
 
 
 class linear:
-  def __init__(self):
-    self.axis = ximc.Axis(r'xi-com:\\.\COM13')
+  def __init__(self, address):
+    self.axis = ximc.Axis(r'xi-com:\\.\COM' + str(address))
 
   def get_position(self):
     return get_position(self.axis)
@@ -63,8 +63,8 @@ class linear:
 
 
 class vertical:
-  def __init__(self):
-    self.axis = ximc.Axis(r'xi-com:\\.\COM14')
+  def __init__(self, address):
+    self.axis = ximc.Axis(r'xi-com:\\.\COM' + str(address))
 
   def get_position(self):
     return get_position(self.axis)

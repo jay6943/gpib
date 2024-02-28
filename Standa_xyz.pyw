@@ -14,13 +14,21 @@ class motors(Qw.QMainWindow):
     self.setWindowIcon(Qg.QIcon('jk.png'))
     self.setGeometry(500, 500, 420, 300)
 
-    self.laxis = Standa.linear()
-    self.vaxis = Standa.vertical()
+    self.laxis = Standa.linear(13)
+    self.vaxis = Standa.vertical(14)
+
+    # self.inx = Standa.linear(15)
+    # self.iny = Standa.linear(15)
+    # self.inz = Standa.linear(15)
+
+    # self.outx = Standa.linear(5)
+    # self.outy = Standa.linear(15)
+    # self.outz = Standa.linear(15)
 
     dat.Qbutton(self, self.linear_move, 'Linear', 0, 0, 120)
     dat.Qbutton(self, self.linear_position, 'Position', 130, 0, 120)
     dat.Qbutton(self, self.linear_test, 'Test', 260, 0, 120)
-    self.l_steps = dat.Qedit(self, '100', 0, 40, 120)
+    self.l_steps = dat.Qedit(self, '500', 0, 40, 120)
     self.l_position = dat.Qedit(self, '', 130, 40, 120)
     self.l_speed = dat.Qedit(self, '', 260, 40, 120)
     dat.Qlabel(self, self.laxis.get_edges(), 10, 70, 200)
