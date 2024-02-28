@@ -20,8 +20,8 @@ def get_info(device):
   axis.close_device()
 
   fp = open('../data/Standa_' + sn + '.txt', 'w')
-  data = str(device) + '\n' + sn + '\n\n' + sf + df + cf + mf
-  fp.write(data)
+  tf = str(device) + '\n' + sn + '\n\n' + sf + df + cf + mf
+  fp.write(tf)
   fp.close()
 
 
@@ -62,8 +62,15 @@ def Standa_8MVT70_13_1():
 
 
 if __name__ == '__main__':
-  Standa_8MT200_100()
+  # Standa_8MT200_100()
   # Standa_8MVT70_13_1()
 
   # get_info(dev_linear)
   # get_info(dev_vertical)
+
+  stage = ximc.Axis(dev_linear)
+  stage.open_device()
+  data = str(stage.get_edges_settings()).split()
+  stage.close_device()
+
+  print(data[5], data[9])
