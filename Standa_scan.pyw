@@ -12,10 +12,19 @@ class motors(Qw.QMainWindow):
 
     self.setWindowTitle('Standa XYZ')
     self.setWindowIcon(Qg.QIcon('jk.png'))
-    self.setGeometry(500, 500, 420, 500)
+    self.setGeometry(500, 500, 420, 300)
 
-    self.laxis = Standa.device('5')
-    self.vaxis = Standa.device('15')
+    self.linear = Standa.device('5')
+
+    self.inx = Standa.device('12')
+    self.iny = Standa.device('10')
+    self.inz = Standa.device('14')
+
+    self.outx = Standa.device('11')
+    self.outy = Standa.device('9')
+    self.outz = Standa.device('13')
+
+    self.inz_home = 320
 
     dat.Qbutton(self, self.linear_shift_on, 'Linear', 0, 0, 120)
     dat.Qbutton(self, self.linear_move_to, 'Move to', 130, 0, 120)
@@ -23,26 +32,15 @@ class motors(Qw.QMainWindow):
     self.l_steps = dat.Qedit(self, '500', 0, 40, 120)
     self.l_position = dat.Qedit(self, '', 130, 40, 120)
     self.l_speed = dat.Qedit(self, '', 260, 40, 120)
-    dat.Qlabel(self, Standa.get_edges(self.laxis), 10, 70, 200)
-
-    dat.Qbutton(self, self.vertical_shift_on, 'Vertical', 0, 120, 120)
-    dat.Qbutton(self, self.vertical_move_to, 'Move to', 130, 120, 120)
-    dat.Qbutton(self, self.vertical_test, 'Test', 260, 120, 120)
-    self.v_steps = dat.Qedit(self, '50', 0, 160, 120)
-    self.v_position = dat.Qedit(self, '', 130, 160, 120)
-    self.v_speed = dat.Qedit(self, '', 260, 160, 120)
-    dat.Qlabel(self, Standa.get_edges(self.vaxis), 10, 190, 200)
-    dat.Qbutton(self, self.vertical_home, 'Home', 260, 200, 120)
+    dat.Qlabel(self, Standa.get_edges(self.linear), 10, 70, 200)
 
     self.l_position.setText(Standa.get_position(self.laxis))
-    self.v_position.setText(Standa.get_position(self.vaxis))
-    self.l_speed.setText(Standa.get_speed(self.laxis))
-    self.v_speed.setText(Standa.get_speed(self.vaxis))
+    self.l_speed.setText(Standa.get_speed(self.vaxis))
 
-    self.address = dat.Qedit(self, '13', 0, 280, 120)
+    dat.Qlabel(self, 'COM', 10, 270, 30)
+    self.address = dat.Qedit(self, '14', 40, 280, 80)
     self.axis = Standa.device(self.address.text())
 
-    dat.Qbutton(self, self.axis_get_device, 'COM', 130, 280, 120)
     dat.Qbutton(self, self.axis_shift_on, 'Shift on', 0, 320, 120)
     dat.Qbutton(self, self.axis_move_to, 'Move to', 130, 320, 120)
     dat.Qbutton(self, self.axis_test, 'Test', 260, 320, 120)
@@ -93,10 +91,6 @@ class motors(Qw.QMainWindow):
     Standa.go_home(self.vaxis)
     self.v_position.setText(Standa.get_position(self.vaxis))
 
-  def axis_get_device(self):
-    self.axis = Standa.device(self.address.text())
-    self.axis_position.setText(Standa.get_position(self.axis))
-
   def axis_shift_on(self):
     Standa.shift_on(self.axis, int(self.axis_steps.text()), 0)
     self.axis_position.setText(Standa.get_position(self.axis))
@@ -118,9 +112,8 @@ class motors(Qw.QMainWindow):
     Standa.go_home(self.axis)
     self.axis_position.setText(Standa.get_position(self.axis))
 
-
-if __name__ == '__main__':
-  app = Qw.QApplication(sys.argv)
-  window = motors()
-  window.show()
-  sys.exit(app.exec_())
+  if __name__ == '__main__':
+    app = Qw.QApplication(sys.argv)
+    window = motors()
+    window.show()
+    sys.exit(app.exec_())

@@ -1,99 +1,58 @@
 import libximc.highlevel as ximc
 
 
-def get_position(stage):
-  stage.open_device()
-  position = str(stage.get_position()).split()
-  stage.close_device()
+def device(address):
+  return ximc.Axis(r'xi-com:\\.\COM' + address)
+
+
+def get_position(axis):
+  axis.open_device()
+  position = str(axis.get_position()).split()
+  axis.close_device()
 
   return position[1]
 
 
-def get_speed(stage):
-  stage.open_device()
-  m = stage.get_move_settings()
-  stage.close_device()
+def get_speed(axis):
+  axis.open_device()
+  m = axis.get_move_settings()
+  axis.close_device()
 
   return str(m.Speed)
 
 
-def get_edges(stage):
-  stage.open_device()
-  edges = str(stage.get_edges_settings()).split()
-  stage.close_device()
-
-  return edges[5], edges[9]
-
-
-class linear:
-  def __init__(self, address):
-    self.axis = ximc.Axis(r'xi-com:\\.\COM' + str(address))
-
-  def get_position(self):
-    return get_position(self.axis)
-
-  def get_speed(self):
-    return get_speed(self.axis)
-
-  def get_edges(self):
-    left, right = get_edges(self.axis)
-    return 'left = ' + left + ', right = ' + right
-
-  def set_speed(self, speed):
-    self.axis.open_device()
-    m = self.axis.get_move_settings()
-    m.Speed = speed
-    self.axis.set_move_settings(m)
-    self.axis.close_device()
-
-  def move(self, steps, microsteps):
-    self.axis.open_device()
-    self.axis.command_movr(steps, microsteps)
-    self.axis.command_wait_for_stop(500)
-    self.axis.close_device()
-
-  def move_speed(self, steps, microsteps, speed):
-    self.axis.open_device()
-    m = self.axis.get_move_settings()
-    m.Speed = speed
-    self.axis.set_move_settings(m)
-    self.axis.command_movr(steps, microsteps)
-    self.axis.command_wait_for_stop(500)
-    self.axis.close_device()
+def set_speed(axis, speed):
+  axis.open_device()
+  m = axis.get_move_settings()
+  m.Speed = speed
+  axis.set_move_settings(m)
+  axis.close_device()
 
 
-class vertical:
-  def __init__(self, address):
-    self.axis = ximc.Axis(r'xi-com:\\.\COM' + str(address))
+def get_edges(axis):
+  axis.open_device()
+  edges = str(axis.get_edges_settings()).split()
+  axis.close_device()
 
-  def get_position(self):
-    return get_position(self.axis)
+  return edges[5] + ' to ' + edges[9]
 
-  def get_speed(self):
-    return get_speed(self.axis)
 
-  def get_edges(self):
-    bottom, top = get_edges(self.axis)
-    return 'bottom = ' + bottom + ', top = ' + top
+def go_home(axis):
+  axis.open_device()
+  axis.command_home()
+  axis.command_wait_for_stop(500)
+  axis.close_device()
 
-  def go_home(self):
-    self.axis.open_device()
-    self.axis.command_home()
-    self.axis.command_wait_for_stop(500)
-    self.axis.command_stop()
-    self.axis.close_device()
 
-  def move(self, steps, microsteps):
-    self.axis.open_device()
-    self.axis.command_movr(steps, microsteps)
-    self.axis.command_wait_for_stop(500)
-    self.axis.close_device()
+def move_to(axis, position, microsteps):
+  axis.open_device()
+  axis.command_move(position, microsteps)
+  axis.command_wait_for_stop(500)
+  axis.close_device()
 
-  def move_speed(self, steps, microsteps, speed):
-    self.axis.open_device()
-    m = self.axis.get_move_settings()
-    m.Speed = speed
-    self.axis.set_move_settings(m)
-    self.axis.command_movr(steps, microsteps)
-    self.axis.command_wait_for_stop(500)
-    self.axis.close_device()
+
+def shift_on(axis, steps, microsteps):
+  axis.open_device()
+  axis.command_movr(steps, microsteps)
+  axis.command_wait_for_stop(500)
+  axis.close_device()
