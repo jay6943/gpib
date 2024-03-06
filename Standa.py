@@ -34,7 +34,7 @@ def get_edges(axis):
   edges = str(axis.get_edges_settings()).split()
   axis.close_device()
 
-  return edges[5] + ' to ' + edges[9]
+  return [edges[5], edges[9]]
 
 
 def go_home(axis):

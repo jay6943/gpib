@@ -13,6 +13,7 @@ def Qlabel(self, text, x, y, size):
   label.resize(size, 30)
   label.move(x + 20, y + 30)
   label.setText(text)
+  label.setAlignment(Qc.Qt.AlignCenter)
   label.setFont(Qg.QFont('Calibri'))
 
 def Qbutton(self, event, text, x, y, size):
