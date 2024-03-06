@@ -1,8 +1,16 @@
 import libximc.highlevel as ximc
 
 
+linear, vertical = 5, 15
+
+port = [5, 12, 10, 14, 11, 9, 13, 15]
+pmin = [-24934, -500, -511, -789, -501, -427, 4475, -385]
+pmax = [15170, 1150, 1150, 856, 1180, 1267, 6177, 2280]
+home = [-24434, 1, -9, -289, 0, 72, 4976, 241]
+
+
 def device(address):
-  return ximc.Axis(r'xi-com:\\.\COM' + address)
+  return ximc.Axis(r'xi-com:\\.\COM' + str(address))
 
 
 def get_position(axis):
