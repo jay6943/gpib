@@ -12,102 +12,68 @@ class motors(Qw.QMainWindow):
 
     self.setWindowTitle('Standa XYZ')
     self.setWindowIcon(Qg.QIcon('jk.png'))
-    self.setGeometry(3500, 500, 570, 490)
+    self.setGeometry(3500, 500, 420, 490)
 
-    xp, yp = 0, 50
-    dat.Qbutton(self, self.xin, 'L', xp, yp-40, 40)
-    self.l_address = dat.Qedit(self, '5', xp, yp, 100)
-    self.linear = Standa.device(int(self.l_address.text()))
-    self.l_steps = dat.Qedit(self, '50', xp, yp+40, 100)
-    self.l_there = dat.Qedit(self, '', xp, yp+80, 100)
-    self.l_position = dat.Qedit(self, '', xp, yp+180, 100)
-    self.l_speed = dat.Qedit(self, '', xp+110, yp+180, 100)
-    self.l_min = dat.Qedit(self, '', xp, yp+240, 100)
-    self.l_max = dat.Qedit(self, '', xp+110, yp+240, 100)
-    dat.Qbutton(self, self.linear_init, 'Linear', xp+110, yp, 100)
-    dat.Qbutton(self, self.linear_shift_on, 'Shift on', xp+110, yp+40, 100)
-    dat.Qbutton(self, self.linear_move_to, 'Move to', xp + 110, yp+80, 100)
-    dat.Qbutton(self, self.linear_home, 'Home', xp+150, yp+120, 140)
-    dat.Qlabel(self, 'Position', xp, yp+150, 100)
-    dat.Qlabel(self, 'Speed', xp+110, yp+150, 100)
-    dat.Qlabel(self, 'Min', xp, yp+210, 100)
-    dat.Qlabel(self, 'Max', xp+110, yp+210, 100)
-    self.l_position.setText(Standa.get_position(self.linear))
-    self.l_there.setText(Standa.get_position(self.linear))
-    self.l_speed.setText(Standa.get_speed(self.linear))
-    self.l_min.setText(Standa.get_edges(self.linear)[0])
-    self.l_max.setText(Standa.get_edges(self.linear)[1])
+    x, y, w, m = 0, 60, 100, 40
+    dat.Qlabel(self, 'Input Axis', x + 70, y - 90, w)
+    dat.Qlabel(self, 'Output Axis', x + 240, y - 90, w)
+    dat.Qbutton(self, self.linear, 'L', x, y - 50, m)
+    dat.Qbutton(self, self.xin, 'X', x + 70, y - 50, m)
+    dat.Qbutton(self, self.yin, 'Y', x + 120, y - 50, m)
+    dat.Qbutton(self, self.zin, 'Z', x + 170, y - 50, m)
+    dat.Qbutton(self, self.xout, 'X', x + 240, y - 50, m)
+    dat.Qbutton(self, self.yout, 'Y', x + 290, y - 50, m)
+    dat.Qbutton(self, self.zout, 'Z', x + 340, y - 50, m)
+    self.address = dat.Qedit(self, '', x, y, w)
+    self.port = Standa.port[0]
+    self.axis = Standa.device(self.port)
+    self.steps = dat.Qedit(self, '10', x, y + 40, w)
+    self.there = dat.Qedit(self, '', x, y + 80, w)
+    self.position = dat.Qedit(self, '', x, y + 180, w)
+    self.speed = dat.Qedit(self, '', x + w + 10, y + 180, w)
+    self.amin = dat.Qedit(self, '', x, y + 240, w)
+    self.amax = dat.Qedit(self, '', x + w + 10, y + 240, w)
+    dat.Qbutton(self, self.set_device, 'Set', x + w + 10, y, w)
+    dat.Qbutton(self, self.shift_on, 'Shift on', x + w + 10, y + 40, w)
+    dat.Qbutton(self, self.move_to, 'Move to', x + w + 10, y + 80, w)
+    dat.Qbutton(self, self.go_center, 'Home', x + w + 10, y + 120, w)
+    dat.Qlabel(self, 'Position', x, y + 150, w)
+    dat.Qlabel(self, 'Speed', x + w + 10, y + 150, w)
+    dat.Qlabel(self, 'Min', x, y + 210, w)
+    dat.Qlabel(self, 'Max', x + w + 10, y + 210, w)
 
-    xp, yp = 240, 50
-    dat.Qlabel(self, 'Input Axis', xp, yp-80, 140)
-    dat.Qlabel(self, 'Output Axis', xp+150, yp-80, 140)
-    dat.Qbutton(self, self.xin, 'X', xp, yp-40, 40)
-    dat.Qbutton(self, self.yin, 'Y', xp+50, yp-40, 40)
-    dat.Qbutton(self, self.zin, 'Z', xp+100, yp-40, 40)
-    dat.Qbutton(self, self.xout, 'X', xp+150, yp-40, 40)
-    dat.Qbutton(self, self.yout, 'Y', xp+200, yp-40, 40)
-    dat.Qbutton(self, self.zout, 'Z', xp+250, yp-40, 40)
-    self.axis_address = dat.Qedit(self, '14', xp, yp, 140)
-    self.axis = Standa.device(int(self.axis_address.text()))
-    self.axis_steps = dat.Qedit(self, '50', xp, yp+40, 140)
-    self.axis_there = dat.Qedit(self, '', xp, yp+80, 140)
-    self.axis_position = dat.Qedit(self, '', xp, yp+180, 140)
-    self.axis_speed = dat.Qedit(self, '', xp+150, yp+180, 140)
-    self.axis_min = dat.Qedit(self, '', xp, yp+240, 140)
-    self.axis_max = dat.Qedit(self, '', xp+150, yp+240, 140)
-    dat.Qbutton(self, self.axis_init, 'Axis', xp+150, yp, 140)
-    dat.Qbutton(self, self.axis_shift_on, 'Shift on', xp+150, yp+40, 140)
-    dat.Qbutton(self, self.axis_move_to, 'Move to', xp+150, yp+80, 140)
-    dat.Qbutton(self, self.axis_home, 'Home', xp+150, yp+120, 140)
-    dat.Qlabel(self, 'Position', xp, yp+150, 140)
-    dat.Qlabel(self, 'Speed', xp+150, yp+150, 140)
-    dat.Qlabel(self, 'Min', xp, yp+210, 140)
-    dat.Qlabel(self, 'Max', xp+150, yp+210, 140)
+    x, y, w = 0, 360, 100
+    dat.Qbutton(self, self.align, 'align', x, y, w)
 
-    xp, yp = 245, 340
-    dat.Qbutton(self, self.p10, '+10', xp, yp, 60)
-    dat.Qbutton(self, self.n10, '-10', xp+70, yp, 60)
-    dat.Qbutton(self, self.p50, '+50', xp+150, yp, 60)
-    dat.Qbutton(self, self.n50, '-50', xp+220, yp, 60)
-    dat.Qbutton(self, self.p100, '+100', xp, yp+40, 60)
-    dat.Qbutton(self, self.n100, '-100', xp+70, yp+40, 60)
-    dat.Qbutton(self, self.p200, '+200', xp+150, yp+40, 60)
-    dat.Qbutton(self, self.n200, '-200', xp+220, yp+40, 60)
-    dat.Qbutton(self, self.p500, '+500', xp, yp+80, 60)
-    dat.Qbutton(self, self.n500, '-500', xp+70, yp+80, 60)
-    dat.Qbutton(self, self.p1000, '+1000', xp+150, yp+80, 60)
-    dat.Qbutton(self, self.n1000, '-1000', xp+220, yp+80, 60)
+    x, y, w = 240, 100, 65
+    dat.Qbutton(self, self.p1, '+1', x, y - 40, w)
+    dat.Qbutton(self, self.n1, '-1', x + w + 10, y - 40, w)
+    dat.Qbutton(self, self.p10, '+10', x, y, w)
+    dat.Qbutton(self, self.n10, '-10', x + w + 10, y, w)
+    dat.Qbutton(self, self.p50, '+50', x, y + 40, w)
+    dat.Qbutton(self, self.n50, '-50', x + w + 10, y + 40, w)
+    dat.Qbutton(self, self.p100, '+100', x, y + 80, w)
+    dat.Qbutton(self, self.n100, '-100', x + w + 10, y + 80, w)
+    dat.Qbutton(self, self.p200, '+200', x, y + 120, w)
+    dat.Qbutton(self, self.n200, '-200', x + w + 10, y + 120, w)
+    dat.Qbutton(self, self.p500, '+500', x, y + 160, w)
+    dat.Qbutton(self, self.n500, '-500', x + w + 10, y + 160, w)
+    dat.Qbutton(self, self.p1000, '+1000', x, y + 200, w)
+    dat.Qbutton(self, self.n1000, '-1000', x + w + 10, y + 200, w)
 
-  def linear_init(self):
-    steps = int(self.l_steps.text())
-    speed = int(self.l_speed.text())
+    self.linear()
 
-    Standa.set_speed(self.linear, speed)
-    Standa.shift_on(self.linear, steps, 0)
-    Standa.shift_on(self.linear, -steps, 0)
-    self.l_position.setText(Standa.get_position(self.linear))
+  def get_device(self, n):
+    self.port = n
+    self.axis = Standa.device(Standa.port[n])
+    self.address.setText(str(Standa.port[n]))
+    self.there.setText(str(int((Standa.amax[n] + Standa.amin[n]) / 2)))
+    self.speed.setText(Standa.get_speed(self.axis))
+    self.position.setText(Standa.get_position(self.axis))
+    self.amin.setText(str(Standa.amin[n]))
+    self.amax.setText(str(Standa.amax[n]))
 
-  def linear_shift_on(self):
-    Standa.shift_on(self.linear, int(self.l_steps.text()), 0)
-    self.l_position.setText(Standa.get_position(self.linear))
-
-  def linear_move_to(self):
-    Standa.move_to(self.linear, int(self.l_there.text()), 0)
-    self.l_position.setText(Standa.get_position(self.linear))
-
-  def linear_home(self):
-    there = (Standa.pmax[0] + Standa.pmin[0]) / 2
-    Standa.move_to(self.linear, int(there), 0)
-    self.l_position.setText(Standa.get_position(self.linear))
-
-  def get_device(self, idev):
-    self.axis = Standa.device(Standa.port[idev])
-    self.axis_address.setText(str(Standa.port[idev]))
-    self.axis_there.setText(str(Standa.home[idev]))
-    self.axis_speed.setText(Standa.get_speed(self.axis))
-    self.axis_position.setText(Standa.get_position(self.axis))
-    self.axis_min.setText(str(Standa.pmin[idev]))
-    self.axis_max.setText(str(Standa.pmax[idev]))
+  def linear(self): self.get_device(0)
 
   def xin(self): self.get_device(1)
   def yin(self): self.get_device(2)
@@ -117,43 +83,53 @@ class motors(Qw.QMainWindow):
   def yout(self): self.get_device(5)
   def zout(self): self.get_device(6)
 
-  def axis_init(self):
-    steps = int(self.axis_steps.text())
-    speed = int(self.axis_speed.text())
+  def set_device(self):
+    steps = int(self.steps.text())
+    speed = int(self.speed.text())
 
     Standa.set_speed(self.axis, speed)
     Standa.shift_on(self.axis, steps, 0)
     Standa.shift_on(self.axis, -steps, 0)
-    self.axis_position.setText(Standa.get_position(self.axis))
+    self.position.setText(Standa.get_position(self.axis))
 
-  def axis_shift_on(self):
-    Standa.shift_on(self.axis, int(self.axis_steps.text()), 0)
-    self.axis_position.setText(Standa.get_position(self.axis))
+  def shift_on(self):
+    Standa.shift_on(self.axis, int(self.steps.text()), 0)
+    self.position.setText(Standa.get_position(self.axis))
 
-  def axis_move_to(self):
-    Standa.move_to(self.axis, int(self.axis_there.text()), 0)
-    self.axis_position.setText(Standa.get_position(self.axis))
+  def move_to(self):
+    Standa.move_to(self.axis, int(self.there.text()), 0)
+    self.position.setText(Standa.get_position(self.axis))
 
-  def axis_home(self):
+  def go_home(self):
     Standa.go_home(self.axis)
-    self.axis_position.setText(Standa.get_position(self.axis))
+    self.position.setText(Standa.get_position(self.axis))
 
-  def axis_shift_steps(self, steps):
+  def go_center(self):
+    Standa.go_center(self.axis, self.port)
+    self.position.setText(Standa.get_position(self.axis))
+
+  def shift_steps(self, steps):
     Standa.shift_on(self.axis, steps, 0)
-    self.axis_position.setText(Standa.get_position(self.axis))
+    self.position.setText(Standa.get_position(self.axis))
 
-  def p10(self): self.axis_shift_steps(10)
-  def n10(self): self.axis_shift_steps(-10)
-  def p50(self): self.axis_shift_steps(50)
-  def n50(self): self.axis_shift_steps(-50)
-  def p100(self): self.axis_shift_steps(100)
-  def n100(self): self.axis_shift_steps(-100)
-  def p200(self): self.axis_shift_steps(200)
-  def n200(self): self.axis_shift_steps(-200)
-  def p500(self): self.axis_shift_steps(500)
-  def n500(self): self.axis_shift_steps(-500)
-  def p1000(self): self.axis_shift_steps(1000)
-  def n1000(self): self.axis_shift_steps(-1000)
+  def align(self):
+    self.shift_steps(4162)
+    self.shift_steps(-4162)
+
+  def p1(self): self.shift_steps(1)
+  def n1(self): self.shift_steps(-1)
+  def p10(self): self.shift_steps(10)
+  def n10(self): self.shift_steps(-10)
+  def p50(self): self.shift_steps(50)
+  def n50(self): self.shift_steps(-50)
+  def p100(self): self.shift_steps(100)
+  def n100(self): self.shift_steps(-100)
+  def p200(self): self.shift_steps(200)
+  def n200(self): self.shift_steps(-200)
+  def p500(self): self.shift_steps(500)
+  def n500(self): self.shift_steps(-500)
+  def p1000(self): self.shift_steps(1000)
+  def n1000(self): self.shift_steps(-1000)
 
 
 if __name__ == '__main__':
