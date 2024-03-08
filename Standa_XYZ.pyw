@@ -1,22 +1,24 @@
+import os
 import sys
 import dat
 import Standa
+import numpy as np
 import PyQt5.QtGui as Qg
 import PyQt5.QtWidgets as Qw
 
 
-class motors(Qw.QMainWindow):
+class Motorized_Stages(Qw.QMainWindow):
 
   def __init__(self):
     super().__init__()
 
-    self.setWindowTitle('Standa XYZ')
+    self.setWindowTitle('XYZ Scanning')
     self.setWindowIcon(Qg.QIcon('jk.png'))
-    self.setGeometry(3500, 500, 420, 490)
+    self.setGeometry(3500, 500, 490, 490)
 
     x, y, w, m = 0, 60, 100, 40
-    dat.Qlabel(self, 'Input Axis', x + 70, y - 90, w)
-    dat.Qlabel(self, 'Output Axis', x + 240, y - 90, w)
+    dat.Qlabel(self, 'Input Axis', x + 70, y - 90, m * 3 + 20)
+    dat.Qlabel(self, 'Output Axis', x + 240, y - 90, m * 3 + 20)
     dat.Qbutton(self, self.linear, 'L', x, y - 50, m)
     dat.Qbutton(self, self.xin, 'X', x + 70, y - 50, m)
     dat.Qbutton(self, self.yin, 'Y', x + 120, y - 50, m)
@@ -24,6 +26,7 @@ class motors(Qw.QMainWindow):
     dat.Qbutton(self, self.xout, 'X', x + 240, y - 50, m)
     dat.Qbutton(self, self.yout, 'Y', x + 290, y - 50, m)
     dat.Qbutton(self, self.zout, 'Z', x + 340, y - 50, m)
+    dat.Qbutton(self, self.vertical, 'V', x + 410, y - 50, m)
     self.address = dat.Qedit(self, '', x, y, w)
     self.port = Standa.port[0]
     self.axis = Standa.device(self.port)
@@ -31,21 +34,17 @@ class motors(Qw.QMainWindow):
     self.there = dat.Qedit(self, '', x, y + 80, w)
     self.position = dat.Qedit(self, '', x, y + 180, w)
     self.speed = dat.Qedit(self, '', x + w + 10, y + 180, w)
-    self.amin = dat.Qedit(self, '', x, y + 240, w)
-    self.amax = dat.Qedit(self, '', x + w + 10, y + 240, w)
     dat.Qbutton(self, self.set_device, 'Set', x + w + 10, y, w)
     dat.Qbutton(self, self.shift_on, 'Shift on', x + w + 10, y + 40, w)
     dat.Qbutton(self, self.move_to, 'Move to', x + w + 10, y + 80, w)
-    dat.Qbutton(self, self.go_center, 'Home', x + w + 10, y + 120, w)
+    dat.Qbutton(self, self.set_zero, 'Set Zero', x, y + 120, w)
+    dat.Qbutton(self, self.go_center, 'Center', x + w + 10, y + 120, w)
     dat.Qlabel(self, 'Position', x, y + 150, w)
     dat.Qlabel(self, 'Speed', x + w + 10, y + 150, w)
-    dat.Qlabel(self, 'Min', x, y + 210, w)
-    dat.Qlabel(self, 'Max', x + w + 10, y + 210, w)
 
-    x, y, w = 0, 360, 100
-    dat.Qbutton(self, self.align, 'align', x, y, w)
+    self.linear()
 
-    x, y, w = 240, 100, 65
+    x, y, w = 240, 100, 100
     dat.Qbutton(self, self.p1, '+1', x, y - 40, w)
     dat.Qbutton(self, self.n1, '-1', x + w + 10, y - 40, w)
     dat.Qbutton(self, self.p10, '+10', x, y, w)
@@ -61,17 +60,20 @@ class motors(Qw.QMainWindow):
     dat.Qbutton(self, self.p1000, '+1000', x, y + 200, w)
     dat.Qbutton(self, self.n1000, '-1000', x + w + 10, y + 200, w)
 
-    self.linear()
+    x, y, w = 0, 300, 100
+    dat.Qbutton(self, self.align, 'align', x, y, w)
+    dat.Qbutton(self, self.scan_file_open, 'Open', x + w + 10, y, w)
+    dat.Qbutton(self, self.operation, 'Operation', x, y + 40, w)
+
+    self.data = np.array([])
 
   def get_device(self, n):
     self.port = n
     self.axis = Standa.device(Standa.port[n])
     self.address.setText(str(Standa.port[n]))
-    self.there.setText(str(int((Standa.amax[n] + Standa.amin[n]) / 2)))
     self.speed.setText(Standa.get_speed(self.axis))
+    self.there.setText(Standa.get_position(self.axis))
     self.position.setText(Standa.get_position(self.axis))
-    self.amin.setText(str(Standa.amin[n]))
-    self.amax.setText(str(Standa.amax[n]))
 
   def linear(self): self.get_device(0)
 
@@ -83,38 +85,62 @@ class motors(Qw.QMainWindow):
   def yout(self): self.get_device(5)
   def zout(self): self.get_device(6)
 
+  def vertical(self): self.get_device(7)
+
   def set_device(self):
     steps = int(self.steps.text())
     speed = int(self.speed.text())
 
     Standa.set_speed(self.axis, speed)
-    Standa.shift_on(self.axis, steps, 0)
-    Standa.shift_on(self.axis, -steps, 0)
-    self.position.setText(Standa.get_position(self.axis))
+    self.speed.setText(Standa.get_speed(self.axis))
+
+    self.shift_steps(steps)
+    self.shift_steps(-steps)
+
+  def xyz(self, there):
+    q, edge, f = Qw.QMessageBox, Standa.edge[self.port], True
+
+    if abs(there) > edge:
+      s = '최종 위치(' + str(there) + ')가 경계(' + str(edge) + ')보다 큽니다.'
+      t = '경계까지 진행하시겠습니까?'
+      a = q.question(self, 'Set Zero', s + ' ' + t, q.Yes | q.No, q.No)
+      f = True if a == q.Yes else False
+
+    return f
+
+  def set_zero(self):
+    q = Qw.QMessageBox
+    s = '현재 위치를 0으로 설정하시겠습니까?'
+    a = q.question(self, 'Set Zero', s, q.Yes | q.No, q.No)
+    if a == q.Yes: Standa.set_zero(self.axis)
+    position = Standa.get_position(self.axis)
+    self.there.setText(position)
+    self.position.setText(position)
 
   def shift_on(self):
-    Standa.shift_on(self.axis, int(self.steps.text()), 0)
-    self.position.setText(Standa.get_position(self.axis))
+    there = int(Standa.get_position(self.axis)) + int(self.steps.text())
+    if self.xyz(there):
+      Standa.shift_on(self.axis, there, 0)
+      self.position.setText(Standa.get_position(self.axis))
 
   def move_to(self):
-    Standa.move_to(self.axis, int(self.there.text()), 0)
-    self.position.setText(Standa.get_position(self.axis))
-
-  def go_home(self):
-    Standa.go_home(self.axis)
-    self.position.setText(Standa.get_position(self.axis))
+    there = int(self.there.text())
+    if self.xyz(there):
+      Standa.move_to(self.axis, there, 0)
+      self.position.setText(Standa.get_position(self.axis))
 
   def go_center(self):
-    Standa.go_center(self.axis, self.port)
+    Standa.set_speed(self.axis, 2000)
+    Standa.move_to(self.axis, 0, 0)
+    Standa.set_speed(self.axis, 500)
+    self.speed.setText(Standa.get_speed(self.axis))
     self.position.setText(Standa.get_position(self.axis))
 
   def shift_steps(self, steps):
-    Standa.shift_on(self.axis, steps, 0)
-    self.position.setText(Standa.get_position(self.axis))
-
-  def align(self):
-    self.shift_steps(4162)
-    self.shift_steps(-4162)
+    there = int(Standa.get_position(self.axis)) + steps
+    if self.xyz(there):
+      Standa.shift_on(self.axis, steps, 0)
+      self.position.setText(Standa.get_position(self.axis))
 
   def p1(self): self.shift_steps(1)
   def n1(self): self.shift_steps(-1)
@@ -131,9 +157,32 @@ class motors(Qw.QMainWindow):
   def p1000(self): self.shift_steps(1000)
   def n1000(self): self.shift_steps(-1000)
 
+  def align(self):
+    self.axis = Standa.device(Standa.port[0])
+    Standa.set_speed(self.axis, 2000)
+    self.shift_steps(4162)
+    self.shift_steps(-4162)
+    Standa.set_speed(self.axis, 500)
+    self.speed.setText(Standa.get_speed(self.axis))
+
+  def scan_file_open(self):
+    fp = Qw.QFileDialog.getOpenFileName(self, '', dat.get_folder(), '*.txt')[0]
+    cd = os.path.dirname(fp)
+
+    if fp:
+      dat.set_folder(cd)
+      self.data = np.loadtxt(fp)
+      print(self.data)
+
+  def operation(self):
+    if len(self.data):
+      for step in self.data:
+        self.shift_steps(int(step))
+    else:
+      print('None')
 
 if __name__ == '__main__':
   app = Qw.QApplication(sys.argv)
-  window = motors()
+  window = Motorized_Stages()
   window.show()
   sys.exit(app.exec_())
