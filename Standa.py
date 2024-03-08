@@ -1,8 +1,8 @@
 import libximc.highlevel as ximc
 
-
 port = [5, 12, 10, 14, 11, 9, 13, 15]
 edge = [20000, 800, 800, 800, 800, 800, 800, 1300]
+stop = 100
 
 
 def device(address):
@@ -15,6 +15,14 @@ def get_position(axis):
   axis.close_device()
 
   return position[1]
+
+
+def get_uposition(axis):
+  axis.open_device()
+  position = str(axis.get_position()).split()
+  axis.close_device()
+
+  return [position[1], position[3]]
 
 
 def get_speed(axis):
@@ -50,21 +58,21 @@ def get_edges(axis):
 def go_home(axis):
   axis.open_device()
   axis.command_home()
-  axis.command_wait_for_stop(500)
+  axis.command_wait_for_stop(stop)
   axis.close_device()
 
 
 def move_to(axis, position, microsteps):
   axis.open_device()
   axis.command_move(position, microsteps)
-  axis.command_wait_for_stop(500)
+  axis.command_wait_for_stop(stop)
   axis.close_device()
 
 
 def shift_on(axis, steps, microsteps):
   axis.open_device()
   axis.command_movr(steps, microsteps)
-  axis.command_wait_for_stop(500)
+  axis.command_wait_for_stop(stop)
   axis.close_device()
 
 

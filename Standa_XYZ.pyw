@@ -1,10 +1,12 @@
 import os
 import sys
 import dat
+import dev
 import Standa
 import numpy as np
 import PyQt5.QtGui as Qg
 import PyQt5.QtWidgets as Qw
+import matplotlib.pyplot as plt
 
 
 class Motorized_Stages(Qw.QMainWindow):
@@ -14,7 +16,7 @@ class Motorized_Stages(Qw.QMainWindow):
 
     self.setWindowTitle('XYZ Scanning')
     self.setWindowIcon(Qg.QIcon('jk.png'))
-    self.setGeometry(3500, 500, 490, 490)
+    self.setGeometry(2800, 500, 490, 490)
 
     x, y, w, m = 0, 60, 100, 40
     dat.Qlabel(self, 'Input Axis', x + 70, y - 90, m * 3 + 20)
@@ -64,6 +66,7 @@ class Motorized_Stages(Qw.QMainWindow):
     dat.Qbutton(self, self.align, 'align', x, y, w)
     dat.Qbutton(self, self.scan_file_open, 'Open', x + w + 10, y, w)
     dat.Qbutton(self, self.operation, 'Operation', x, y + 40, w)
+    dat.Qbutton(self, self.scan, 'Scan', x + w + 10, y + 40, w)
 
     self.data = np.array([])
 
@@ -136,9 +139,7 @@ class Motorized_Stages(Qw.QMainWindow):
       if abs(there - position) > 500: Standa.set_speed(self.axis, 500)
 
   def go_center(self):
-    Standa.set_speed(self.axis, 2000)
-    Standa.move_to(self.axis, 0, 0)
-    Standa.set_speed(self.axis, 500)
+    self.shift_steps(-int(Standa.get_position(self.axis)))
     self.speed.setText(Standa.get_speed(self.axis))
     self.position.setText(Standa.get_position(self.axis))
 
@@ -146,6 +147,7 @@ class Motorized_Stages(Qw.QMainWindow):
     there = int(Standa.get_position(self.axis)) + steps
     if self.xyz(there):
       if abs(steps) > 500: Standa.set_speed(self.axis, 1000)
+      if abs(steps) > 2000: Standa.set_speed(self.axis, 2000)
       Standa.shift_on(self.axis, steps, 0)
       self.position.setText(Standa.get_position(self.axis))
       if abs(steps) > 500: Standa.set_speed(self.axis, 500)
@@ -188,6 +190,33 @@ class Motorized_Stages(Qw.QMainWindow):
         self.shift_steps(int(step))
     else:
       print('None')
+
+  def scan(self):
+    pd = dev.Keysight_81630B_photodiode()
+    pd.write('*CLS')
+    pd.write('INIT1:CHAN1:CONT 0')
+    pd.write('INIT1:CHAN1:IMM')
+
+    dx, dp = [], []
+
+    position = Standa.get_position(self.axis)
+    Standa.shift_on(self.axis, -5, 0)
+    for i in range(10):
+      Standa.shift_on(self.axis, 1, 0)
+      pwr = pd.read(1, 1)
+      dx.append(i)
+      dp.append(pwr)
+      print(i, Standa.get_uposition(self.axis), pwr)
+    Standa.move_to(self.axis, int(position), 0)
+    print(Standa.get_uposition(self.axis))
+
+    pd.write('INIT1:CHAN1:CONT 1')
+    pd.close()
+
+    plt.plot(dx, dp)
+    plt.grid()
+    plt.show()
+
 
 if __name__ == '__main__':
   app = Qw.QApplication(sys.argv)
