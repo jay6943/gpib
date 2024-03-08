@@ -118,16 +118,22 @@ class Motorized_Stages(Qw.QMainWindow):
     self.position.setText(position)
 
   def shift_on(self):
-    there = int(Standa.get_position(self.axis)) + int(self.steps.text())
+    steps = int(self.steps.text())
+    there = int(Standa.get_position(self.axis)) + steps
     if self.xyz(there):
+      if abs(steps) > 500: Standa.set_speed(self.axis, 1000)
       Standa.shift_on(self.axis, there, 0)
       self.position.setText(Standa.get_position(self.axis))
+      if abs(steps) > 500: Standa.set_speed(self.axis, 500)
 
   def move_to(self):
     there = int(self.there.text())
+    position = int(Standa.get_position(self.axis))
     if self.xyz(there):
+      if abs(there - position) > 500: Standa.set_speed(self.axis, 1000)
       Standa.move_to(self.axis, there, 0)
       self.position.setText(Standa.get_position(self.axis))
+      if abs(there - position) > 500: Standa.set_speed(self.axis, 500)
 
   def go_center(self):
     Standa.set_speed(self.axis, 2000)
@@ -139,8 +145,10 @@ class Motorized_Stages(Qw.QMainWindow):
   def shift_steps(self, steps):
     there = int(Standa.get_position(self.axis)) + steps
     if self.xyz(there):
+      if abs(steps) > 500: Standa.set_speed(self.axis, 1000)
       Standa.shift_on(self.axis, steps, 0)
       self.position.setText(Standa.get_position(self.axis))
+      if abs(steps) > 500: Standa.set_speed(self.axis, 500)
 
   def p1(self): self.shift_steps(1)
   def n1(self): self.shift_steps(-1)

@@ -4,6 +4,28 @@ import dev
 import PyQt5.QtGui as Qg
 import PyQt5.QtWidgets as Qw
 
+port = 'COM8'
+
+
+def write(command):
+  sld = dev.usbserial(port)
+  sld.write(command)
+  sld.close()
+
+
+def current_on():
+  sld = dev.usbserial(port)
+  sld.write('enable=1')
+  sld.close()
+
+
+def current_off():
+  sld = dev.usbserial(port)
+  sld.write('current=0')
+  sld.write('enable=0')
+  sld.close()
+
+
 class App(Qw.QWidget):
 
   def __init__(self):
@@ -19,28 +41,11 @@ class App(Qw.QWidget):
     self.current = dat.Qedit(self, '200.0', 110, 0, 100)
     self.tec = dat.Qedit(self, '25.0', 110, 40, 100)
 
-    dat.Qbutton(self, self.On, 'Enable', 0, 80, 100)
-    dat.Qbutton(self, self.Off, 'Disable', 110, 80, 100)
+    dat.Qbutton(self, current_on, 'Enable', 0, 80, 100)
+    dat.Qbutton(self, current_off, 'Disable', 110, 80, 100)
 
-  def write(self, command):
-    sld = dev.usbserial('COM4')
-    sld.write(command)
-    sld.close()
-
-  def OnCurrent(self):
-    self.write('current=' + self.current.text())
-
-  def OnTEC(self):
-    self.write('target=' + self.tec.text())
-
-  def On(self):
-    self.write('enable=1')
-
-  def Off(self):
-    sld = dev.usbserial('COM4')
-    sld.write('current=0')
-    sld.write('enable=0')
-    sld.close()
+  def OnCurrent(self): write('current=' + self.current.text())
+  def OnTEC(self): write('target=' + self.tec.text())
 
 if __name__ ==  '__main__':
   
