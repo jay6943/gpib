@@ -23,7 +23,24 @@ def switch(channel):
   device.close()
 
 
-class Digital_Laser_Diode_Controller_1002:
+class usbserial:
+  def __init__(self, port):
+    self.device = serial.Serial(port, 115200)
+
+  def write(self, command):
+    self.device.write(bytes(command + '\r', encoding='ascii'))
+    time.sleep(0.2)
+
+  def read(self, command):
+    self.write(command)
+    time.sleep(1)
+    return self.device.read(self.device.in_waiting)
+
+  def close(self):
+    self.device.close()
+
+
+class E_Tek_DLDC_1002:
   def __init__(self):
     rm = visa.ResourceManager()
     self.device = rm.open_resource('GPIB9::27::INSTR')
@@ -66,7 +83,7 @@ class Ando_AQ2105B_photodiode:
     self.device.close()
 
 
-class att:
+class Anritsu_MN9610A_attenuator:
   def __init__(self):
     rm = visa.ResourceManager()
     self.device = rm.open_resource('GPIB0::6::INSTR')
@@ -289,7 +306,7 @@ class Agilent_81640A_tunalble_laser:
     self.device.close()
 
 
-class Santec_WSL_tunalble_laser:
+class Santec_WSL_110_tunalble_laser:
   def __init__(self):
     rm = visa.ResourceManager()
     self.device = rm.open_resource('GPIB0::1::INSTR')
@@ -387,27 +404,10 @@ class ivs:
     self.device.close()
 
 
-class usbserial:
-  def __init__(self, port):
-    self.device = serial.Serial(port, 115200)
-  
-  def write(self, command):
-    self.device.write(bytes(command + '\r', encoding='ascii'))
-    time.sleep(0.2)
-
-  def read(self, command):
-    self.write(command)
-    time.sleep(1)
-    return self.device.read(self.device.in_waiting)
-
-  def close(self):
-    self.device.close()
-
-
 if __name__ == '__main__':
   # search()
 
-  ld = Digital_Laser_Diode_Controller_1002()
+  ld = E_Tek_DLDC_1002()
   print(ld.query('*IDN?'))
 
   '''
