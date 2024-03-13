@@ -26,7 +26,7 @@ class Motorized_Stages(Qw.QMainWindow):
     dat.Qbutton(self, self.axis_yout, 'Y', x + 290, y - 50, m)
     dat.Qbutton(self, self.axis_zout, 'Z', x + 340, y - 50, m)
     dat.Qbutton(self, self.axis_vertical, 'V', x + 410, y - 50, m)
-    self.addr = dat.Qedit(self, '', x, y, w)
+    self.address = dat.Qedit(self, '', x, y, w)
     self.steps = dat.Qedit(self, '10', x, y + 40, s)
     self.usteps = dat.Qedit(self, '0', x + s + 5, y + 40, s)
     self.there = dat.Qedit(self, '', x, y + 80, s)
@@ -71,28 +71,25 @@ class Motorized_Stages(Qw.QMainWindow):
     dat.Qbutton(self, self.scan_file_open, 'Open', x, y + 40, w)
     dat.Qbutton(self, self.operation, 'Operation', x + w + 10, y + 40, w)
 
-    self.address = self.get_device(0)
+    self.axis = Standa.Stage(0)
     self.data = []
 
-  def get_device(self, address):
-    axis = Standa.Stage(address)
-    self.addr.setText(str(axis.port))
-    position = axis.get_position()
+  def get_device(self, axis):
+    self.axis = Standa.Stage(axis)
+    self.address.setText(str(self.axis.port))
+    position = self.axis.get_position()
     self.set_position(position)
     self.set_there(position)
     self.set_max_postision(position)
-    axis.close()
 
-    return address
-
-  def axis_linear(self): self.address = self.get_device(0)
-  def axis_xin(self): self.address = self.get_device(1)
-  def axis_yin(self): self.address = self.get_device(2)
-  def axis_zin(self): self.address = self.get_device(3)
-  def axis_xout(self): self.address = self.get_device(4)
-  def axis_yout(self): self.address = self.get_device(5)
-  def axis_zout(self): self.address = self.get_device(6)
-  def axis_vertical(self): self.address = self.get_device(7)
+  def axis_linear(self): self.get_device(0)
+  def axis_xin(self): self.get_device(1)
+  def axis_yin(self): self.get_device(2)
+  def axis_zin(self): self.get_device(3)
+  def axis_xout(self): self.get_device(4)
+  def axis_yout(self): self.get_device(5)
+  def axis_zout(self): self.get_device(6)
+  def axis_vertical(self): self.get_device(7)
 
   def set_device(self):
     self.shift_steps(10)
@@ -115,10 +112,10 @@ class Motorized_Stages(Qw.QMainWindow):
     self.uamax.setText(position[1])
 
   def get_edge(self, there):
-    q, edge, f = Qw.QMessageBox, Standa.edge[self.address], True
+    q, f = Qw.QMessageBox, True
 
-    if abs(there) > edge:
-      s = '최종 위치(' + str(there) + ') > 경계(' + str(edge) + ')'
+    if abs(there) > self.axis.edge:
+      s = '최종 위치(' + str(there) + ') > 경계(' + str(self.axis.edge) + ')'
       t = '경계까지 진행하시겠습니까?'
       a = q.question(self, 'Set Zero', s + ' ' + t, q.Yes | q.No, q.No)
       f = True if a == q.Yes else False
@@ -126,52 +123,40 @@ class Motorized_Stages(Qw.QMainWindow):
     return f
 
   def set_zero(self):
-    axis = Standa.Stage(self.address)
     q = Qw.QMessageBox
     s = '현재 위치를 0으로 설정하시겠습니까?'
     a = q.question(self, 'Set Zero', s, q.Yes | q.No, q.No)
-    if a == q.Yes: axis.set_zero()
-    position = axis.get_position()
+    if a == q.Yes: self.axis.set_zero()
+    position = self.axis.get_position()
     self.set_there(position)
     self.set_position(position)
-    axis.close()
 
   def shift_on(self):
-    axis = Standa.Stage(self.address)
     steps = int(self.steps.text())
-    if self.get_edge(int(axis.get_position()[0]) + steps):
-      axis.shift_on(steps, int(self.usteps.text()))
-      self.set_position(axis.get_position())
-    axis.close()
+    if self.get_edge(int(self.axis.get_position()[0]) + steps):
+      self.axis.shift_on(steps, int(self.usteps.text()))
+      self.set_position(self.axis.get_position())
 
   def move_to(self):
-    axis = Standa.Stage(self.address)
     there = int(self.there.text())
     if self.get_edge(there):
-      axis.move_to(there, int(self.uthere.text()))
-      self.set_position(axis.get_position())
-    axis.close()
+      self.axis.move_to(there, int(self.uthere.text()))
+      self.set_position(self.axis.get_position())
 
   def to_max(self):
-    axis = Standa.Stage(self.address)
     amax = int(self.amax.text())
     if self.get_edge(amax):
-      axis.move_to(amax, int(self.uamax.text()))
-      self.set_position(axis.get_position())
-    axis.close()
+      self.axis.move_to(amax, int(self.uamax.text()))
+      self.set_position(self.axis.get_position())
 
   def go_center(self):
-    axis = Standa.Stage(self.address)
-    axis.move_to(0, 0)
-    self.set_position(axis.get_position())
-    axis.close()
+    self.axis.move_to(0, 0)
+    self.set_position(self.axis.get_position())
 
   def shift_steps(self, steps):
-    axis = Standa.Stage(self.address)
-    if self.get_edge(int(axis.get_position()[0]) + steps):
-      axis.shift_on(steps, 0)
-      self.set_position(axis.get_position())
-    axis.close()
+    if self.get_edge(int(self.axis.get_position()[0]) + steps):
+      self.axis.shift_on(steps, 0)
+      self.set_position(self.axis.get_position())
 
   def p1(self): self.shift_steps(1)
   def n1(self): self.shift_steps(-1)
@@ -193,30 +178,25 @@ class Motorized_Stages(Qw.QMainWindow):
   def n1000(self): self.shift_steps(-1000)
 
   def chip_align(self):
-    self.address = 0
+    self.axis = Standa.Stage(0)
     self.shift_steps(4162)
     self.shift_steps(-4162)
-    print('Done.')
 
   def find_max(self):
-    axis = Standa.Stage(self.address)
+    print('Find ' + Standa.title[self.axis.address] + ' max')
     steps = int(self.scan.text())
     microsteps = int(self.uscan.text())
-    steps, microsteps = axis.scanner(steps, microsteps, True)
-    self.set_position(axis.get_position())
+    steps, microsteps = self.axis.scanner(steps, microsteps, True)
+    self.set_position(self.axis.get_position())
     self.set_max_postision([steps, microsteps])
-    axis.close()
-    print('Done.')
 
-  def go_to_max(self, address):
-    axis = Standa.Stage(address)
+  def go_to_max(self):
+    print('Go to ' + Standa.title[self.axis.address] + 'max')
     steps = int(self.scan.text())
     microsteps = int(self.uscan.text())
-    steps, microsteps = axis.go_scan_max(steps, microsteps)
+    steps, microsteps = self.axis.go_scan_max(steps, microsteps)
     self.set_position([steps, microsteps])
     self.set_max_postision([steps, microsteps])
-    axis.close()
-    print('Done.')
 
   def fiber_align(self):
     steps = int(self.scan.text())
@@ -225,25 +205,18 @@ class Motorized_Stages(Qw.QMainWindow):
       print(Standa.title[i])
       axis = Standa.Stage(i)
       axis.go_scan_max(steps, microsteps)
-      axis.close()
-    print('Done.')
 
   def operation(self):
-    n, x, y = 2, [], []
+    x, y = [], []
 
-    for i in range(n):
+    linear = Standa.Stage(0)
+    for i in range(2):
       self.fiber_align()
-
       x.append(i)
-
       pd = Standa.photodiode()
       y.append(pd.read())
       pd.close()
-
-      if i < n - 1:
-        linear = Standa.Stage(0)
-        linear.shift_on(40, 0)
-        linear.close()
+      linear.shift_on(40, 0)
 
     print(x, y)
 

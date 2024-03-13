@@ -5,7 +5,7 @@ import libximc.highlevel as ximc
 port = [5, 12, 10, 14, 11, 9, 13, 15]
 edge = [20000, 800, 800, 800, 800, 800, 800, 1300]
 title = ['linear', 'Xin', 'Yin', 'Zin', 'Xout', 'Yout', 'Zout', 'vertical']
-stop = 50
+stop = 100
 
 
 class photodiode:
@@ -25,53 +25,68 @@ class photodiode:
 
 class Stage:
   def __init__(self, address):
+    self.address = address
     self.port = port[address]
     self.edge = edge[address]
 
     self.device = ximc.Axis(r'xi-com:\\.\COM' + str(port[address]))
-    self.device.open_device()
-
-  def close(self):
-    self.device.close_device()
 
   def get_position(self):
+    self.device.open_device()
     position = str(self.device.get_position()).split()
+    self.device.close_device()
 
     return [position[1], position[3]]
 
   def get_speed(self):
+    self.device.open_device()
     m = self.device.get_move_settings()
+    self.device.close_device()
+
     return str(m.Speed)
 
   def set_speed(self, speed):
     if speed < 1: speed = 1
     if speed > 2000: speed = 2000
 
+    self.device.open_device()
     m = self.device.get_move_settings()
     m.Speed = speed
     self.device.set_move_settings(m)
+    self.device.close_device()
 
   def set_zero(self):
+    self.device.open_device()
     self.device.command_zero()
+    self.device.close_device()
 
   def get_edges(self):
+    self.device.open_device()
     edges = str(self.device.get_edges_settings()).split()
+    self.device.close_device()
+
     return [edges[5], edges[9]]
 
   def go_home(self):
     self.set_speed(1000)
+    self.device.open_device()
     self.device.command_home()
     self.device.command_wait_for_stop(stop)
+    self.device.close_device()
 
   def move_to(self, there, microsteps):
     self.set_speed(abs(there - int(self.get_position()[0])) * 2)
+    self.device.open_device()
     self.device.command_move(there, microsteps)
     self.device.command_wait_for_stop(stop)
+    self.device.close_device()
 
   def shift_on(self, steps, microsteps):
     self.set_speed(abs(steps) * 2)
+    self.device.open_device()
     self.device.command_movr(steps, microsteps)
     self.device.command_wait_for_stop(stop)
+    self.device.close_device()
 
   def scanner(self, steps, microsteps, show):
     x, y, a, b = [i for i in range(33)], [], [], []
