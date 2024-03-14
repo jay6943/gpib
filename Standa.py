@@ -1,27 +1,10 @@
 import dev
-import matplotlib.pyplot as plt
 import libximc.highlevel as ximc
 
 port = [5, 12, 10, 14, 11, 9, 13, 15]
 edge = [20000, 800, 800, 800, 800, 800, 800, 1300]
 title = ['linear', 'Xin', 'Yin', 'Zin', 'Xout', 'Yout', 'Zout', 'vertical']
-stop = 50
-
-
-class photodiode:
-  def __init__(self):
-    self.pd = dev.Keysight_81630B_photodiode()
-    self.pd.write('*CLS')
-    self.pd.write('INIT1:CHAN1:CONT 0')
-    self.pd.write('INIT1:CHAN1:IMM')
-
-  def read(self):
-    return self.pd.read(1, 1)
-
-  def close(self):
-    self.pd.write('INIT1:CHAN1:CONT 1')
-    self.pd.close()
-
+stop = 100
 
 class Stage:
   def __init__(self, address):
@@ -44,7 +27,7 @@ class Stage:
     return str(m.Speed)
 
   def set_speed(self, speed):
-    if speed < 1: speed = 1
+    if speed < 10: speed = 10
     if speed > 2000: speed = 2000
 
     m = self.device.get_move_settings()
@@ -73,42 +56,29 @@ class Stage:
     self.device.command_movr(steps, microsteps)
     self.device.command_wait_for_stop(stop)
 
-  def scanner(self, steps, microsteps, show):
-    x, y, a, b = [i for i in range(33)], [], [], []
+  def find_max(self, steps, microsteps):
+    n, y, a, b = 20, [], [], []
+    x = [i for i in range(2 * n + 1)]
+    macro = -steps * n
+    micro = divmod(microsteps * n, 256)
 
-    pd = photodiode()
+    self.shift_on(macro - micro[0], -micro[1])
 
-    start = self.get_position()
-    self.shift_on(-2, 0)
+    pd = dev.Keysight_81630B_photodiode()
     for i in x:
       position = self.get_position()
-      power = pd.read()
+      power = pd.read(1, 1)
       y.append(power)
       a.append(position[0])
       b.append(position[1])
       print(i, position, power)
       self.shift_on(steps, microsteps)
     imax = y.index(max(y))
-    self.move_to(int(start[0]), int(start[1]))
-
+    self.move_to(int(a[imax]), int(b[imax]))
+    ymax = pd.read(1, 1)
     pd.close()
 
-    if show:
-      plt.figure(dpi=120)
-      plt.plot(x, y)
-      plt.xlabel('Axis position')
-      plt.ylabel('Measured power (dBm)')
-      plt.grid()
-      plt.savefig('../data/scanning.png')
-      plt.show()
-
-    return a[imax], b[imax]
-
-  def go_scan_max(self, steps, microsteps):
-    steps, microsteps = self.scanner(steps, microsteps, 0)
-    self.move_to(int(steps), int(microsteps))
-
-    return steps, microsteps
+    return a[imax], b[imax], ymax
 
 
 if __name__ == '__main__':

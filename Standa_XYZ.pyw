@@ -5,6 +5,7 @@ import Standa
 import numpy as np
 import PyQt5.QtGui as Qg
 import PyQt5.QtWidgets as Qw
+import matplotlib.pyplot as plt
 
 class Motorized_Stages(Qw.QMainWindow):
 
@@ -13,7 +14,7 @@ class Motorized_Stages(Qw.QMainWindow):
 
     self.setWindowTitle('XYZ Scanning')
     self.setWindowIcon(Qg.QIcon('jk.png'))
-    self.setGeometry(2800, 500, 490, 490)
+    self.setGeometry(1500, 200, 490, 490)
 
     x, y, w, m, s = 0, 60, 100, 40, 45
     dat.Qlabel(self, 'Input Axis', x + 70, y - 90, m * 3 + 20)
@@ -28,24 +29,21 @@ class Motorized_Stages(Qw.QMainWindow):
     dat.Qbutton(self, self.axis_vertical, 'V', x + 410, y - 50, m)
     self.addr = dat.Qedit(self, '', x, y, w)
     self.steps = dat.Qedit(self, '10', x, y + 40, s)
-    self.usteps = dat.Qedit(self, '0', x + s + 5, y + 40, s)
+    self.micro_steps = dat.Qedit(self, '0', x + s + 5, y + 40, s)
     self.there = dat.Qedit(self, '', x, y + 80, s)
-    self.uthere = dat.Qedit(self, '', x + s + 5, y + 80, s)
+    self.micro_there = dat.Qedit(self, '', x + s + 5, y + 80, s)
     self.scan = dat.Qedit(self, '0', x, y + 200, s)
-    self.uscan = dat.Qedit(self, '32', x + s + 5, y + 200, s)
-    self.amax = dat.Qedit(self, '', x, y + 240, s)
-    self.uamax = dat.Qedit(self, '', x + s + 5, y + 240, s)
+    self.micro_scan = dat.Qedit(self, '64', x + s + 5, y + 200, s)
     dat.Qbutton(self, self.set_device, 'Set', x + w + 10, y, w)
     dat.Qbutton(self, self.shift_on, 'Shift on', x + w + 10, y + 40, w)
     dat.Qbutton(self, self.move_to, 'Move to', x + w + 10, y + 80, w)
     dat.Qbutton(self, self.set_zero, 'Set Zero', x, y + 120, w)
     dat.Qbutton(self, self.go_center, 'Center', x + w + 10, y + 120, w)
     dat.Qbutton(self, self.find_max, 'Find Max', x + w + 10, y + 200, w)
-    dat.Qbutton(self, self.to_max, 'to Max', x + w + 10, y + 240, w)
 
     x, y, w = 240, 60, 100
     self.position = dat.Qedit(self, '', x, y, w)
-    self.uposition = dat.Qedit(self, '', x + w + 10, y, w)
+    self.micro_position = dat.Qedit(self, '', x + w + 10, y, w)
     dat.Qbutton(self, self.p1, '+1', x, y + 40, w)
     dat.Qbutton(self, self.n1, '-1', x + w + 10, y + 40, w)
     dat.Qbutton(self, self.p2, '+2', x, y + 80, w)
@@ -68,11 +66,12 @@ class Motorized_Stages(Qw.QMainWindow):
     x, y, w = 0, 380, 100
     dat.Qbutton(self, self.fiber_align, 'Fiber align', x, y, w)
     dat.Qbutton(self, self.chip_align, 'Chip align', x + w + 10, y, w)
-    dat.Qbutton(self, self.scan_file_open, 'Open', x, y + 40, w)
+    dat.Qbutton(self, self.scan_file, 'Open', x, y + 40, w)
     dat.Qbutton(self, self.operation, 'Operation', x + w + 10, y + 40, w)
 
     self.address = self.get_device(0)
-    self.data = []
+    self.folder = dat.get_folder()
+    self.align_data = []
 
   def get_device(self, address):
     axis = Standa.Stage(address)
@@ -80,7 +79,6 @@ class Motorized_Stages(Qw.QMainWindow):
     position = axis.get_position()
     self.set_position(position)
     self.set_there(position)
-    self.set_max_postision(position)
     axis.close()
 
     return address
@@ -100,19 +98,15 @@ class Motorized_Stages(Qw.QMainWindow):
 
   def set_position(self, position):
     self.position.setText(position[0])
-    self.uposition.setText(position[1])
+    self.micro_position.setText(position[1])
 
   def set_there(self, there):
     self.there.setText(there[0])
-    self.uthere.setText(there[1])
+    self.micro_there.setText(there[1])
 
   def set_scan_postision(self, position):
     self.scan.setText(position[0])
-    self.uscan.setText(position[1])
-
-  def set_max_postision(self, position):
-    self.amax.setText(position[0])
-    self.uamax.setText(position[1])
+    self.micro_scan.setText(position[1])
 
   def get_edge(self, there):
     q, edge, f = Qw.QMessageBox, Standa.edge[self.address], True
@@ -140,7 +134,7 @@ class Motorized_Stages(Qw.QMainWindow):
     axis = Standa.Stage(self.address)
     steps = int(self.steps.text())
     if self.get_edge(int(axis.get_position()[0]) + steps):
-      axis.shift_on(steps, int(self.usteps.text()))
+      axis.shift_on(steps, int(self.micro_steps.text()))
       self.set_position(axis.get_position())
     axis.close()
 
@@ -148,15 +142,7 @@ class Motorized_Stages(Qw.QMainWindow):
     axis = Standa.Stage(self.address)
     there = int(self.there.text())
     if self.get_edge(there):
-      axis.move_to(there, int(self.uthere.text()))
-      self.set_position(axis.get_position())
-    axis.close()
-
-  def to_max(self):
-    axis = Standa.Stage(self.address)
-    amax = int(self.amax.text())
-    if self.get_edge(amax):
-      axis.move_to(amax, int(self.uamax.text()))
+      axis.move_to(there, int(self.micro_there.text()))
       self.set_position(axis.get_position())
     axis.close()
 
@@ -201,60 +187,71 @@ class Motorized_Stages(Qw.QMainWindow):
   def find_max(self):
     axis = Standa.Stage(self.address)
     steps = int(self.scan.text())
-    microsteps = int(self.uscan.text())
-    steps, microsteps = axis.scanner(steps, microsteps, True)
+    micro = int(self.micro_scan.text())
+    steps, micro, pwr = axis.find_max(steps, micro)
     self.set_position(axis.get_position())
-    self.set_max_postision([steps, microsteps])
     axis.close()
-    print('Done.')
 
-  def go_to_max(self, address):
-    axis = Standa.Stage(address)
-    steps = int(self.scan.text())
-    microsteps = int(self.uscan.text())
-    steps, microsteps = axis.go_scan_max(steps, microsteps)
-    self.set_position([steps, microsteps])
-    self.set_max_postision([steps, microsteps])
-    axis.close()
-    print('Done.')
+    print(Standa.title[self.address], end=' = ')
+    print(str(pwr) + 'dBm at (' + steps + ', ' + micro + ')')
 
   def fiber_align(self):
     steps = int(self.scan.text())
-    microsteps = int(self.uscan.text())
+    micro = int(self.micro_scan.text())
+    max_power = -100
     for i in [2, 3, 5, 6]:
       print(Standa.title[i])
       axis = Standa.Stage(i)
-      axis.go_scan_max(steps, microsteps)
+      steps, micro, pwr = axis.find_max(steps, micro)
+      if pwr > max_power: max_power = pwr
       axis.close()
-    print('Done.')
+
+    return max_power
 
   def operation(self):
     n, x, y = 2, [], []
 
     for i in range(n):
-      self.fiber_align()
-
-      x.append(i)
-
-      pd = Standa.photodiode()
-      y.append(pd.read())
-      pd.close()
+      x.append(round(0.4 - i * 0.02, 2))
+      y.append(self.fiber_align())
 
       if i < n - 1:
         linear = Standa.Stage(0)
         linear.shift_on(40, 0)
         linear.close()
 
-    print(x, y)
+      print(np.array([x, y]).transpose())
 
-  def scan_file_open(self):
-    fp = Qw.QFileDialog.getOpenFileName(self, '', dat.get_folder(), '*.txt')[0]
-    cd = os.path.dirname(fp)
+      if i > 0:
+        plt.figure(dpi=120)
+        plt.plot(x, y)
+        plt.xlabel('Tip width ($\mu$m)')
+        plt.ylabel('Measured power (dBm)')
+        plt.grid()
+        plt.savefig('../data/scanning.png')
+        plt.close()
 
-    if fp:
-      dat.set_folder(cd)
-      self.data = np.loadtxt(fp, delimiter=',')
-      print(self.data)
+  def scan_file(self):
+    f = Qw.QFileDialog.getOpenFileName(self, '', dat.get_folder(), '*.txt')
+
+    if f[0]:
+      fp = open(f[0])
+      data = fp.read()
+      data = data.split('\n')
+      self.align_data = []
+      for i in range(len(data)):
+        self.align_data.append(data[i].split(','))
+        print(self.align_data[i])
+      fp.close()
+
+      self.folder = os.path.dirname(f[0])
+      dat.set_folder(self.folder)
+
+  def set_folder(self):
+    cd = Qw.QFileDialog.getExistingDirectory(self, '', dat.get_folder())
+    self.folder = cd
+    dat.set_folder(self.folder)
+    print(self.folder)
 
 
 if __name__ == '__main__':
