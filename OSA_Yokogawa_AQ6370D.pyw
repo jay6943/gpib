@@ -1,5 +1,6 @@
 import os
 import sys
+import cfg
 import dat
 import dev
 import numpy as np
@@ -162,15 +163,15 @@ class Yokogawa_AQ6370D(Qw.QMainWindow):
     if self.saving.isChecked(): self.OnSave()
 
   def OnSave(self):
-    filename = Qw.QFileDialog.getSaveFileName(self, '', dat.get_folder(), '*.txt')[0]
-    folder = os.path.dirname(filename)
+    f = Qw.QFileDialog.getSaveFileName(self, '', cfg.get_folder(), '*.txt')
+    folder = os.path.dirname(f[0])
 
-    if filename:
+    if f[0]:
       data = np.array([self.x, self.y])
-      np.savetxt(filename, data.transpose(), fmt='%.3f')
-      dat.set_folder(folder)
+      np.savetxt(f[0], data.transpose(), fmt='%.3f')
+      cfg.set_folder(folder)
       if self.figure.isChecked():
-        fp = os.path.splitext(filename)
+        fp = os.path.splitext(f[0])
         print(fp[0])
         plt.savefig(fp[0] + '.png')
 

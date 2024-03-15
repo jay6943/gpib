@@ -1,6 +1,6 @@
 import sys
+import cfg
 import dev
-import dat
 import time
 import numpy as np
 
@@ -39,7 +39,7 @@ def scan(filename):
     ldc.close()
     opm.close()
 
-    fp = open(dat.getfolder() + filename + '.txt', 'w')
+    fp = open(cfg.get_folder() + filename + '.txt', 'w')
 
     for i in range(len(x)):
         fp.write(str(x[i]) + '\t')

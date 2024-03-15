@@ -5,7 +5,6 @@ import PyQt5.QtWidgets as Qw
 import thorlabs_apt as apt
 
 class App(Qw.QWidget):
-
   def __init__(self):
     super().__init__()
     
@@ -45,6 +44,9 @@ class App(Qw.QWidget):
     self.On6 = dat.Qedit(self, '10.4', 120, y+240, dy)
     self.On7 = dat.Qedit(self, '20', 120, y+280, dy)
 
+    self.stage = None
+    self.x = 0
+
   def OnConn(self):
     self.prt.setText('')
     self.stage = apt.Motor(45288094)
@@ -54,56 +56,26 @@ class App(Qw.QWidget):
     self.x = self.x + sign * float(text)
     self.stage.move_to(round(self.x, 3))
 
-  def OnMove(self):
-    self.OnStep(self.txt.text(), 1)
+  def OnMove(self): self.OnStep(self.txt.text(), 1)
+  def OnHome(self): self.stage.move_home(True)
 
-  def OnHome(self):
-    self.stage.move_home(True)
+  def On1p(self): self.OnStep(self.On1.text(), 1)
+  def On1n(self): self.OnStep(self.On1.text(), -1)
+  def On2p(self): self.OnStep(self.On2.text(), 1)
+  def On2n(self): self.OnStep(self.On2.text(), -1)
+  def On3p(self): self.OnStep(self.On3.text(), 1)
+  def On3n(self): self.OnStep(self.On3.text(), -1)
+  def On4p(self): self.OnStep(self.On4.text(), 1)
+  def On4n(self): self.OnStep(self.On4.text(), -1)
+  def On5p(self): self.OnStep(self.On5.text(), 1)
+  def On5n(self): self.OnStep(self.On5.text(), -1)
+  def On6p(self): self.OnStep(self.On6.text(), 1)
+  def On6n(self): self.OnStep(self.On6.text(), -1)
+  def On7p(self): self.OnStep(self.On7.text(), 1)
+  def On7n(self): self.OnStep(self.On7.text(), -1)
 
-  def On1p(self):
-    self.OnStep(self.On1.text(), 1)
 
-  def On1n(self):
-    self.OnStep(self.On1.text(), -1)
-
-  def On2p(self):
-    self.OnStep(self.On2.text(), 1)
-
-  def On2n(self):
-    self.OnStep(self.On2.text(), -1)
-
-  def On3p(self):
-    self.OnStep(self.On3.text(), 1)
-
-  def On3n(self):
-    self.OnStep(self.On3.text(), -1)
-
-  def On4p(self):
-    self.OnStep(self.On4.text(), 1)
-
-  def On4n(self):
-    self.OnStep(self.On4.text(), -1)
-
-  def On5p(self):
-    self.OnStep(self.On5.text(), 1)
-
-  def On5n(self):
-    self.OnStep(self.On5.text(), -1)
-
-  def On6p(self):
-    self.OnStep(self.On6.text(), 1)
-
-  def On6n(self):
-    self.OnStep(self.On6.text(), -1)
-
-  def On7p(self):
-    self.OnStep(self.On7.text(), 1)
-
-  def On7n(self):
-    self.OnStep(self.On7.text(), -1)
-
-if __name__ ==  '__main__':
-  
+if __name__ == '__main__':
   app = Qw.QApplication(sys.argv)
   MyWindow = App()
   MyWindow.show()

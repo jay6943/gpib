@@ -4,10 +4,9 @@ import dev
 import PyQt5.QtGui as Qg
 import PyQt5.QtWidgets as Qw
 
+
 class App(Qw.QWidget):
-
   def __init__(self):
-
     super().__init__()
     
     self.setWindowTitle('Optical Power Meter')
@@ -30,8 +29,8 @@ class App(Qw.QWidget):
     self.dbm2.setText(str(opm.query(2, 2)))
     opm.close()
 
-if __name__ ==  '__main__':
-  
+
+if __name__ == '__main__':
   app = Qw.QApplication(sys.argv)
   MyWindow = App()
   MyWindow.show()

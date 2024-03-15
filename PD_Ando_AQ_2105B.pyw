@@ -1,13 +1,14 @@
 import os
 import sys
+import cfg
 import dat
 import dev
 import numpy as np
 import PyQt5.QtGui as Qg
 import PyQt5.QtWidgets as Qw
 
-class Ando_AQ_2105B(Qw.QWidget):
 
+class Ando_AQ_2105B(Qw.QWidget):
   def __init__(self):
     super().__init__()
     
@@ -44,7 +45,7 @@ class Ando_AQ_2105B(Qw.QWidget):
 
   def OnSave(self):
 
-    fp = Qw.QFileDialog.getSaveFileName(self, '', dat.get_folder(), '*.txt')[0]
+    fp = Qw.QFileDialog.getSaveFileName(self, '', cfg.get_folder(), '*.txt')[0]
 
     data = []
 
@@ -55,10 +56,10 @@ class Ando_AQ_2105B(Qw.QWidget):
       np.savetxt(fp, np.array(data), fmt='%.3f')
 
       folder = os.path.dirname(fp)
-      if folder != dat.get_folder(): dat.get_folder()
+      if folder != cfg.get_folder(): cfg.get_folder()
+
 
 if __name__ == '__main__':
-  
   app = Qw.QApplication(sys.argv)
   window = Ando_AQ_2105B()
   window.show()

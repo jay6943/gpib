@@ -27,9 +27,7 @@ def current_off():
 
 
 class App(Qw.QWidget):
-
   def __init__(self):
-
     super().__init__()
     
     self.setWindowTitle('SLD')
@@ -47,8 +45,8 @@ class App(Qw.QWidget):
   def OnCurrent(self): write('current=' + self.current.text())
   def OnTEC(self): write('target=' + self.tec.text())
 
-if __name__ ==  '__main__':
-  
+
+if __name__ == '__main__':
   app = Qw.QApplication(sys.argv)
   MyWindow = App()
   MyWindow.show()

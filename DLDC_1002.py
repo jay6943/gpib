@@ -1,6 +1,6 @@
 import dev
 
-ldc = dev.Digital_Laser_Diode_Controller_1002()
+ldc = dev.E_Tek_DLDC_1002()
 
 ldc.write('RES')
 ldc.write('SCH1')

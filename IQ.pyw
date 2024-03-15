@@ -1,5 +1,6 @@
 import os
 import sys
+import cfg
 import dev
 import dat
 import time
@@ -198,7 +199,7 @@ class IQ_measurement(Qw.QMainWindow):
     plt.show()
 
   def OnSave(self):
-    fp = Qw.QFileDialog.getSaveFileName(self, '', dat.get_folder(), '*.txt')[0]
+    fp = Qw.QFileDialog.getSaveFileName(self, '', cfg.get_folder(), '*.txt')[0]
     folder = os.path.dirname(fp)
 
     if fp:
@@ -206,7 +207,7 @@ class IQ_measurement(Qw.QMainWindow):
       np.savetxt(fp, data.transpose(), fmt='%.3f')
       filename = os.path.splitext(fp)
       plt.savefig(filename[0] + '.png')
-      dat.set_folder(folder)
+      cfg.set_folder(folder)
 
 if __name__ == '__main__':
   app = Qw.QApplication(sys.argv)

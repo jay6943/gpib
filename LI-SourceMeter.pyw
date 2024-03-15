@@ -1,4 +1,5 @@
 import sys
+import cfg
 import dev
 import dat
 import time
@@ -7,10 +8,40 @@ import PyQt5.QtGui as Qg
 import PyQt5.QtWidgets as Qw
 import matplotlib.pyplot as plt
 
+
+def write(command):
+  mbl = dev.usbserial('COM3')
+  mbl.write(command)
+  time.sleep(0.1)
+  mbl.close()
+
+
+def read(command):
+  mbl = dev.usbserial('COM3')
+  data = mbl.read(command).decode('utf-8')
+  mbl.close()
+
+  icut = 0
+  for i in range(len(data)):
+    if data[i] == ' ': icut = i
+
+  return str(float(data[icut+1:]))
+
+
+def OnCurrent():
+  ksm = dev.ivs()
+  ksm.write('smua.source.output = smua.OUTPUT_ON')
+  ksm.close()
+
+
+def OffCurrent():
+  ksm = dev.ivs()
+  ksm.write('smua.source.output = smua.OUTPUT_OFF')
+  ksm.close()
+
+
 class App(Qw.QWidget):
-
   def __init__(self):
-
     super().__init__()
     
     ksm = dev.ivs()
@@ -39,9 +70,9 @@ class App(Qw.QWidget):
     self.current = dat.Qedit(self, '0', 310, 0, 90)
     self.tec = dat.Qedit(self, temperature, 310, 40, 90)
 
-    dat.Qlabel(self, 'Start', 130, 80)
-    dat.Qlabel(self, 'Stop', 200, 80)
-    dat.Qlabel(self, 'Step', 270, 80)
+    dat.Qlabel(self, 'Start', 130, 80, 100)
+    dat.Qlabel(self, 'Stop', 200, 80, 100)
+    dat.Qlabel(self, 'Step', 270, 80, 100)
 
     dat.Qbutton(self, self.LIcurve, 'L-I Curve (mA)', 0, 110, 100)
 
@@ -51,23 +82,10 @@ class App(Qw.QWidget):
 
     dat.Qbutton(self, self.OnSave, 'Save', 320, 110, 80)
 
-  def write(self, command):
-    mbl = dev.usbserial('COM3')
-    mbl.write(command)
-    time.sleep(0.1)
-    mbl.close()
+    self.x = []
+    self.y = []
 
-  def read(self, command):
-    mbl = dev.usbserial('COM3')
-    data = mbl.read(command).decode('utf-8')
-    mbl.close()
-
-    for i in range(len(data)):
-      if data[i] == ' ': icut = i
-
-    return str(float(data[icut+1:]))
-
-  def LIcurve(self, ch):
+  def LIcurve(self):
 
     ksm = dev.ivs()
     opm = dev.opm(15)
@@ -121,16 +139,6 @@ class App(Qw.QWidget):
     ksm.write('smua.source.leveli = ' + str(round(current, 4)))
     ksm.close()
 
-  def OnCurrent(self):
-    ksm = dev.ivs()
-    ksm.write('smua.source.output = smua.OUTPUT_ON')
-    ksm.close()
-
-  def OffCurrent(self):
-    ksm = dev.ivs()
-    ksm.write('smua.source.output = smua.OUTPUT_OFF')
-    ksm.close()
-
   def SetTEC(self):
     self.write('tec:temp:value ' + self.tec.text())
 
@@ -141,11 +149,13 @@ class App(Qw.QWidget):
     self.write('tec:start off')
 
   def OnSave(self):
-    fileName = Qw.QFileDialog.getSaveFileName(self, '', dat.getfolder(), '*.txt')[0]
-    if fileName: dat.save(fileName, self.x, self.y)
+    f = Qw.QFileDialog.getSaveFileName(self, '', cfg.get_folder(), '*.txt')
 
-if __name__ ==  '__main__':
-    
+    if f[0]:
+      np.savetxt(f[0], np.array([self.x, self.y]).transpose())
+
+
+if __name__ == '__main__':
   app = Qw.QApplication(sys.argv)
   MyWindow = App()
   MyWindow.show()

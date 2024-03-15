@@ -1,12 +1,11 @@
-import os
-import cfg
-import numpy as np
 import PyQt5.QtGui as Qg
 import PyQt5.QtCore as Qc
 import PyQt5.QtWidgets as Qw
 
+
 def QMessage(self, text):
   Qw.QMessageBox.about(self, 'Receiver', text)
+
 
 def Qlabel(self, text, x, y, size):
   label = Qw.QLabel(self)
@@ -16,12 +15,14 @@ def Qlabel(self, text, x, y, size):
   label.setAlignment(Qc.Qt.AlignCenter)
   label.setFont(Qg.QFont('Calibri'))
 
+
 def Qbutton(self, event, text, x, y, size):
   button = Qw.QPushButton(text, self)
   button.clicked.connect(event)
   button.resize(size, 30)
   button.move(x + 20, y + 20)
   button.setFont(Qg.QFont('Calibri'))
+
 
 def Qedit(self, text, x, y, size):
   edit = Qw.QLineEdit(self)
@@ -33,6 +34,7 @@ def Qedit(self, text, x, y, size):
 
   return edit
 
+
 def Qcheck(self, text, x, y, size):
   check = Qw.QCheckBox(text, self)
   check.resize(size, 30)
@@ -41,6 +43,7 @@ def Qcheck(self, text, x, y, size):
 
   return check
 
+
 def Qcombo(self, x, y, size):
   combo = Qw.QComboBox(self)
   combo.resize(size, 30)
@@ -48,22 +51,3 @@ def Qcombo(self, x, y, size):
   combo.setFont(Qg.QFont('Calibri'))
 
   return combo
-
-def get_folder():
-  fp = open(cfg.temps)
-  data = fp.read()
-  data = data.replace('\n', '')
-  fp.close()
-
-  return data
-
-def set_folder(folder):
-  fp = open(cfg.temps, 'w')
-  fp.write(folder)
-  fp.close()
-
-def arange(xmin, xmax, step):
-  return np.arange(xmin, xmax + step * 0.5, step)
-
-if __name__ == '__main__':
-  print(os.listdir(get_folder()))

@@ -4,8 +4,8 @@ import dev
 import PyQt5.QtGui as Qg
 import PyQt5.QtWidgets as Qw
 
-class Keysight_N7711A(Qw.QWidget):
 
+class Keysight_N7711A(Qw.QWidget):
   def __init__(self):
     super().__init__()
 
@@ -49,6 +49,7 @@ class Keysight_N7711A(Qw.QWidget):
     tld.write('POW ' + self.power.text() + 'DBM')
     tld.write('POW:STAT 0')
     tld.close()
+
 
 if __name__ == '__main__':
   app = Qw.QApplication(sys.argv)
