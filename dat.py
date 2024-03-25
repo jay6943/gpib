@@ -35,6 +35,17 @@ def Qedit(self, text, x, y, size):
   return edit
 
 
+def Qeditbig(self, text, x, y, size):
+  edit = Qw.QLineEdit(self)
+  edit.resize(size, 50)
+  edit.move(x + 20, y + 20)
+  edit.setText(text)
+  edit.setAlignment(Qc.Qt.AlignCenter)
+  edit.setFont(Qg.QFont('Consolas', 24))
+
+  return edit
+
+
 def Qcheck(self, text, x, y, size):
   check = Qw.QCheckBox(text, self)
   check.resize(size, 30)
