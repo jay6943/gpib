@@ -202,28 +202,17 @@ class Keysight_81630B_photodiode:
     self.device.close()
 
 
-class opm:
-  def __init__(self, gpib):
+class Viavi_Power_Meter_mOPM_C1:
+  def __init__(self):
     rm = visa.ResourceManager()
-    self.device = rm.open_resource('GPIB0::' + str(gpib) + '::INSTR')
+    self.device = rm.open_resource('TCPIP0::192.168.0.107::inst0::INSTR')
 
   def write(self, command):
     self.device.write(command)
 
-  def query(self, slot, ch):
-    command = 'FETCH' + str(slot) + ':CHAN' + str(ch) + ':POW?'
-    return float(self.device.query(command))
+  def query(self, command):
+    return self.device.query(command)
 
-  def read(self, slot, ch):
-    command = 'READ' + str(slot) + ':CHAN' + str(ch) + ':POW?'
-    return float(self.device.query(command))
-
-  def dBm(self, slot, ch):
-    self.write('SENS' + str(slot) + ':CHAN' + str(ch) + ':POW:UNIT 0')
-
-  def mW(self, slot, ch):
-    self.write('SENS' + str(slot) + ':CHAN' + str(ch) + ':POW:UNIT 1')
-      
   def close(self):
     self.device.close()
 
@@ -405,21 +394,4 @@ class ivs:
 
 
 if __name__ == '__main__':
-  # search()
-
-  ld = E_Tek_DLDC_1002()
-  print(ld.query('*IDN?'))
-
-  '''
-  iq = dso(False)
-  iq.write('TIM:FORM YT')
-  iq.write('TIM:SCAL ' + str(float(1000 * 1e-6)))
-  iq.write('WAV:POINTS:MODE RAW')
-  iq.write('WAV:POINTS ' + str(100))
-  iq.write('WAV:FORM ASCII')
-  iq.write('SINGLE')
-
-  time.sleep(2)
-
-  data = iq.getwave(1)
-  '''
+  search()
