@@ -163,7 +163,7 @@ class Yokogawa_AQ6370D(Qw.QMainWindow):
     if self.saving.isChecked(): self.OnSave()
 
   def OnSave(self):
-    f = Qw.QFileDialog.getSaveFileName(self, '', cfg.get_folder(), '*.txt')
+    f = Qw.QFileDialog.getSaveFileName(self, '', cfg.get_folder(), '*.dat')
     folder = os.path.dirname(f[0])
 
     if f[0]:
