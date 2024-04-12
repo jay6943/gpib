@@ -8,6 +8,7 @@ for cd in cdir[:-1]: root += cd + '/'
 works = root[0] + root[1] + '/data/SiN/'
 temps = root + 'data/cfg.txt'
 
+
 def mkdir(folder):
   folders = folder.split('/')
   folder = works
@@ -31,6 +32,7 @@ def set_folder(folder):
   fp = open(temps, 'w')
   fp.write(folder)
   fp.close()
+
 
 def get_gpib():
   fp = open(root + 'data/gpib.txt')
