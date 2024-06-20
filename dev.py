@@ -204,6 +204,16 @@ class Keysight_81630B_photodiode:
     self.device.close()
 
 
+class Keysight_81630B_attenuator:
+  def __init__(self):
+    rm = visa.ResourceManager()
+    self.device = rm.open_resource('TCPIP0::192.168.0.25::inst0::INSTR')
+    self.device.timeout = 5000
+
+  def close(self):
+    self.device.close()
+
+
 class Viavi_Power_Meter_mOPM_C1:
   def __init__(self):
     rm = visa.ResourceManager()

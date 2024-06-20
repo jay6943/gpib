@@ -25,7 +25,7 @@ class IQ_measurement(Qw.QMainWindow):
     self.t = None
     self.phase = None
 
-    self.setGeometry(500, 500, 260, 390)
+    self.setGeometry(500, 500, 260, 430)
     self.setWindowIcon(Qg.QIcon('jk.png'))
     self.setWindowTitle('IQ')
 
@@ -35,20 +35,22 @@ class IQ_measurement(Qw.QMainWindow):
     dat.Qbutton(self, OnStop, 'Stop', 120, 80, 100)
     dat.Qbutton(self, self.OnTY, 'TY-plot', 0, 120, 100)
     dat.Qbutton(self, self.OnXY, 'XY-plot', 120, 120, 100)
-    
+
+    self.var = dat.Qedit(self, '', 0, 160, 100)
+    self.amp1 = dat.Qedit(self, '', 0, 200, 100)
+    self.amp2 = dat.Qedit(self, '', 0, 240, 100)
+    self.off1 = dat.Qedit(self, '', 0, 280, 100)
+    self.off2 = dat.Qedit(self, '', 0, 320, 100)
+    self.att = dat.Qedit(self, '', 0, 360, 100)
+    self.fit = dat.Qedit(self, '', 80, 40, 100)
+
     dat.Qbutton(self, self.OnTime, 'Time', 120, 160, 100)
-    dat.Qbutton(self, self.OnAmp, 'Ch 1 (mV/Div)', 120, 200, 100)
+    dat.Qbutton(self, self.OnAmp, 'Ch 1 && 2 (mV/Div)', 120, 200, 100)
     dat.Qbutton(self, self.OnAmp2, 'Ch 2 (mV/Div)', 120, 240, 100)
     dat.Qbutton(self, self.OnOff1, 'Offset 1 (mV)', 120, 280, 100)
     dat.Qbutton(self, self.OnOff2, 'Offset 2 (mV)', 120, 320, 100)
+    dat.Qbutton(self, self.OnAtt, 'Att. (dB)', 120, 360, 100)
 
-    self.var = dat.Qedit(self, '0.01', 0, 160, 100)
-    self.amp1 = dat.Qedit(self, '', 0, 200, 100)
-    self.amp2 = dat.Qedit(self, '', 0, 240, 100)
-    self.off1 = dat.Qedit(self, '0', 0, 280, 100)
-    self.off2 = dat.Qedit(self, '0', 0, 320, 100)
-    self.fit = dat.Qedit(self, '', 80, 40, 100)
-    
     dat.Qlabel(self, 'Phase error', 0, 30, 80)
     dat.Qlabel(self, 'deg.', 190, 30, 40)
     
@@ -62,17 +64,21 @@ class IQ_measurement(Qw.QMainWindow):
 
     dso = dev.Agilent_DSO1014A_oscilloscope(False)
     dso.write('AUT:DIS')
-    dso.write('TIM:SCAL ' + self.var.text())
     dso.write('CHAN1:COUP DC')
     dso.write('CHAN2:COUP DC')
     dso.write('WAV:POINTS:MODE RAW')
     dso.write('WAV:FORM ASCII')
     dso.write('WAV:POINTS ' + str(self.m))
+    self.var.setText(str(dso.query('TIM:SCAL?')))
     self.amp1.setText(str(round(dso.query('CHAN1:SCAL?') * 1e3, 3)))
     self.amp2.setText(str(round(dso.query('CHAN2:SCAL?') * 1e3, 3)))
     self.off1.setText(str(round(dso.query('CHAN1:OFFS?') * 1e3, 3)))
     self.off2.setText(str(round(dso.query('CHAN2:OFFS?') * 1e3, 3)))
     dso.close()
+
+    att = dev.Keysight_81630B_attenuator()
+    self.att.setText(str(float(att.device.query(':INP2:ATT?'))))
+    att.close()
 
   def OnTY(self):
     dso = dev.Agilent_DSO1014A_oscilloscope(False)
@@ -140,6 +146,11 @@ class IQ_measurement(Qw.QMainWindow):
   def OnOff2(self):
     ostr = str(float(self.off2.text()) * 1e-3)
     dev.Agilent_DSO1014A_oscilloscope('CHAN2:OFFS ' + ostr)
+
+  def OnAtt(self):
+    att = dev.Keysight_81630B_attenuator()
+    att.device.write(':INP2:ATT ' + self.att.text() + 'dB')
+    att.close()
 
   def OnData(self):
     dso = dev.Agilent_DSO1014A_oscilloscope(False)
