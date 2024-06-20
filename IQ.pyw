@@ -44,7 +44,7 @@ class IQ_measurement(Qw.QMainWindow):
     self.att = dat.Qedit(self, '', 0, 360, 100)
     self.fit = dat.Qedit(self, '', 80, 40, 100)
 
-    dat.Qbutton(self, self.OnTime, 'Time', 120, 160, 100)
+    dat.Qbutton(self, self.OnTime, 'Time (msec)', 120, 160, 100)
     dat.Qbutton(self, self.OnAmp, 'Ch 1 && 2 (mV/Div)', 120, 200, 100)
     dat.Qbutton(self, self.OnAmp2, 'Ch 2 (mV/Div)', 120, 240, 100)
     dat.Qbutton(self, self.OnOff1, 'Offset 1 (mV)', 120, 280, 100)
@@ -69,7 +69,7 @@ class IQ_measurement(Qw.QMainWindow):
     dso.write('WAV:POINTS:MODE RAW')
     dso.write('WAV:FORM ASCII')
     dso.write('WAV:POINTS ' + str(self.m))
-    self.var.setText(str(dso.query('TIM:SCAL?')))
+    self.var.setText(str(dso.query('TIM:SCAL?') * 1e3))
     self.amp1.setText(str(round(dso.query('CHAN1:SCAL?') * 1e3, 3)))
     self.amp2.setText(str(round(dso.query('CHAN2:SCAL?') * 1e3, 3)))
     self.off1.setText(str(round(dso.query('CHAN1:OFFS?') * 1e3, 3)))
@@ -111,7 +111,8 @@ class IQ_measurement(Qw.QMainWindow):
     dev.Agilent_DSO1014A_oscilloscope('TIM:FORM XY')
     
   def OnTime(self):
-    dev.Agilent_DSO1014A_oscilloscope('TIM:SCAL ' + self.var.text())
+    timescale = str(round(float(self.var.text()) / 1000, 6))
+    dev.Agilent_DSO1014A_oscilloscope('TIM:SCAL ' + timescale)
 
   def OnAmp1(self):
     dso = dev.Agilent_DSO1014A_oscilloscope(False)
@@ -165,6 +166,8 @@ class IQ_measurement(Qw.QMainWindow):
 
     dso.write('RUN')
     dso.write('TIM:FORM XY')
+    timescale = round(float(self.var.text()) / 1000, 6)
+    dso.write('TIM:SCAL ' + str(timescale))
     dso.close()
 
     A = np.arange(float(self.m * 5)).reshape(5, self.m)
