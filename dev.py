@@ -179,6 +179,7 @@ class Keysight_81630B_photodiode:
   def __init__(self):
     rm = visa.ResourceManager()
     self.device = rm.open_resource('TCPIP0::192.168.0.25::inst0::INSTR')
+    self.device.timeout = 5000
 
   def write(self, command):
     self.device.write(command)

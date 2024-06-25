@@ -24,6 +24,14 @@ def Qbutton(self, event, text, x, y, size):
   button.setFont(Qg.QFont('Calibri'))
 
 
+def QbuttonBig(self, event, text, x, y, size):
+  button = Qw.QPushButton(text, self)
+  button.clicked.connect(event)
+  button.resize(size, 50)
+  button.move(x + 20, y + 20)
+  button.setFont(Qg.QFont('', 14))
+
+
 def Qedit(self, text, x, y, size):
   edit = Qw.QLineEdit(self)
   edit.resize(size, 30)
