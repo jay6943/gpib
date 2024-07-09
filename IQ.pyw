@@ -111,7 +111,7 @@ class IQ_measurement(Qw.QMainWindow):
     dev.Agilent_DSO1014A_oscilloscope('TIM:FORM XY')
     
   def OnTime(self):
-    timescale = str(round(float(self.var.text()) / 1000, 6))
+    timescale = str(round(float(self.var.text()) * 1e-3, 6))
     dev.Agilent_DSO1014A_oscilloscope('TIM:SCAL ' + timescale)
 
   def OnAmp1(self):
@@ -164,9 +164,12 @@ class IQ_measurement(Qw.QMainWindow):
     self.x = dso.getwave(1)
     self.y = dso.getwave(2)
 
+    self.x /= np.max(np.abs(self.x))
+    self.y /= np.max(np.abs(self.y))
+
     dso.write('RUN')
     dso.write('TIM:FORM XY')
-    timescale = round(float(self.var.text()) / 1000, 6)
+    timescale = round(float(self.var.text()) * 1e-3, 6)
     dso.write('TIM:SCAL ' + str(timescale))
     dso.close()
 
