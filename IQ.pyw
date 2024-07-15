@@ -9,11 +9,6 @@ import PyQt5.QtGui as Qg
 import PyQt5.QtWidgets as Qw
 import matplotlib.pyplot as plt
 
-def OnRun():
-  dev.Agilent_DSO1014A_oscilloscope('RUN')
-
-def OnStop():
-  dev.Agilent_DSO1014A_oscilloscope('SINGLE')
 
 class IQ_measurement(Qw.QMainWindow):
   
@@ -25,14 +20,14 @@ class IQ_measurement(Qw.QMainWindow):
     self.t = None
     self.phase = None
 
-    self.setGeometry(500, 500, 260, 430)
+    self.setGeometry(500, 500, 260, 480)
     self.setWindowIcon(Qg.QIcon('jk.png'))
     self.setWindowTitle('IQ')
 
     dat.Qbutton(self, self.OnData, 'Get', 0, 0, 100)
     dat.Qbutton(self, self.OnSave, 'Save', 120, 0, 100)
-    dat.Qbutton(self, OnRun, 'Run', 0, 80, 100)
-    dat.Qbutton(self, OnStop, 'Stop', 120, 80, 100)
+    dat.Qbutton(self, self.OnRun, 'Run', 0, 80, 100)
+    dat.Qbutton(self, self.OnStop, 'Stop', 120, 80, 100)
     dat.Qbutton(self, self.OnTY, 'TY-plot', 0, 120, 100)
     dat.Qbutton(self, self.OnXY, 'XY-plot', 120, 120, 100)
 
@@ -41,7 +36,8 @@ class IQ_measurement(Qw.QMainWindow):
     self.amp2 = dat.Qedit(self, '', 0, 240, 100)
     self.off1 = dat.Qedit(self, '', 0, 280, 100)
     self.off2 = dat.Qedit(self, '', 0, 320, 100)
-    self.att = dat.Qedit(self, '', 0, 360, 100)
+    self.att = dat.Qedit(self, '', 0, 370, 100)
+    self.mdl = dat.Qedit(self, '', 0, 410, 100)
     self.fit = dat.Qedit(self, '', 80, 40, 100)
 
     dat.Qbutton(self, self.OnTime, 'Time (msec)', 120, 160, 100)
@@ -49,7 +45,9 @@ class IQ_measurement(Qw.QMainWindow):
     dat.Qbutton(self, self.OnAmp2, 'Ch 2 (mV/Div)', 120, 240, 100)
     dat.Qbutton(self, self.OnOff1, 'Offset 1 (mV)', 120, 280, 100)
     dat.Qbutton(self, self.OnOff2, 'Offset 2 (mV)', 120, 320, 100)
-    dat.Qbutton(self, self.OnAtt, 'Att. (dB)', 120, 360, 100)
+    dat.Qbutton(self, self.OnAtt, 'Att. (dB)', 120, 370, 100)
+    dat.Qbutton(self, self.OnMdl, '(GHz)', 120, 410, 60)
+    dat.Qbutton(self, self.OnMdl, 'OFF', 190, 410, 30)
 
     dat.Qlabel(self, 'Phase error', 0, 30, 80)
     dat.Qlabel(self, 'deg.', 190, 30, 40)
@@ -77,8 +75,20 @@ class IQ_measurement(Qw.QMainWindow):
     dso.close()
 
     att = dev.Keysight_81630B_attenuator()
-    self.att.setText(str(float(att.device.query(':INP2:ATT?'))))
+    self.att.setText(str(float(att.query(':INP2:ATT?'))))
     att.close()
+
+    tld = dev.Keysight_N7711A_tunalble_laser()
+    self.mdl.setText(str(float(tld.query('MODU:INT:SBSC?'))*1e-9))
+    tld.close()
+
+  def OnRun(self):
+    dev.Agilent_DSO1014A_oscilloscope('RUN')
+    print(self.m)
+
+  def OnStop(self):
+    dev.Agilent_DSO1014A_oscilloscope('SINGLE')
+    print(self.m)
 
   def OnTY(self):
     dso = dev.Agilent_DSO1014A_oscilloscope(False)
@@ -150,8 +160,20 @@ class IQ_measurement(Qw.QMainWindow):
 
   def OnAtt(self):
     att = dev.Keysight_81630B_attenuator()
-    att.device.write(':INP2:ATT ' + self.att.text() + 'dB')
+    att.write(':INP2:ATT ' + self.att.text() + 'dB')
     att.close()
+
+  def OnMdl(self):
+    tld = dev.Keysight_N7711A_tunalble_laser()
+    tld.write('MODU:INT:SBSC ' + self.mdl.text() + 'GHz')
+    tld.write('MODU:INT ON')
+    tld.close()
+
+  def OnMdl_Off(self):
+    tld = dev.Keysight_N7711A_tunalble_laser()
+    tld.write('MODU:INT:SBSC ' + self.mdl.text() + 'GHz')
+    tld.write('MODU:INT OFF')
+    tld.close()
 
   def OnData(self):
     dso = dev.Agilent_DSO1014A_oscilloscope(False)
@@ -231,3 +253,9 @@ if __name__ == '__main__':
   window = IQ_measurement()
   window.show()
   sys.exit(app.exec_())
+
+  # tld = dev.Keysight_N7711A_tunalble_laser()
+  # print(tld.query('MODU:INT:SBSC?'))
+  # tld.write('MODU:INT OFF')
+  # tld.write('MODU:INT OFF')
+  # tld.close()

@@ -211,6 +211,12 @@ class Keysight_81630B_attenuator:
     self.device = rm.open_resource('TCPIP0::192.168.0.25::inst0::INSTR')
     self.device.timeout = 5000
 
+  def write(self, command):
+    self.device.write(command)
+
+  def query(self, command):
+    return self.device.query(command)
+
   def close(self):
     self.device.close()
 
