@@ -47,7 +47,7 @@ class IQ_measurement(Qw.QMainWindow):
     dat.Qbutton(self, self.OnOff2, 'Offset 2 (mV)', 120, 320, 100)
     dat.Qbutton(self, self.OnAtt, 'Att. (dB)', 120, 370, 100)
     dat.Qbutton(self, self.OnMdl, '(GHz)', 120, 410, 60)
-    dat.Qbutton(self, self.OnMdl, 'OFF', 190, 410, 30)
+    dat.Qbutton(self, self.OnMdl_Off, 'OFF', 190, 410, 30)
 
     dat.Qlabel(self, 'Phase error', 0, 30, 80)
     dat.Qlabel(self, 'deg.', 190, 30, 40)
