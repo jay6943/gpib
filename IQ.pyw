@@ -20,7 +20,7 @@ class IQ_measurement(Qw.QMainWindow):
     self.t = None
     self.phase = None
 
-    self.setGeometry(500, 500, 260, 480)
+    self.setGeometry(500, 500, 260, 490)
     self.setWindowIcon(Qg.QIcon('jk.png'))
     self.setWindowTitle('IQ')
 
@@ -36,8 +36,8 @@ class IQ_measurement(Qw.QMainWindow):
     self.amp2 = dat.Qedit(self, '', 0, 240, 100)
     self.off1 = dat.Qedit(self, '', 0, 280, 100)
     self.off2 = dat.Qedit(self, '', 0, 320, 100)
-    self.att = dat.Qedit(self, '', 0, 370, 100)
-    self.mdl = dat.Qedit(self, '', 0, 410, 100)
+    self.att = dat.Qedit(self, '', 0, 380, 100)
+    self.mdl = dat.Qedit(self, '', 0, 420, 100)
     self.fit = dat.Qedit(self, '', 80, 40, 100)
 
     dat.Qbutton(self, self.OnTime, 'Time (msec)', 120, 160, 100)
@@ -45,9 +45,9 @@ class IQ_measurement(Qw.QMainWindow):
     dat.Qbutton(self, self.OnAmp2, 'Ch 2 (mV/Div)', 120, 240, 100)
     dat.Qbutton(self, self.OnOff1, 'Offset 1 (mV)', 120, 280, 100)
     dat.Qbutton(self, self.OnOff2, 'Offset 2 (mV)', 120, 320, 100)
-    dat.Qbutton(self, self.OnAtt, 'Att. (dB)', 120, 370, 100)
-    dat.Qbutton(self, self.OnMdl, '(GHz)', 120, 410, 60)
-    dat.Qbutton(self, self.OnMdl_Off, 'OFF', 190, 410, 30)
+    dat.Qbutton(self, self.OnAtt, 'Att. (dB)', 120, 380, 100)
+    dat.Qbutton(self, self.OnMdl, '(GHz)', 120, 420, 60)
+    dat.Qbutton(self, self.OnMdl_Off, 'OFF', 190, 420, 30)
 
     dat.Qlabel(self, 'Phase error', 0, 30, 80)
     dat.Qlabel(self, 'deg.', 190, 30, 40)
