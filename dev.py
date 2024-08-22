@@ -206,9 +206,11 @@ class Keysight_81630B_photodiode:
 
 
 class Keysight_81630B_attenuator:
-  def __init__(self):
+  def __init__(self, address):
+    # TCPIP0::192.168.0.25::inst0::INSTR
+    # gpib + '::17::INSTR'
     rm = visa.ResourceManager()
-    self.device = rm.open_resource('TCPIP0::192.168.0.25::inst0::INSTR')
+    self.device = rm.open_resource(address)
     self.device.timeout = 5000
 
   def write(self, command):

@@ -19,6 +19,7 @@ class IQ_measurement(Qw.QMainWindow):
     self.x = None
     self.t = None
     self.phase = None
+    self.address = 'TCPIP0::192.168.0.25::inst0::INSTR'
 
     self.setGeometry(500, 500, 260, 490)
     self.setWindowIcon(Qg.QIcon('jk.png'))
@@ -74,7 +75,7 @@ class IQ_measurement(Qw.QMainWindow):
     self.off2.setText(str(round(dso.query('CHAN2:OFFS?') * 1e3, 3)))
     dso.close()
 
-    att = dev.Keysight_81630B_attenuator()
+    att = dev.Keysight_81630B_attenuator(self.address)
     self.att.setText(str(float(att.query(':INP2:ATT?'))))
     att.close()
 
@@ -159,7 +160,7 @@ class IQ_measurement(Qw.QMainWindow):
     dev.Agilent_DSO1014A_oscilloscope('CHAN2:OFFS ' + ostr)
 
   def OnAtt(self):
-    att = dev.Keysight_81630B_attenuator()
+    att = dev.Keysight_81630B_attenuator(self.address)
     att.write(':INP2:ATT ' + self.att.text() + 'dB')
     att.close()
 
