@@ -4,7 +4,6 @@ import serial
 import numpy as np
 import pyvisa as visa
 
-gpib = cfg.get_gpib()
 
 def search():
   rm = visa.ResourceManager()
@@ -20,7 +19,7 @@ def search():
 
 def switch(channel):
   rm = visa.ResourceManager()
-  device = rm.open_resource(gpib + '::17::INSTR')
+  device = rm.open_resource('GPIB0::17::INSTR')
   device.write('ROUT1:CHAN1 A,' + str(channel))
   device.close()
 
@@ -45,7 +44,7 @@ class usbserial:
 class E_Tek_DLDC_1002:
   def __init__(self):
     rm = visa.ResourceManager()
-    self.device = rm.open_resource(gpib + '::27::INSTR')
+    self.device = rm.open_resource('GPIB0::27::INSTR')
 
   def write(self, command):
     self.device.write(command)
@@ -65,7 +64,7 @@ class E_Tek_DLDC_1002:
 class Ando_AQ2105B_photodiode:
   def __init__(self):
     rm = visa.ResourceManager()
-    self.device = rm.open_resource(gpib + '::19::INSTR')
+    self.device = rm.open_resource('GPIB0::19::INSTR')
 
   def write(self, command):
     self.device.write(command)
@@ -88,7 +87,7 @@ class Ando_AQ2105B_photodiode:
 class Anritsu_MN9610A_attenuator:
   def __init__(self):
     rm = visa.ResourceManager()
-    self.device = rm.open_resource(gpib + '::6::INSTR')
+    self.device = rm.open_resource('GPIB0::6::INSTR')
 
   def write(self, command):
     self.device.write(command)
@@ -141,7 +140,7 @@ class Agilent_DSO1014A_oscilloscope:
 class ldc:
   def __init__(self):
     rm = visa.ResourceManager()
-    self.device = rm.open_resource(gpib + '::4::INSTR')
+    self.device = rm.open_resource('GPIB0::4::INSTR')
 
   def write(self, command):
     self.device.write(command + ';')
@@ -207,8 +206,6 @@ class Keysight_81630B_photodiode:
 
 class Keysight_81630B_attenuator:
   def __init__(self, address):
-    # TCPIP0::192.168.0.25::inst0::INSTR
-    # gpib + '::17::INSTR'
     rm = visa.ResourceManager()
     self.device = rm.open_resource(address)
     self.device.timeout = 5000
@@ -241,7 +238,7 @@ class Viavi_Power_Meter_mOPM_C1:
 class Yokogawa_AQ6370D_oscilloscope:
   def __init__(self, command):
     rm = visa.ResourceManager()
-    self.device = rm.open_resource(gpib + '::5::INSTR')
+    self.device = rm.open_resource('GPIB0::5::INSTR')
     self.device.timeout = 50000
 
     if command:
@@ -261,7 +258,7 @@ class Yokogawa_AQ6370D_oscilloscope:
 class pdl:
   def __init__(self):
     rm = visa.ResourceManager()
-    self.device = rm.open_resource(gpib + '::2::INSTR')
+    self.device = rm.open_resource('GPIB0::2::INSTR')
     self.device.write_termination = '\n'
     self.write('WAV 1550')
 
@@ -281,7 +278,7 @@ class pdl:
 class Keysight_N7711A_tunalble_laser:
   def __init__(self):
     rm = visa.ResourceManager()
-    # self.device = rm.open_resource(gpib + '::20::INSTR')
+    # self.device = rm.open_resource('GPIB0::20::INSTR')
     self.device = rm.open_resource('TCPIP0::192.168.0.101::inst0::INSTR')
     self.device.timeout = 1000
     self.device.clear()
@@ -300,7 +297,7 @@ class Keysight_N7711A_tunalble_laser:
 class Agilent_81640A_tunalble_laser:
   def __init__(self):
     rm = visa.ResourceManager()
-    self.device = rm.open_resource(gpib + '::20::INSTR')
+    self.device = rm.open_resource('GPIB0::20::INSTR')
 
   def write(self, command):
     self.device.write(command)
@@ -319,7 +316,7 @@ class Agilent_81640A_tunalble_laser:
 class Santec_WSL_110_tunalble_laser:
   def __init__(self):
     rm = visa.ResourceManager()
-    self.device = rm.open_resource(gpib + '::1::INSTR')
+    self.device = rm.open_resource('GPIB0::1::INSTR')
     self.device.timeout = 1000
     self.device.clear()
 
@@ -337,7 +334,7 @@ class Santec_WSL_110_tunalble_laser:
 class Keysight_E3648A_power_supply:
   def __init__(self, address):
     rm = visa.ResourceManager()
-    self.device = rm.open_resource(gpib + '::' + str(address) + '::INSTR')
+    self.device = rm.open_resource('GPIB0::' + str(address) + '::INSTR')
     self.device.timeout = 5000
 
   def write(self, command):
@@ -353,7 +350,7 @@ class Keysight_E3648A_power_supply:
 class Agilent_E3831A_power_supply:
   def __init__(self):
     rm = visa.ResourceManager()
-    self.device = rm.open_resource(gpib + '::6::INSTR')
+    self.device = rm.open_resource('GPIB0::6::INSTR')
     self.device.timeout = 5000
 
   def write(self, command):
@@ -369,7 +366,7 @@ class Agilent_E3831A_power_supply:
 class ivs:
   def __init__(self):
     rm = visa.ResourceManager()
-    self.device = rm.open_resource(gpib + '::10::INSTR')
+    self.device = rm.open_resource('GPIB0::10::INSTR')
     self.device.timeout = 50000
 
   def write(self, command):
