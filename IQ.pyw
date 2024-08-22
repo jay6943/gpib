@@ -77,6 +77,7 @@ class IQ_measurement(Qw.QMainWindow):
 
     att = dev.Keysight_81630B_attenuator(self.address)
     self.att.setText(str(float(att.query(':INP2:ATT?'))))
+    att.write(':OUTP2:STAT ON')
     att.close()
 
     tld = dev.Keysight_N7711A_tunalble_laser()
