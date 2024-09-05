@@ -1,4 +1,3 @@
-import cfg
 import time
 import serial
 import numpy as np
@@ -9,12 +8,7 @@ def search():
   rm = visa.ResourceManager()
   devices = rm.list_resources()
 
-  for idn in devices:
-    print(idn)
-    if idn[0] == 'G':
-      device = rm.open_resource(idn)
-      print(device.query('*IDN?'))
-      device.close()
+  for device in devices: print(device)
 
 
 def switch(channel):
@@ -413,3 +407,4 @@ class ivs:
 
 if __name__ == '__main__':
   search()
+
