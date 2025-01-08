@@ -10,7 +10,7 @@ class Attenuator(Qw.QMainWindow):
   def __init__(self):
     super().__init__()
 
-    self.setGeometry(1000, 500, 260, 150)
+    self.setGeometry(500, 500, 260, 150)
     self.setWindowIcon(Qg.QIcon('jk.png'))
     self.setWindowTitle('Attenuator')
 
