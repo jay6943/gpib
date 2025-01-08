@@ -250,6 +250,7 @@ class IQ_measurement(Qw.QMainWindow):
       plt.savefig(filename[0] + '.png')
       cfg.set_folder(folder)
 
+
 if __name__ == '__main__':
   app = Qw.QApplication(sys.argv)
   window = IQ_measurement()
