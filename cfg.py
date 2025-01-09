@@ -35,5 +35,4 @@ def set_folder(folder):
 
 
 if __name__ == '__main__':
-  # mkdir('EI-ICR-WG-R1-TV23-004/voa/t1/')
-  print(get_gpib())
+  mkdir('EI-ICR-WG-R1-TV23-004/voa/t1/')
