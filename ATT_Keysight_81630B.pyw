@@ -15,8 +15,8 @@ class Attenuator(Qw.QMainWindow):
     self.setWindowTitle('Attenuator')
 
     self.address = dat.Qcombo(self, 0, 0, 220)
-    self.address.addItem('TCPIP0::192.168.0.25::inst0::INSTR')
     self.address.addItem('GPIB0::17::INSTR')
+    self.address.addItem('TCPIP0::192.168.0.25::inst0::INSTR')
     self.var = dat.Qedit(self, '30', 0, 40, 100)
     dat.Qlabel(self, 'dB', 70, 30, 20)
 
