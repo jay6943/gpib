@@ -58,7 +58,7 @@ class App(Qw.QWidget):
     temperature = self.read('tec:temp:value?')
 
     self.setWindowTitle('MAIMAN Electronics')
-    self.setWindowIcon(Qg.QIcon('jk.png'))
+    self.setWindowIcon(Qg.QIcon('../doc/jk.png'))
     self.setGeometry(100, 100, 440, 180)
 
     dat.Qbutton(self, self.SetCurrent, 'Current (mA)', 0, 0, 100)
@@ -88,7 +88,7 @@ class App(Qw.QWidget):
   def LIcurve(self):
 
     ksm = dev.ivs()
-    opm = dev.opm(15)
+    opm = dev.Keysight_81630B_photodiode()
     
     star = float(self.star.text())
     stop = float(self.stop.text())
@@ -96,18 +96,18 @@ class App(Qw.QWidget):
     
     x, y = [], []
     
-    ksm.write('smua.source.leveli = ' + str(round(star * 0.001, 4)))
+    ksm.write(f'smua.source.leveli = {star * 0.001:.4f}')
     ksm.write('smua.source.output = smua.OUTPUT_ON')
     time.sleep(1)
 
     for i in np.arange(star, stop + step * 0.1, step):
 
-      ksm.write('smua.source.leveli = ' + str(round(i * 0.001, 4)))
+      ksm.write(f'smua.source.leveli = {i * 0.001:.4f}')
 
       plt.pause(0.5)
 
       x.append(i)
-      y.append(10 ** (opm.query(1, 2) * 0.1))
+      y.append(10 ** (opm.read(1, 2) * 0.1))
 
       if i > star:
         plt.cla()
@@ -117,7 +117,7 @@ class App(Qw.QWidget):
         plt.xlim(star, i)
         plt.grid()
 
-    ksm.write('smua.source.leveli = ' + str(round(star, 1)))
+    ksm.write(f'smua.source.leveli = {star:.1f}')
     ksm.write('smua.source.output = smua.OUTPUT_OFF')
     
     plt.show()
@@ -136,11 +136,11 @@ class App(Qw.QWidget):
   def SetCurrent(self):
     current = float(self.current.text()) * 0.001
     ksm = dev.ivs()
-    ksm.write('smua.source.leveli = ' + str(round(current, 4)))
+    ksm.write(f'smua.source.leveli = {current:.4f}')
     ksm.close()
 
   def SetTEC(self):
-    self.write('tec:temp:value ' + self.tec.text())
+    self.write(f'tec:temp:value {self.tec.text()}')
 
   def OnTEC(self):
     self.write('tec:start on')

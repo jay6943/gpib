@@ -31,7 +31,7 @@ class App(Qw.QWidget):
     super().__init__()
     
     self.setWindowTitle('SLD')
-    self.setWindowIcon(Qg.QIcon('jk.png'))
+    self.setWindowIcon(Qg.QIcon('../doc/jk.png'))
     self.setGeometry(500, 50, 250, 150)
 
     dat.Qbutton(self, self.OnCurrent, 'Current', 0, 0, 100)
@@ -42,8 +42,8 @@ class App(Qw.QWidget):
     dat.Qbutton(self, current_on, 'Enable', 0, 80, 100)
     dat.Qbutton(self, current_off, 'Disable', 110, 80, 100)
 
-  def OnCurrent(self): write('current=' + self.current.text())
-  def OnTEC(self): write('target=' + self.tec.text())
+  def OnCurrent(self): write(f'current={self.current.text()}')
+  def OnTEC(self): write(f'target={self.tec.text()}')
 
 
 if __name__ == '__main__':

@@ -31,13 +31,13 @@ def updown():
   while running:
     for volt in v:
       print('\b' * 20, end='')
-      print('Voltage = ' + str(volt), end='')
-      ps.write('VOLT ' + str(volt))
+      print(f'Voltage = {volt}', end='')
+      ps.write(f'VOLT {volt}')
       time.sleep(0.1)
     for volt in v[::-1]:
       print('\b' * 20, end='')
-      print('Voltage = ' + str(volt), end='')
-      ps.write('VOLT ' + str(volt))
+      print(f'Voltage = {volt}', end='')
+      ps.write(f'VOLT {volt}')
       time.sleep(0.1)
 
     running = 1 if keyboard_escape(running) else 0

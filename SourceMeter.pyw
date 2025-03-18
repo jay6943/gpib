@@ -10,19 +10,19 @@ import matplotlib.pyplot as plt
 
 def ON(ch, src, value):
   if src == 'i': value = str(float(value) * 0.001)
-  dc = '.OUTPUT_DCAMPS' if src == 'i' else '.OUTPUT_DCVOLTS'
+  dc = 'DCAMPS' if src == 'i' else 'DCVOLTS'
 
   ksm = dev.ivs()
   ksm.write('reset()')
-  ksm.write(ch + '.source.func = ' + ch + dc)
-  ksm.write(ch + '.source.level' + src + ' = ' + value)
-  ksm.write(ch + '.source.output = ' + ch + '.OUTPUT_ON')
+  ksm.write(f'{ch}.source.func = {ch}.OUTPUT_{dc}')
+  ksm.write(f'{ch}.source.level{src} = {value}')
+  ksm.write(f'{ch}.source.output = {ch}.OUTPUT_ON')
   ksm.close()
 
 
 def OFF(ch):
   ksm = dev.ivs()
-  ksm.write(ch + '.source.output = ' + ch + '.OUTPUT_OFF')
+  ksm.write(f'{ch}.source.output = {ch}.OUTPUT_OFF')
   ksm.close()
 
 
@@ -37,7 +37,7 @@ class App(Qw.QWidget):
     super().__init__()
     
     self.setWindowTitle('KEITHLEY 2612B')
-    self.setWindowIcon(Qg.QIcon('jk.png'))
+    self.setWindowIcon(Qg.QIcon('../doc/jk.png'))
     self.setGeometry(100, 100, 540, 290)
 
     dat.Qlabel(self, 'IA', 0, 0, 100)
@@ -101,29 +101,26 @@ class App(Qw.QWidget):
 
     n = len(self.x)
 
-    xstr = str(start) + ',' + str(stop) + ',' + str(step) + ',' + str(n)
-    xstr = '(' + ch + ',' + xstr + ')'
-
     ksm = dev.ivs()
     ksm.write('reset()')
-    ksm.write(ch + '.source.limitv = 10')
-    ksm.write('SweepILinMeasureV' + xstr)
+    ksm.write(f'{ch}.source.limitv = 10')
+    ksm.write(f'SweepILinMeasureV({ch},{start},{stop},{step},{n})')
     self.y = ksm.Vread(n, ch)
     ksm.close()
 
-    filename = cfg.get_folder() + '/' + self.filename.text() + '-IV'
-    self.x = np.round(self.x * 1000, 3)
-    self.y = np.round(self.y, 6)
-    np.savetxt(filename + '.txt', np.array([self.x, self.y]).transpose())
+    filename = f'{cfg.get_folder()}/{self.filename.text()}-IV'
+    self.x = round(self.x * 1000, 3)
+    self.y = round(self.y, 6)
+    np.savetxt(f'{filename}.txt', np.array([self.x, self.y]).transpose())
 
     if self.checkplot.isChecked():
       plt.plot(self.x, self.y)
       plt.xlabel('Current (A)')
       plt.ylabel('Voltage (mV)')
-      plt.xlim(0, self.x[n-1])
+      plt.xlim(0, self.x[-1])
       plt.ylim(min(self.y), max(self.y))
       plt.grid()
-      plt.savefig(filename + '.png')
+      plt.savefig(f'{filename}.png')
       plt.show()
       plt.close()
 
@@ -136,20 +133,17 @@ class App(Qw.QWidget):
 
     n = len(self.x)
 
-    xstr = str(start) + ',' + str(stop) + ',' + str(step) + ',' + str(n)
-    xstr = '(' + ch + ',' + xstr + ')'
-
     ksm = dev.ivs()
     ksm.write('reset()')
     ksm.write(ch + '.source.limiti = 10e-3')
-    ksm.write('SweepVLinMeasureI' + xstr)
+    ksm.write(f'SweepVLinMeasureI({ch},{start},{stop},{step},{n})')
     self.y = ksm.Iread(n, ch)
     ksm.close()
 
-    filename = cfg.get_folder() + '/' + self.filename.text() + '-VI'
-    self.x = np.round(self.x * 1000, 3)
-    self.y = np.round(self.y, 6)
-    np.savetxt(filename + '.txt', np.array([self.x, self.y]).transpose())
+    filename = f'{cfg.get_folder()}/{self.filename.text()}-VI'
+    self.x = round(self.x * 1000, 3)
+    self.y = round(self.y, 6)
+    np.savetxt(f'{filename}.txt', np.array([self.x, self.y]).transpose())
 
     if self.checkplot.isChecked():
       plt.plot(self.x, self.y)
@@ -158,7 +152,7 @@ class App(Qw.QWidget):
       plt.xlim(start, stop)
       plt.ylim(min(self.y), max(self.y))
       plt.grid()
-      plt.savefig(filename + '.png')
+      plt.savefig(f'{filename}.png')
       plt.show()
       plt.close()
 

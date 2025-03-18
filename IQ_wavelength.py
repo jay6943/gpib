@@ -6,7 +6,7 @@ def set_wavelength(wavelength):
   lo = dev.Keysight_N7711A_tunalble_laser()
   print(lo.query('*IDN?'))
   lo.write('WAV:AUTO 1')
-  lo.write('WAV ' + str(wavelength) + 'NM')
+  lo.write(f'WAV {wavelength}NM')
   lo.close()
 
 def sweep_wavelength():
@@ -17,10 +17,10 @@ def sweep_wavelength():
   wavelength = np.linspace(1530, 1531, 3)
 
   for k in wavelength:
-    lo.write('WAV ' + str(round(k, 1)) + 'NM')
+    lo.write(f'WAV {k:.1f}NM')
     time.sleep(1)
     w = float(lo.query('WAV?')) * 1e9
-    print('Wavelength =', w, 'nm')
+    print(f'Wavelength = {w} nm')
 
   lo.close()
 
@@ -53,7 +53,7 @@ def get_data():
 
   if k[0] > 0: p = 180 - p
 
-  print('Phase difference =', round(p, 1), 'degree')
+  print(f'Phase difference = {p:.1f} degree')
 
 if __name__ == '__main__':
   # set_wavelength(1540)

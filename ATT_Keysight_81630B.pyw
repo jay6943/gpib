@@ -11,7 +11,7 @@ class Attenuator(Qw.QMainWindow):
     super().__init__()
 
     self.setGeometry(500, 500, 260, 150)
-    self.setWindowIcon(Qg.QIcon('jk.png'))
+    self.setWindowIcon(Qg.QIcon('../doc/jk.png'))
     self.setWindowTitle('Attenuator')
 
     self.address = dat.Qcombo(self, 0, 0, 220)
@@ -40,7 +40,7 @@ class Attenuator(Qw.QMainWindow):
 
   def attenuator(self):
     att = dev.Keysight_81630B_attenuator(self.address.currentText())
-    att.write(':INP2:ATT ' + self.var.text() + 'dB')
+    att.write(f':INP2:ATT {self.var.text()}dB')
     att.close()
 
 

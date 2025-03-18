@@ -16,7 +16,7 @@ class ExWindow(Qw.QMainWindow):
     super().__init__()
 
     self.setWindowTitle('Switch')
-    self.setWindowIcon(Qg.QIcon('jk.png'))
+    self.setWindowIcon(Qg.QIcon('../doc/jk.png'))
     self.setGeometry(260, 300, 250, 110)
 
     dat.Qbutton(self, self.On1, '1.', 0, 0, 100)

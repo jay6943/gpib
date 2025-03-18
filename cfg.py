@@ -1,26 +1,19 @@
 import os
 
-cdir = os.getcwd().split('\\')
-root = ''
+path = '../data/SiN'
+cfgfile = '../data/cfg.txt'
 
-for cd in cdir[:-1]: root += cd + '/'
-
-works = root[0] + root[1] + '/data/SiN/'
-temps = root + 'data/cfg.txt'
-
+circ = r'$^{\circ}$'
 
 def mkdir(folder):
-  folders = folder.split('/')
-  folder = works
-  for fp in folders[:-1]:
-    folder += fp + '/'
-    if not os.path.isdir(folder): os.mkdir(folder)
+  folder = f'{path}/{folder}'
+  if not os.path.isdir(folder): os.mkdir(folder)
 
   return folder
 
 
 def get_folder():
-  fp = open(temps)
+  fp = open(cfgfile)
   data = fp.read()
   data = data.replace('\n', '')
   fp.close()
@@ -29,7 +22,7 @@ def get_folder():
 
 
 def set_folder(folder):
-  fp = open(temps, 'w')
+  fp = open(cfgfile, 'w')
   fp.write(folder)
   fp.close()
 

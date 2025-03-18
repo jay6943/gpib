@@ -9,14 +9,12 @@ def IV2600():
   x = np.round(x, 2)
   n = len(x)
 
-  xstr = str(round(start * 0.001, 4)) + ', '
-  xstr = xstr + str(round(stop * 0.001, 4)) + ', '
-  xstr = xstr + str(round(step * 0.001, 4)) + ', ' + str(n)
+  xstr = f'{start * 0.001:.4f}, {stop * 0.001:.4f}, {step * 0.001:.4f}, {n}'
 
   ksm = dev.ivs()
   ksm.write('reset()')
   ksm.write('smua.source.limitv = 10')
-  ksm.write('SweepILinMeasureV(smua, ' + xstr + ')')
+  ksm.write(f'SweepILinMeasureV(smua, {xstr})')
   y = ksm.Vread(str(n), 'smua')
   y = np.round(y / x, 6)
   ksm.close()
@@ -31,12 +29,10 @@ def VI2600():
   x = np.round(x, 2)
   n = len(x)
 
-  xstr = str(start) + ', ' + str(stop) + ', ' + str(step) + ', ' + str(n)
-
   ksm = dev.ivs()
   ksm.write('reset()')
   ksm.write('smua.source.limiti = 10e-3')
-  ksm.write('SweepVLinMeasureI(smua, ' + xstr + ')')
+  ksm.write(f'SweepVLinMeasureI(smua, {start}, {stop}, {step}, {n})')
   y = ksm.Iread(str(n), 'smua')
   ksm.close()
 
@@ -57,13 +53,13 @@ def VI2400():
   ksm.write(':SENS:FUNC "CURR"')
   ksm.write(':SENS:CURR:PROT 100e-3')
   ksm.write(':SENS:CURR:RANG 10e-3')
-  ksm.write(':SOUR:VOLT:START ' + str(start))
-  ksm.write(':SOUR:VOLT:STOP ' + str(stop))
-  ksm.write(':SOUR:VOLT:STEP ' + str(step))
+  ksm.write(f':SOUR:VOLT:START {start}')
+  ksm.write(f':SOUR:VOLT:STOP {stop}')
+  ksm.write(f':SOUR:VOLT:STEP {step}')
   ksm.write(':SOUR:VOLT:MODE SWE')
   ksm.write(':SOUR:SWE:RANG AUTO')
   ksm.write(':SOUR:SWE:SPAC LIN')
-  ksm.write(':TRIG:COUN ' + str(n))
+  ksm.write(f':TRIG:COUN {n}')
   ksm.write(':SOUR:DEL 0.01')
   ksm.write(':OUTP ON')
   _, y = ksm.read2400()

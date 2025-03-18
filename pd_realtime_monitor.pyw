@@ -14,7 +14,7 @@ class Power_Monitoring(Qw.QMainWindow):
     super().__init__()
 
     self.setWindowTitle('PD monitor')
-    self.setWindowIcon(Qg.QIcon('jk.png'))
+    self.setWindowIcon(Qg.QIcon('../doc/jk.png'))
     self.setGeometry(800, 200, 300, 160)
 
     dat.QbuttonBig(self, self.start, 'Power Monitoring', 0, 0, 260)

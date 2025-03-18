@@ -41,7 +41,7 @@ class App(Qw.QWidget):
     temperature = self.read('tec:temp:value?')
 
     self.setWindowTitle('MAIMAN Electronics')
-    self.setWindowIcon(Qg.QIcon('ni.png'))
+    self.setWindowIcon(Qg.QIcon('../doc/ni.png'))
     self.setGeometry(100, 100, 440, 180)
 
     dat.Qbutton(self, self.SetCurrent, 'Current (mA)', 0, 0, 100)
@@ -70,7 +70,7 @@ class App(Qw.QWidget):
 
   def LIcurve(self):
     mbl = dev.usbserial('COM3')
-    opm = dev.opm(15)
+    opm = dev.Keysight_81630B_photodiode()
     
     star = float(self.star.text())
     stop = float(self.stop.text())
@@ -83,12 +83,12 @@ class App(Qw.QWidget):
 
     for i in np.arange(star, stop + step * 0.1, step):
 
-      mbl.write('curr:value ' + str(round(i, 1)))
+      mbl.write(f'curr:value {i:.1f}')
 
       plt.pause(0.2)
 
       x.append(i)
-      y.append(10 ** (opm.query(1, 1) * 0.1))
+      y.append(10 ** (opm.read(1, 1) * 0.1))
 
       if i > star:
         plt.cla()
@@ -98,7 +98,7 @@ class App(Qw.QWidget):
         plt.xlim(star, i)
         plt.grid()
 
-    mbl.write('curr:value ' + str(round(star, 1)))
+    mbl.write(f'curr:value {star:.1f}')
     mbl.write('dev:start off')
     
     plt.show()
@@ -115,7 +115,7 @@ class App(Qw.QWidget):
     for i in range(n): self.y[i] = round(self.y[i], 6)
 
   def SetCurrent(self):
-    self.write('curr:value ' + self.current.text())
+    self.write(f'curr:value {self.current.text()}')
 
   def OnCurrent(self):
     self.write('dev:start on')
@@ -124,7 +124,7 @@ class App(Qw.QWidget):
     self.write('dev:start off')
 
   def SetTEC(self):
-    self.write('tec:temp:value ' + self.tec.text())
+    self.write(f'tec:temp:value {self.tec.text()}')
 
   def OnTEC(self):
     self.write('tec:start on')

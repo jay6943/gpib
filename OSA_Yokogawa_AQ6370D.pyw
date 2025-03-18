@@ -44,7 +44,7 @@ class Yokogawa_AQ6370D(Qw.QMainWindow):
     self.x = None
 
     self.setWindowTitle('Yokogawa AQ6370D')
-    self.setWindowIcon(Qg.QIcon('jk.png'))
+    self.setWindowIcon(Qg.QIcon('../doc/jk.png'))
     self.setGeometry(500, 500, 290, 490)
 
     osa = dev.Yokogawa_AQ6370D_oscilloscope(False)
@@ -87,36 +87,36 @@ class Yokogawa_AQ6370D(Qw.QMainWindow):
     self.setSwitch = 1
     self.figure.setChecked(True)
 
-    dev.Yokogawa_AQ6370D_oscilloscope(':SENS:SWE:POIN ' + self.m.text())
+    dev.Yokogawa_AQ6370D_oscilloscope(f':SENS:SWE:POIN {self.m.text()}')
 
   def OnCenter(self):
     osa = dev.Yokogawa_AQ6370D_oscilloscope(False)
-    osa.write(':SENS:WAV:CENT ' + self.center.text() + 'NM')
+    osa.write(f':SENS:WAV:CENT {self.center.text()}NM')
     osa.close()
 
   def OnSpan(self):
     osa = dev.Yokogawa_AQ6370D_oscilloscope(False)
-    osa.write(':SENS:WAV:SPAN ' + self.span.text() + 'NM')
+    osa.write(f':SENS:WAV:SPAN {self.span.text()}NM')
     osa.close()
 
   def OnBandwidth(self):
     osa = dev.Yokogawa_AQ6370D_oscilloscope(False)
-    osa.write(':SENS:BAND:RES ' + self.bandwidth.text() + 'NM')
+    osa.write(f':SENS:BAND:RES {self.bandwidth.text()}NM')
     osa.close()
 
   def OnSensitivity(self):
     osa = dev.Yokogawa_AQ6370D_oscilloscope(False)
-    osa.write(':DISP:TRAC:Y1:RPOS ' + self.sensitivity.text() + 'DIV')
+    osa.write(f':DISP:TRAC:Y1:RPOS {self.sensitivity.text()}DIV')
     osa.close()
 
   def OnReference(self):
     osa = dev.Yokogawa_AQ6370D_oscilloscope(False)
-    osa.write(':DISP:TRAC:Y1:RLEV ' + self.reference.text() + 'DBM')
+    osa.write(f':DISP:TRAC:Y1:RLEV {self.reference.text()}DBM')
     osa.close()
 
   def OnDivision(self):
     osa = dev.Yokogawa_AQ6370D_oscilloscope(False)
-    osa.write(':DISP:TRAC:Y1:PDIV ' + self.division.text() + 'DB')
+    osa.write(f':DISP:TRAC:Y1:PDIV {self.division.text()}DB')
     osa.close()
 
   def OnLevel(self):
@@ -131,7 +131,7 @@ class Yokogawa_AQ6370D(Qw.QMainWindow):
   def OnGet(self):
     osa = dev.Yokogawa_AQ6370D_oscilloscope(False)
     osa.timeout = 50000
-    osa.write(':SENS:SWE:POIN ' + self.m.text())
+    osa.write(f':SENS:SWE:POIN {self.m.text()}')
     OnSingle()
     self.x = osa.query(':TRAC:DATA:X? TRA')
     self.y = osa.query(':TRAC:DATA:Y? TRA')
@@ -173,7 +173,7 @@ class Yokogawa_AQ6370D(Qw.QMainWindow):
       if self.figure.isChecked():
         fp = os.path.splitext(f[0])
         print(fp[0])
-        plt.savefig(fp[0] + '.png')
+        plt.savefig(f'{fp[0]}.png')
 
 
 if __name__ == '__main__':

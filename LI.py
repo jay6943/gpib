@@ -11,7 +11,7 @@ def scan(filename):
     step = 1
 
     ldc = dev.ldc()
-    opm = dev.opm(20)
+    opm = dev.Keysight_81630B_photodiode()
 
     ldc.value(int(start))
     opm.mW(1, 1)
@@ -26,7 +26,7 @@ def scan(filename):
         ldc.value(current)
         v[i] = ldc.volt()
         x[i] = float(current)
-        y[i] = opm.query(1, 1) * 1e6
+        y[i] = opm.read(1, 1) * 1e6
 
         if x[i] < 0: x[i] = 0
 
@@ -39,13 +39,9 @@ def scan(filename):
     ldc.close()
     opm.close()
 
-    fp = open(cfg.get_folder() + filename + '.txt', 'w')
-
+    fp = open(f'{cfg.get_folder()}/{filename}.txt', 'w')
     for i in range(len(x)):
-        fp.write(str(x[i]) + '\t')
-        fp.write(str(y[i]) + '\t')
-        fp.write(str(v[i]) + '\n')
-
+        fp.write(f'{x[i]}\t{y[i]}\t{v[i]}\n')
     fp.close()
 
 if __name__ == '__main__': scan(sys.argv[1])

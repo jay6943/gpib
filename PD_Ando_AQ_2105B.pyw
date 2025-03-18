@@ -13,7 +13,7 @@ class Ando_AQ_2105B(Qw.QWidget):
     super().__init__()
     
     self.setWindowTitle('ANDO')
-    self.setWindowIcon(Qg.QIcon('jk.png'))
+    self.setWindowIcon(Qg.QIcon('../doc/jk.png'))
     self.setGeometry(100, 600, 280, 110)
 
     dat.Qbutton(self, self.OnGet, 'Get', 0, 0, 100)

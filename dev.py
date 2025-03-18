@@ -14,7 +14,7 @@ def search():
 def switch(channel):
   rm = visa.ResourceManager()
   device = rm.open_resource('GPIB0::17::INSTR')
-  device.write('ROUT1:CHAN1 A,' + str(channel))
+  device.write(f'ROUT1:CHAN1 A,{channel}')
   device.close()
 
 
@@ -23,7 +23,7 @@ class usbserial:
     self.device = serial.Serial(port, 115200)
 
   def write(self, command):
-    self.device.write(bytes(command + '\r', encoding='ascii'))
+    self.device.write(bytes(f'{command}\r', encoding='ascii'))
     time.sleep(0.2)
 
   def read(self, command):
@@ -87,7 +87,7 @@ class Anritsu_MN9610A_attenuator:
     self.device.write(command)
 
   def value(self, level):
-    self.write('ATT ' + str(level))
+    self.write(f'ATT {level}')
     time.sleep(0.5)
 
   def close(self):
@@ -104,16 +104,16 @@ class Agilent_DSO1014A_oscilloscope:
       self.close()
 
   def write(self, command):
-    self.device.write(':' + command)
+    self.device.write(f':{command}')
 
   def query(self, command):
-    return float(self.device.query(':' + command))
+    return float(self.device.query(f':{command}'))
 
   def close(self):
     self.device.close()
 
   def getwave(self, ch):
-    data = self.device.query(':WAV:DATA? CHAN' + str(ch))
+    data = self.device.query(f':WAV:DATA? CHAN{ch}')
     data = data.replace(',', '')
     data = data.split(' ')[1:]
     data = np.array([v for v in data if v], np.float64)
@@ -137,15 +137,15 @@ class ldc:
     self.device = rm.open_resource('GPIB0::4::INSTR')
 
   def write(self, command):
-    self.device.write(command + ';')
+    self.device.write(f'{command};')
 
   def query(self, command):
-    value = float(self.device.query(command + ';'))
+    value = float(self.device.query(f'{command};'))
     time.sleep(0.5)
     return value
 
   def value(self, level):
-    self.write('LAS:LDI ' + str(level))
+    self.write(f'LAS:LDI {level}')
     self.on()
     time.sleep(0.5)
 
@@ -154,7 +154,7 @@ class ldc:
 
   def tec(self, temperature):
     self.write('TEC:MODE:T')
-    self.write('TEC:T ' + str(temperature))
+    self.write(f'TEC:T {temperature}')
     self.write('TEC:OUT ON')
     time.sleep(1)
 
@@ -181,18 +181,18 @@ class Keysight_81630B_photodiode:
     return self.device.query(command)
 
   def fetch(self, slot, ch):
-    command = 'FETCH' + str(slot) + ':CHAN' + str(ch) + ':POW?'
+    command = f'FETCH{slot}:CHAN{ch}:POW?'
     return float(self.device.query(command))
 
   def read(self, slot, ch):
-    command = 'READ' + str(slot) + ':CHAN' + str(ch) + ':POW?'
+    command = f'READ{slot}:CHAN{ch}:POW?'
     return float(self.device.query(command))
 
   def dBm(self, slot, ch):
-    self.write('SENS' + str(slot) + ':CHAN' + str(ch) + ':POW:UNIT 0')
+    self.write(f'SENS{slot}:CHAN{ch}:POW:UNIT 0')
 
   def mW(self, slot, ch):
-    self.write('SENS' + str(slot) + ':CHAN' + str(ch) + ':POW:UNIT 1')
+    self.write(f'SENS{slot}:CHAN{ch}:POW:UNIT 1')
 
   def close(self):
     self.device.close()
@@ -297,11 +297,11 @@ class Agilent_81640A_tunalble_laser:
     self.device.write(command)
 
   def wavelength(self, k):
-    self.write('SOUR0:WAV ' + str(k) + 'NM')
+    self.write(f'SOUR0:WAV {k}NM')
     time.sleep(1)
 
   def power(self, p):
-    self.write('SOUR0:POW ' + str(p) + 'DBM')
+    self.write(f'SOUR0:POW {p}DBM')
 
   def close(self):
     self.device.close()
@@ -328,7 +328,7 @@ class Santec_WSL_110_tunalble_laser:
 class Keysight_E3648A_power_supply:
   def __init__(self, address):
     rm = visa.ResourceManager()
-    self.device = rm.open_resource('GPIB0::' + str(address) + '::INSTR')
+    self.device = rm.open_resource(f'GPIB0::{address}::INSTR')
     self.device.timeout = 5000
 
   def write(self, command):
@@ -384,7 +384,7 @@ class ivs:
     return volt, curr
 
   def Iread(self, n, ch):
-    strs = 'printbuffer(1,' + str(n) + ',' + ch + '.nvbuffer1.readings)'
+    strs = f'printbuffer(1,{n},{ch}.nvbuffer1.readings)'
     data = self.device.query(strs)
     data = data.split(',')
 
@@ -393,7 +393,7 @@ class ivs:
     return data
 
   def Vread(self, n, ch):
-    strs = 'printbuffer(1,' + str(n) + ',' + ch + '.nvbuffer1.readings)'
+    strs = f'printbuffer(1,{n},{ch}.nvbuffer1.readings)'
     data = self.device.query(strs)
     data = data.split(',')
 

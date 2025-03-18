@@ -39,7 +39,7 @@ def photodide():
 
 def voa(folder):
   tp = dt.datetime.now()
-  fp = cfg.mkdir(folder) + tp.strftime('%m-%d-%H%M')
+  fp = f'{cfg.mkdir(folder)}/{tp.strftime('%m-%d-%H%M')}'
   print(fp)
 
   # vmin, vmax, vstep = 0.4, 1.4, 0.02
@@ -57,7 +57,7 @@ def voa(folder):
 
   vir.write('*RST')
   vir.write('INST P6V')
-  vir.write('VOLT ' + str(v[0]))
+  vir.write(f'VOLT {v[0]}')
   vir.write('OUTP ON')
   vir.write('INIT')
   opm.write('INIT1:CHAN1:CONT 0')
@@ -65,20 +65,20 @@ def voa(folder):
   time.sleep(2)
 
   for i in range(len(v)):
-    vir.write('VOLT ' + str(v[i]))
+    vir.write(f'VOLT {v[i]}')
     time.sleep(1)
     p[i] = opm.read(1, 1)
     print(v[i], p[i])
 
   opm.write('INIT1:CHAN1:CONT 1')
-  vir.write('VOLT ' + str(v[0]))
+  vir.write(f'VOLT {v[0]}')
   vir.write('OUTP OFF')
 
   vir.close()
   opm.close()
 
   df = np.array([v, p]).transpose()
-  np.savetxt(fp + '.dat', df, fmt='%.3f')
+  np.savetxt(f'{fp}.dat', df, fmt='%.3f')
 
   pmin, pmax = np.min(p), np.max(p)
   ex = round(pmax-pmin, 1)
@@ -88,7 +88,7 @@ def voa(folder):
 
   plt.figure(dpi=150)
   plt.plot(v, p)
-  plt.text(v[np.argmin(p)], pmin-1, str(ex) + ' dB',
+  plt.text(float(v[np.argmin(p)]), pmin-1, f'{ex} dB',
            verticalalignment='top', horizontalalignment='center')
   plt.xlim(xt[0], xt[-1])
   plt.ylim(yt[0], yt[-1])
@@ -97,14 +97,14 @@ def voa(folder):
   plt.xticks(xt)
   plt.yticks(yt)
   plt.grid()
-  plt.savefig(fp + '.png')
+  plt.savefig(f'{fp}.png')
   plt.show()
 
   return v, p
 
 
 def vdraw(folder):
-  fp = cfg.mkdir(folder) + '12-05-1047'
+  fp = f'{cfg.mkdir(folder)}/12-05-1047'
   data = np.loadtxt(fp)
   data = data.transpose()
   v, p = data[0], data[1]
@@ -116,14 +116,14 @@ def vdraw(folder):
 
   plt.figure(dpi=150)
   plt.plot(v, p)
-  plt.text(v[np.argmin(p)], pmin-1, str(ex) + ' dB',
+  plt.text(float(v[np.argmin(p)]), pmin-1, f'{ex} dB',
            verticalalignment='top', horizontalalignment='center')
   plt.xlim(xt[0], xt[-1])
   plt.ylim(yt[0], yt[-1])
   plt.xticks(xt)
   plt.yticks(yt)
   plt.grid()
-  plt.savefig(fp + '.png')
+  plt.savefig(f'{fp}.png')
 
 
 if __name__ == '__main__':

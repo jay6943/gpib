@@ -22,7 +22,7 @@ class IQ_measurement(Qw.QMainWindow):
     self.address = 'TCPIP0::192.168.0.25::inst0::INSTR'
 
     self.setGeometry(500, 500, 260, 490)
-    self.setWindowIcon(Qg.QIcon('jk.png'))
+    self.setWindowIcon(Qg.QIcon('../doc/jk.png'))
     self.setWindowTitle('IQ')
 
     dat.Qbutton(self, self.OnData, 'Get', 0, 0, 100)
@@ -97,8 +97,8 @@ class IQ_measurement(Qw.QMainWindow):
     dso.write('TIM:FORM YT')
     dso.write('CHAN1:DISP 1')
     dso.write('CHAN2:DISP 1')
-    dso.write('CHAN1:SCAL ' + str(float(self.amp1.text()) * 1e-3))
-    dso.write('CHAN2:SCAL ' + str(float(self.amp2.text()) * 1e-3))
+    dso.write(f'CHAN1:SCAL {float(self.amp1.text()) * 1e-3}')
+    dso.write(f'CHAN2:SCAL {float(self.amp2.text()) * 1e-3}')
     dso.write('SINGLE')
 
     time.sleep(2)
@@ -112,8 +112,8 @@ class IQ_measurement(Qw.QMainWindow):
     self.off1.setText(str(rf1))
     self.off2.setText(str(rf2))
 
-    dso.write('CHAN1:OFFS ' + str(rf1) + 'E-3')
-    dso.write('CHAN2:OFFS ' + str(rf2) + 'E-3')
+    dso.write(f'CHAN1:OFFS {rf1}E-3')
+    dso.write(f'CHAN2:OFFS {rf2}E-3')
 
     dso.write('RUN')
     dso.close()
@@ -124,13 +124,13 @@ class IQ_measurement(Qw.QMainWindow):
     
   def OnTime(self):
     timescale = str(round(float(self.var.text()) * 1e-3, 6))
-    dev.Agilent_DSO1014A_oscilloscope('TIM:SCAL ' + timescale)
+    dev.Agilent_DSO1014A_oscilloscope(f'TIM:SCAL {timescale}')
 
   def OnAmp1(self):
     dso = dev.Agilent_DSO1014A_oscilloscope(False)
     if self.OnCH1.isChecked():
       dso.write('CHAN1:DISP 1')
-      dso.write('CHAN1:SCAL ' + str(float(self.amp1.text()) * 1e-3))
+      dso.write(f'CHAN1:SCAL {float(self.amp1.text()) * 1e-3}')
     else:
       dso.write('CHAN1:DISP 0')
     dso.close()
@@ -139,7 +139,7 @@ class IQ_measurement(Qw.QMainWindow):
     dso = dev.Agilent_DSO1014A_oscilloscope(False)
     if self.OnCH2.isChecked():
       dso.write('CHAN2:DISP 1')
-      dso.write('CHAN2:SCAL ' + str(float(self.amp2.text()) * 1e-3))
+      dso.write(f'CHAN2:SCAL {float(self.amp2.text()) * 1e-3}')
     else:
       dso.write('CHAN2:DISP 0')
     dso.close()
@@ -154,26 +154,26 @@ class IQ_measurement(Qw.QMainWindow):
 
   def OnOff1(self):
     ostr = str(float(self.off1.text()) * 1e-3)
-    dev.Agilent_DSO1014A_oscilloscope('CHAN1:OFFS ' + ostr)
+    dev.Agilent_DSO1014A_oscilloscope(f'CHAN1:OFFS {ostr}')
 
   def OnOff2(self):
     ostr = str(float(self.off2.text()) * 1e-3)
-    dev.Agilent_DSO1014A_oscilloscope('CHAN2:OFFS ' + ostr)
+    dev.Agilent_DSO1014A_oscilloscope(f'CHAN2:OFFS {ostr}')
 
   def OnAtt(self):
     att = dev.Keysight_81630B_attenuator(self.address)
-    att.write(':INP2:ATT ' + self.att.text() + 'dB')
+    att.write(f':INP2:ATT {self.att.text()}dB')
     att.close()
 
   def OnMdl(self):
     tld = dev.Keysight_N7711A_tunalble_laser()
-    tld.write('MODU:INT:SBSC ' + self.mdl.text() + 'GHz')
+    tld.write(f'MODU:INT:SBSC {self.mdl.text()}GHz')
     tld.write('MODU:INT ON')
     tld.close()
 
   def OnMdl_Off(self):
     tld = dev.Keysight_N7711A_tunalble_laser()
-    tld.write('MODU:INT:SBSC ' + self.mdl.text() + 'GHz')
+    tld.write(f'MODU:INT:SBSC {self.mdl.text()}GHz')
     tld.write('MODU:INT OFF')
     tld.close()
 
@@ -230,7 +230,7 @@ class IQ_measurement(Qw.QMainWindow):
     plt.figure(dpi=150)
     plt.scatter(self.x, self.y, c='b', s=5)
     plt.axis('square')
-    plt.title(self.phase + '$^{\circ}$')
+    plt.title(f'{self.phase}{cfg.circ}')
     plt.gca().axes.xaxis.set_visible(False)
     plt.gca().axes.yaxis.set_visible(False)
     plt.plot([0, 0], [-lim, lim], 'k:', linewidth='1')
@@ -247,7 +247,7 @@ class IQ_measurement(Qw.QMainWindow):
       data = np.array([self.t, self.x, self.y])
       np.savetxt(fp, data.transpose(), fmt='%.3f')
       filename = os.path.splitext(fp)
-      plt.savefig(filename[0] + '.png')
+      plt.savefig(f'{filename[0]}.png')
       cfg.set_folder(folder)
 
 
