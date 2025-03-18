@@ -1,7 +1,6 @@
 import os
 
 path = '../data/SiN'
-cfgfile = '../data/cfg.txt'
 
 circ = r'$^{\circ}$'
 
@@ -13,7 +12,7 @@ def mkdir(folder):
 
 
 def get_folder():
-  fp = open(cfgfile)
+  fp = open('../data/cfg.txt')
   data = fp.read()
   data = data.replace('\n', '')
   fp.close()
@@ -22,7 +21,7 @@ def get_folder():
 
 
 def set_folder(folder):
-  fp = open(cfgfile, 'w')
+  fp = open('../data/cfg.txt', 'w')
   fp.write(folder)
   fp.close()
 
