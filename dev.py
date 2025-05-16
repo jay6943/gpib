@@ -1,5 +1,6 @@
 import time
 import serial
+import socket
 import numpy as np
 import pyvisa as visa
 
@@ -272,7 +273,6 @@ class pdl:
 class Keysight_N7711A_tunalble_laser:
   def __init__(self):
     rm = visa.ResourceManager()
-    # self.device = rm.open_resource('GPIB0::20::INSTR')
     self.device = rm.open_resource('TCPIP0::192.168.0.101::inst0::INSTR')
     self.device.timeout = 1000
     self.device.clear()
@@ -405,5 +405,36 @@ class ivs:
     self.device.close()
 
 
+class Scpi:
+  def __init__(self, host, port):
+    self.socket = socket.socket()
+    self.socket.connect((host, port))
+
+  def write(self, command):
+    self.socket.sendall(bytearray(f'{command}\n', 'utf-8'))
+
+  def query(self, command):
+    self.write(command)
+    reply = ''
+    while reply.find('\n') < 0:
+      reply += self.socket.recv(1024).decode()
+    return reply
+
+  def close(self):
+    self.socket.close()
+
+
+def Scpi_pd_test():
+  pd = Scpi('192.168.0.25', 5025)
+  print(pd.query('*IDN?'))
+  try:
+    while 1:
+      print(float(pd.query('FETCH1:CHAN1:POW?')))
+      time.sleep(0.5)
+  except KeyboardInterrupt:
+    pd.close()
+
+
 if __name__ == '__main__':
-  search()
+  # search()
+  Scpi_pd_test()
