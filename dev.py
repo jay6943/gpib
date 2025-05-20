@@ -19,6 +19,25 @@ def switch(channel):
   device.close()
 
 
+class Scpi:
+  def __init__(self, host, port):
+    self.socket = socket.socket()
+    self.socket.connect((host, port))
+
+  def write(self, command):
+    self.socket.sendall(bytearray(f'{command}\n', 'utf-8'))
+
+  def query(self, command):
+    self.write(command)
+    reply = ''
+    while reply.find('\n') < 0:
+      reply += self.socket.recv(1024).decode()
+    return reply
+
+  def close(self):
+    self.socket.close()
+
+
 class usbserial:
   def __init__(self, port):
     self.device = serial.Serial(port, 115200)
@@ -230,11 +249,31 @@ class Viavi_Power_Meter_mOPM_C1:
     self.device.close()
 
 
-class Yokogawa_AQ6370D_oscilloscope:
+class Yokogawa_AQ6370D_GPIB:
   def __init__(self, command):
     rm = visa.ResourceManager()
     self.device = rm.open_resource('GPIB0::5::INSTR')
     self.device.timeout = 50000
+
+    if command:
+      self.write(command)
+      self.close()
+
+  def write(self, command):
+    self.device.write(command)
+
+  def query(self, command):
+    return self.device.query(command)
+
+  def close(self):
+    self.device.close()
+
+
+class Yokogawa_AQ6370D:
+  def __init__(self, command):
+    self.device = Scpi('192.168.0.30', 1024)
+    self.device.query('open \"yokogawa\"')
+    self.device.query('coherent')
 
     if command:
       self.write(command)
@@ -403,25 +442,6 @@ class ivs:
 
   def close(self):
     self.device.close()
-
-
-class Scpi:
-  def __init__(self, host, port):
-    self.socket = socket.socket()
-    self.socket.connect((host, port))
-
-  def write(self, command):
-    self.socket.sendall(bytearray(f'{command}\n', 'utf-8'))
-
-  def query(self, command):
-    self.write(command)
-    reply = ''
-    while reply.find('\n') < 0:
-      reply += self.socket.recv(1024).decode()
-    return reply
-
-  def close(self):
-    self.socket.close()
 
 
 def Scpi_pd_test():
