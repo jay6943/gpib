@@ -151,7 +151,6 @@ class Yokogawa_AQ6370D(Qw.QMainWindow):
     yr = float(self.reference.text())
     dy = float(self.division.text())
 
-    # plt.close()
     plt.figure(dpi=150)
     plt.plot(self.x, self.y)
     plt.xlabel('Wavelength (nm)')
