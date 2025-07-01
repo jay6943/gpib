@@ -48,8 +48,28 @@ class usbserial:
 
   def read(self, command):
     self.write(command)
-    time.sleep(1)
+    time.sleep(0.5)
     return self.device.read(self.device.in_waiting)
+
+  def close(self):
+    self.device.close()
+
+
+class Maiman_Laser_TEC:
+  def __init__(self):
+    self.device = usbserial('COM4')
+
+  def write(self, command):
+    self.device.write(command)
+
+  def read(self, command):
+    data = self.device.read(command).decode()
+
+    icut = 0
+    for i in range(len(data)):
+      if data[i] == ' ': icut = i
+
+    return str(float(data[icut + 1:]))
 
   def close(self):
     self.device.close()
@@ -455,6 +475,4 @@ def Scpi_pd_test():
     pd.close()
 
 
-if __name__ == '__main__':
-  # search()
-  Scpi_pd_test()
+if __name__ == '__main__': search()
