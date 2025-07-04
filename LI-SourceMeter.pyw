@@ -29,13 +29,13 @@ def read(command):
 
 
 def OnCurrent():
-  ksm = dev.ivs()
+  ksm = dev.Keithley()
   ksm.write('smua.source.output = smua.OUTPUT_ON')
   ksm.close()
 
 
 def OffCurrent():
-  ksm = dev.ivs()
+  ksm = dev.Keithley()
   ksm.write('smua.source.output = smua.OUTPUT_OFF')
   ksm.close()
 
@@ -44,7 +44,7 @@ class App(Qw.QWidget):
   def __init__(self):
     super().__init__()
     
-    ksm = dev.ivs()
+    ksm = dev.Keithley()
     ksm.write('reset()')
     ksm.write('smua.source.func = smua.OUTPUT_DCAMPS')
     ksm.write('smua.source.leveli = 0')
@@ -87,7 +87,7 @@ class App(Qw.QWidget):
 
   def LIcurve(self):
 
-    ksm = dev.ivs()
+    ksm = dev.Keithley()
     opm = dev.Keysight_81630B_photodiode()
     
     star = float(self.star.text())
@@ -135,7 +135,7 @@ class App(Qw.QWidget):
 
   def SetCurrent(self):
     current = float(self.current.text()) * 0.001
-    ksm = dev.ivs()
+    ksm = dev.Keithley()
     ksm.write(f'smua.source.leveli = {current:.4f}')
     ksm.close()
 

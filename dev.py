@@ -43,7 +43,7 @@ class usbserial:
     self.device = serial.Serial(port, 115200)
 
   def write(self, command):
-    self.device.write(bytes(f'{command}\r', encoding='ascii'))
+    self.device.write(bytes(f'{command}\r', 'ascii'))
     time.sleep(0.2)
 
   def read(self, command):
@@ -55,21 +55,41 @@ class usbserial:
     self.device.close()
 
 
-class Maiman_Laser_TEC:
+class Keithley_2450:
   def __init__(self):
-    self.device = usbserial('COM4')
+    rm = visa.ResourceManager()
+    self.device = rm.open_resource('TCPIP0::192.168.0.16::inst0::INSTR')
+    self.device.timeout = 5000
 
   def write(self, command):
     self.device.write(command)
 
+  def query(self, command):
+    return self.device.query(command)
+
+  def close(self):
+    self.device.close()
+
+
+class Maiman_Laser_TEC:
+  def __init__(self):
+    self.device = serial.Serial('COM4', 115200)
+
+  def write(self, command):
+    self.device.write(bytearray(f'{command}\r', 'utf-8'))
+    time.sleep(0.2)
+
+  def query(self, command):
+    self.write(command)
+    time.sleep(0.5)
+    data = self.device.read(self.device.in_waiting)
+    return data.decode().split(' ')[-1]
+
   def read(self, command):
-    data = self.device.read(command).decode()
-
-    icut = 0
-    for i in range(len(data)):
-      if data[i] == ' ': icut = i
-
-    return str(float(data[icut + 1:]))
+    self.write(command)
+    time.sleep(0.5)
+    data = self.device.read(self.device.in_waiting)
+    return str(float(data.decode().split(' ')[-1]))
 
   def close(self):
     self.device.close()
@@ -171,7 +191,7 @@ class Agilent_DSO1014A_oscilloscope:
     time.sleep(1)
 
 
-class ldc:
+class Laser_Diode_Controller:
   def __init__(self):
     rm = visa.ResourceManager()
     self.device = rm.open_resource('GPIB0::4::INSTR')
@@ -416,7 +436,7 @@ class Agilent_E3831A_power_supply:
     self.device.close()
 
 
-class ivs:
+class Keithley:
   def __init__(self):
     rm = visa.ResourceManager()
     self.device = rm.open_resource('GPIB0::10::INSTR')
@@ -476,3 +496,4 @@ def Scpi_pd_test():
 
 
 if __name__ == '__main__': search()
+

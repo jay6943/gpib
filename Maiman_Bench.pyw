@@ -14,7 +14,7 @@ class App(Qw.QWidget):
     super().__init__()
 
     mbl = dev.Maiman_Laser_TEC()
-    mbl.write('dur:value 1')
+    mbl.write('dur:value 1000')
     mbl.write('freq:value 0')
     current = mbl.read('curr:real?')
     voltage = mbl.read('volt:real?')
@@ -42,62 +42,46 @@ class App(Qw.QWidget):
 
     dat.Qbutton(self, self.LIcurve, 'L-I Curve (mA)', 0, 150, 100)
 
-    self.star = dat.Qedit(self, '0', 110, 150, 60)
+    self.start = dat.Qedit(self, '0', 110, 150, 60)
     self.stop = dat.Qedit(self, '50', 180, 150, 60)
     self.step = dat.Qedit(self, '1', 250, 150, 60)
 
     dat.Qbutton(self, self.OnSave, 'Save', 320, 150, 80)
 
-    self.x = []
-    self.y = []
-
-    self.run = 1
-
   def LIcurve(self):
     mbl = dev.Maiman_Laser_TEC()
     opm = dev.Keysight_81630B_photodiode()
     
-    star = float(self.star.text())
+    start = float(self.start.text())
     stop = float(self.stop.text())
     step = float(self.step.text())
     
-    x, y = [], []
-    
+    x = np.arange(start, stop + step * 0.1, step)
+    y = np.zeros_like(x)
+
     mbl.write('dev:start on')
     time.sleep(1)
 
-    for i in np.arange(star, stop + step * 0.1, step):
-
-      mbl.write(f'curr:value {i:.1f}')
-
+    for i, current in enumerate(x):
+      mbl.write(f'curr:value {current:.1f}')
       plt.pause(0.2)
+      y[i] = 10 ** (opm.read(1, 1) * 0.1)
 
-      x.append(i)
-      y.append(10 ** (opm.read(1, 1) * 0.1))
-
-      if i > star:
+      if i > 0:
         plt.cla()
         plt.plot(x, y)
         plt.xlabel('Current (mA)')
         plt.ylabel('Output power (mW)')
-        plt.xlim(star, i)
+        plt.xlim(start, current)
         plt.grid()
 
-    mbl.write(f'curr:value {star:.1f}')
+    mbl.write(f'curr:value {start:.1f}')
     mbl.write('dev:start off')
     
     plt.show()
 
     mbl.close()
     opm.close()
-
-    self.x = x
-    self.y = y
-
-    n = len(x)
-
-    for i in range(n): self.x[i] = round(self.x[i], 1)
-    for i in range(n): self.y[i] = round(self.y[i], 6)
 
   def SetCurrent(self):
     mbl = dev.Maiman_Laser_TEC()
@@ -107,15 +91,15 @@ class App(Qw.QWidget):
   def OnCurrent(self):
     mbl = dev.Maiman_Laser_TEC()
     mbl.write('dev:start on')
-    current = mbl.read('curr:real?')
-    self.current.setText(f'{current}')
+    voltage = mbl.read('volt:real?')
+    self.voltage.setText(f'{voltage}')
     mbl.close()
 
   def OffCurrent(self):
     mbl = dev.Maiman_Laser_TEC()
     mbl.write('dev:start off')
-    current = mbl.read('curr:real?')
-    self.current.setText(f'{current}')
+    voltage = mbl.read('volt:real?')
+    self.voltage.setText(f'{voltage}')
     mbl.close()
 
   def SetTEC(self):
@@ -129,8 +113,6 @@ class App(Qw.QWidget):
     temperature = mbl.read('tec:temp:real?')
     self.tec.setText(f'{temperature}')
     mbl.close()
-
-    self.run = 1
 
   def OffTEC(self):
     mbl = dev.Maiman_Laser_TEC()

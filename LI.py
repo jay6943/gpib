@@ -10,7 +10,7 @@ def scan(filename):
     stop = 60
     step = 1
 
-    ldc = dev.ldc()
+    ldc = dev.Laser_Diode_Controller()
     opm = dev.Keysight_81630B_photodiode()
 
     ldc.value(int(start))
