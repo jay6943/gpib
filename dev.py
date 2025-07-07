@@ -55,6 +55,28 @@ class usbserial:
     self.device.close()
 
 
+class Thorlabs_ITC_8052:
+  def __init__(self):
+    rm = visa.ResourceManager()
+    self.device = rm.open_resource('GPIB0::10::INSTR')
+    self.device.timeout = 5000
+
+  def write(self, command):
+    self.device.write(command)
+    # self.write('*WAI')
+
+  def query(self, command):
+    data = self.device.query(command)
+    # self.write('*WAI')
+    return data.split(' ')[-1]
+
+  def read(self, command):
+    return float(self.query(command))
+
+  def close(self):
+    self.device.close()
+
+
 class Keithley_2450:
   def __init__(self):
     rm = visa.ResourceManager()
@@ -86,10 +108,7 @@ class Maiman_Laser_TEC:
     return data.decode().split(' ')[-1]
 
   def read(self, command):
-    self.write(command)
-    time.sleep(0.5)
-    data = self.device.read(self.device.in_waiting)
-    return str(float(data.decode().split(' ')[-1]))
+    return float(self.query(command))
 
   def close(self):
     self.device.close()
@@ -496,4 +515,3 @@ def Scpi_pd_test():
 
 
 if __name__ == '__main__': search()
-

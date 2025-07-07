@@ -10,7 +10,9 @@ def test():
     # mbl.write('dur:value 1')
     # mbl.write('freq:value 0')
     # mbl.write('tec:temp:value 25')
-    print(mbl.read('tec:temp:real?'))
+    mbl.write('dev:blo:ign')
+    # print(mbl.read('block?'))
+    # print(mbl.read('tec:temp:real?'))
     mbl.close()
 
 
@@ -51,5 +53,5 @@ def laser(filname):
 
 
 if __name__ == '__main__':
-  laser('D:/data/SOA/3SOA010-3/LIV_real')
-  # test()
+  # laser('D:/data/SOA/3SOA010-3/LIV_real')
+  test()
