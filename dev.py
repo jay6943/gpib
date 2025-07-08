@@ -63,11 +63,9 @@ class Thorlabs_ITC_8052:
 
   def write(self, command):
     self.device.write(command)
-    # self.write('*WAI')
 
   def query(self, command):
     data = self.device.query(command)
-    # self.write('*WAI')
     return data.split(' ')[-1]
 
   def read(self, command):
