@@ -17,7 +17,7 @@ def sweep():
   iv.write('SENS:VOLT:RANG:AUTO ON')
   iv.write('SENS:VOLT:RSEN ON')
   iv.write('SOUR:FUNC CURR')
-  iv.write('SOUR:CURR:RANGE 0.1')
+  iv.write('SOUR:CURR:RANG 0.1')
   iv.write('SOUR:CURR:VLIM 10')
   iv.write(f'SOUR:SWE:CURR:LIN {start}, {stop}, {num}, 0.1')
   iv.write('INIT')
