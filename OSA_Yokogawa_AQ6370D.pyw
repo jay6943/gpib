@@ -168,8 +168,7 @@ class Yokogawa_AQ6370D(Qw.QMainWindow):
     folder = os.path.dirname(f[0])
 
     if f[0]:
-      data = np.array([self.x, self.y])
-      np.savetxt(f[0], data.transpose())
+      np.savetxt(f[0], np.array([self.x, self.y]).transpose())
       cfg.set_folder(folder)
       if self.figure.isChecked():
         fp = os.path.splitext(f[0])
