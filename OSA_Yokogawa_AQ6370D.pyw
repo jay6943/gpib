@@ -169,7 +169,7 @@ class Yokogawa_AQ6370D(Qw.QMainWindow):
 
     if f[0]:
       data = np.array([self.x, self.y])
-      np.savetxt(f[0], data.transpose(), fmt='%.3f')
+      np.savetxt(f[0], data.transpose())
       cfg.set_folder(folder)
       if self.figure.isChecked():
         fp = os.path.splitext(f[0])
