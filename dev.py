@@ -8,7 +8,6 @@ import pyvisa as visa
 def search():
   rm = visa.ResourceManager()
   devices = rm.list_resources()
-
   for device in devices: print(device)
 
 
@@ -504,12 +503,8 @@ class Keithley:
 def Scpi_pd_test():
   pd = Scpi('192.168.0.25', 5025)
   print(pd.query('*IDN?'))
-  try:
-    while 1:
-      print(float(pd.query('FETCH1:CHAN1:POW?')))
-      time.sleep(0.5)
-  except KeyboardInterrupt:
-    pd.close()
+  print(float(pd.query('FETCH1:CHAN1:POW?')))
+  pd.close()
 
 
-if __name__ == '__main__': search()
+if __name__ == '__main__': Scpi_pd_test()
