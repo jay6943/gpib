@@ -19,10 +19,11 @@ class Scpi:
 
   def query(self, command):
     self.write(command)
-    reply = ''
-    while reply.find('\n') < 0:
-      reply += self.socket.recv(1024).decode()
-    return reply
+    return self.socket.recv(1024).decode().strip()
+
+  def read(self, command):
+    self.write(command)
+    return self.socket.recv(32768).decode().strip()
 
   def close(self):
     self.socket.close()
@@ -31,8 +32,8 @@ class Scpi:
 class Yokogawa_AQ6370D:
   def __init__(self, command):
     self.device = Scpi('192.168.0.30', 1024)
-    self.device.query('open \"yokogawa\"')
-    self.device.query('coherent')
+    self.query('open \"yokogawa\"')
+    self.query('coherent')
 
     if command:
       self.write(command)
@@ -43,6 +44,9 @@ class Yokogawa_AQ6370D:
 
   def query(self, command):
     return self.device.query(command)
+
+  def read(self, command):
+    return self.device.read(command)
 
   def close(self):
     self.device.close()
@@ -172,8 +176,8 @@ class Optical_Spectrum_Analizer(Qw.QMainWindow):
     osa.write(f':SENS:SWE:POIN {self.m.text()}')
     osa.write(':INIT:SMOD SING')
     osa.write(':INIT:IMM')
-    self.x = osa.query(':TRAC:DATA:X? TRA')
-    self.y = osa.query(':TRAC:DATA:Y? TRA')
+    self.x = osa.read(':TRAC:DATA:X? TRA')
+    self.y = osa.read(':TRAC:DATA:Y? TRA')
     osa.write(':INIT:SMOD REP')
     osa.write(':INIT:IMM')
     osa.close()
