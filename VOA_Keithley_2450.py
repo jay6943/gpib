@@ -55,7 +55,9 @@ def detector():
 
 
 def voa(filname):
-  x = np.linspace(10, 300, 30)
+  c = np.linspace(10, 320, 32)
+  d = np.linspace(301, 309, 9)
+  x = np.unique(np.concatenate((c, d)))
   y = np.zeros_like(x)
   v = np.zeros_like(x)
 
@@ -84,18 +86,18 @@ def voa(filname):
   data = np.array([x, y, v]).transpose()
   np.savetxt(f'{filname}.dat', data)
   plt.figure(figsize=(10, 6))
-  plt.plot(x, y)
-  plt.xlabel('Current (mA)')
-  plt.ylabel('Output power (dBm)')
-  plt.grid()
-  plt.savefig(f'{filname}_current.png')
-  plt.close()
-  plt.figure(figsize=(10, 6))
   plt.plot(x * v, y)
   plt.xlabel('Power (mW)')
   plt.ylabel('Output power (dBm)')
   plt.grid()
   plt.savefig(f'{filname}_watt.png')
+  plt.savefig(f'{filname}_current.png')
+  plt.close()
+  plt.figure(figsize=(10, 6))
+  plt.plot(x, y)
+  plt.xlabel('Current (mA)')
+  plt.ylabel('Output power (dBm)')
+  plt.grid()
   plt.show()
 
 
