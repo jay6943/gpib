@@ -4,6 +4,7 @@ import dev
 import time
 import numpy as np
 
+
 def scan(filename):
 
     start = 0
@@ -39,9 +40,10 @@ def scan(filename):
     ldc.close()
     opm.close()
 
-    fp = open(f'{cfg.get_folder()}/{filename}.txt', 'w')
+    fp = open(f'{cfg.path}/{filename}.txt', 'w')
     for i in range(len(x)):
         fp.write(f'{x[i]}\t{y[i]}\t{v[i]}\n')
     fp.close()
+
 
 if __name__ == '__main__': scan(sys.argv[1])

@@ -1,4 +1,3 @@
-import cfg
 import dev
 import time
 import numpy as np
@@ -37,9 +36,9 @@ def photodide():
   opm.close()
 
 
-def voa(folder):
+def voa(path):
   tp = dt.datetime.now()
-  fp = f'{cfg.mkdir(folder)}/{tp.strftime('%m-%d-%H%M')}'
+  fp = f'{path}/{tp.strftime('%m-%d-%H%M')}'
   print(fp)
 
   # vmin, vmax, vstep = 0.4, 1.4, 0.02
@@ -81,14 +80,13 @@ def voa(folder):
   np.savetxt(f'{fp}.dat', df, fmt='%.3f')
 
   pmin, pmax = np.min(p), np.max(p)
-  ex = round(pmax-pmin, 1)
-
+  ex = round(pmax - pmin, 1)
   xt = np.linspace(v[0], v[-1], 11)
   yt = np.linspace(-40, 0, 5)
 
   plt.figure(dpi=150)
   plt.plot(v, p)
-  plt.text(float(v[np.argmin(p)]), pmin-1, f'{ex} dB',
+  plt.text(float(v[np.argmin(p)]), pmin - 1, f'{ex} dB',
            verticalalignment='top', horizontalalignment='center')
   plt.xlim(xt[0], xt[-1])
   plt.ylim(yt[0], yt[-1])
@@ -103,8 +101,8 @@ def voa(folder):
   return v, p
 
 
-def vdraw(folder):
-  fp = f'{cfg.mkdir(folder)}/12-05-1047'
+def vdraw(path):
+  fp = f'{path}/12-05-1047'
   data = np.loadtxt(fp)
   data = data.transpose()
   v, p = data[0], data[1]

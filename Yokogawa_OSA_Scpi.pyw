@@ -207,16 +207,11 @@ class Optical_Spectrum_Analizer(Qw.QMainWindow):
     if self.saving.isChecked(): self.OnSave()
 
   def OnSave(self):
-    f = Qw.QFileDialog.getSaveFileName(self, '', cfg.get_folder(), '*.dat')
-    folder = os.path.dirname(f[0])
-
-    if f[0]:
-      np.savetxt(f[0], np.array([self.x, self.y]).transpose())
-      cfg.set_folder(folder)
+    fp = Qw.QFileDialog.getSaveFileName(self, '', cfg.path, '*.dat')
+    if fp[0]:
+      np.savetxt(fp[0], np.array([self.x, self.y]).transpose())
       if self.figure.isChecked():
-        fp = os.path.splitext(f[0])
-        print(fp[0])
-        plt.savefig(f'{fp[0]}.png')
+        plt.savefig(f'{os.path.splitext(fp[0])[0]}.png')
 
 
 if __name__ == '__main__':

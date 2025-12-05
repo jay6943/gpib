@@ -1,4 +1,3 @@
-import os
 import sys
 import cfg
 import dat
@@ -44,19 +43,12 @@ class Ando_AQ_2105B(Qw.QWidget):
     self.getData = 1
 
   def OnSave(self):
-
-    fp = Qw.QFileDialog.getSaveFileName(self, '', cfg.get_folder(), '*.txt')[0]
-
+    fp = Qw.QFileDialog.getSaveFileName(self, '', cfg.path, '*.txt')[0]
     data = []
-
     if self.getData and fp:
       if self.checkA.isChecked(): data += [self.Ap]
       if self.checkB.isChecked(): data += [self.Bp]
-
       np.savetxt(fp, np.array(data), fmt='%.3f')
-
-      folder = os.path.dirname(fp)
-      if folder != cfg.get_folder(): cfg.get_folder()
 
 
 if __name__ == '__main__':

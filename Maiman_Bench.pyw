@@ -128,10 +128,9 @@ class App(Qw.QWidget):
     mbl.close()
 
   def OnSave(self):
-    f = Qw.QFileDialog.getSaveFileName(self, '', cfg.get_folder(), '*.txt')
-
-    if f[0]:
-      np.savetxt(f[0], np.array([self.x, self.y]).transpose())
+    fp = Qw.QFileDialog.getSaveFileName(self, '', cfg.path, '*.txt')
+    if fp[0]:
+      np.savetxt(fp[0], np.array([self.x, self.y]).transpose())
 
 if __name__ == '__main__':
   app = Qw.QApplication(sys.argv)

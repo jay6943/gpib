@@ -7,5 +7,6 @@ def test():
   print(device.query('*IDN?'))
   device.close()
 
+
 if __name__ == '__main__':
   test()

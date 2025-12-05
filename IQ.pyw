@@ -240,15 +240,12 @@ class IQ_measurement(Qw.QMainWindow):
     plt.show()
 
   def OnSave(self):
-    fp = Qw.QFileDialog.getSaveFileName(self, '', cfg.get_folder(), '*.txt')[0]
-    folder = os.path.dirname(fp)
-
-    if fp:
+    fp = Qw.QFileDialog.getSaveFileName(self, '', cfg.path, '*.txt')
+    if fp[0]:
       data = np.array([self.t, self.x, self.y])
-      np.savetxt(fp, data.transpose(), fmt='%.3f')
+      np.savetxt(fp[0], data.transpose(), fmt='%.3f')
       filename = os.path.splitext(fp)
       plt.savefig(f'{filename[0]}.png')
-      cfg.set_folder(folder)
 
 
 if __name__ == '__main__':
