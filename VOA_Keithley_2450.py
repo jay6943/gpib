@@ -1,6 +1,8 @@
+import cfg
 import dev
 import time
 import numpy as np
+import datetime as dt
 import matplotlib.pyplot as plt
 
 
@@ -52,8 +54,8 @@ def detector():
   pd.close()
 
 
-def laser(filname):
-  x = np.linspace(1, 100, 100)
+def voa(filname):
+  x = np.linspace(10, 300, 30)
   y = np.zeros_like(x)
   v = np.zeros_like(x)
 
@@ -63,19 +65,17 @@ def laser(filname):
   iv.write(':SENS:VOLT:RANG:AUTO ON')
   iv.write(':SENS:VOLT:RSEN ON')
   iv.write(':SOUR:FUNC CURR')
-  iv.write(':SOUR:CURR:RANG 0.1')
+  iv.write(':SOUR:CURR:RANG 1')
   iv.write(':SOUR:CURR:VLIM 10')
   iv.write(':OUTP ON')
 
   pd = dev.Keysight_81630B_photodiode()
-  pd.mW(1, 1)
   for i, current in enumerate(x):
     iv.write(f':SOUR:CURR {np.round(x[i] * 0.001, 3)}')
     v[i] = float(iv.query(':READ?'))
     time.sleep(0.4)
-    y[i] = pd.fetch(1, 1) * 1e6
-    print(f'{x[i]:.0f} mA, {y[i]:.6f} uW, {v[i]:.3f} V')
-  pd.dBm(1, 1)
+    y[i] = pd.read(1, 1)
+    print(f'{x[i]:3.0f} mA, {y[i]:10.3f} dBm, {v[i]:6.3f} V')
   pd.close()
 
   iv.write(':OUTP OFF')
@@ -83,15 +83,22 @@ def laser(filname):
 
   data = np.array([x, y, v]).transpose()
   np.savetxt(f'{filname}.dat', data)
-
   plt.figure(figsize=(10, 6))
   plt.plot(x, y)
   plt.xlabel('Current (mA)')
-  plt.ylabel(r'Output power ($\mu$W)')
+  plt.ylabel('Output power (dBm)')
   plt.grid()
-  plt.savefig(f'{filname}.png')
+  plt.savefig(f'{filname}_current.png')
+  plt.close()
+  plt.figure(figsize=(10, 6))
+  plt.plot(x * v, y)
+  plt.xlabel('Power (mW)')
+  plt.ylabel('Output power (dBm)')
+  plt.grid()
+  plt.savefig(f'{filname}_watt.png')
   plt.show()
 
 
 if __name__ == '__main__':
-  laser('D:/data/SOA/3SOA010-3/LI')
+  at = dt.datetime.now()
+  voa(f'{cfg.path}/voa/10w_{at.strftime('%H%M%S')}')

@@ -256,13 +256,18 @@ class Keysight_81630B_photodiode:
   def query(self, command):
     return self.device.query(command)
 
+  def get_power(self, command):
+    value = 100.0
+    while abs(value) > 99.0:
+      value = float(self.query(command))
+      self.query('*OPC?')
+    return value
+
   def fetch(self, slot, ch):
-    command = f'FETCH{slot}:CHAN{ch}:POW?'
-    return float(self.device.query(command))
+    return self.get_power(f'FETCH{slot}:CHAN{ch}:POW?')
 
   def read(self, slot, ch):
-    command = f'READ{slot}:CHAN{ch}:POW?'
-    return float(self.device.query(command))
+    return self.get_power(f'READ{slot}:CHAN{ch}:POW?')
 
   def dBm(self, slot, ch):
     self.write(f'SENS{slot}:CHAN{ch}:POW:UNIT 0')
@@ -505,6 +510,3 @@ def Scpi_pd_test():
   print(pd.query('*IDN?'))
   print(float(pd.query('FETCH1:CHAN1:POW?')))
   pd.close()
-
-
-if __name__ == '__main__': Scpi_pd_test()
