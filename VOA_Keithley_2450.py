@@ -54,9 +54,29 @@ def detector():
   pd.close()
 
 
+def set_voa(mA):
+  pd = dev.Keysight_81630B_photodiode()
+  iv = dev.Keithley_2450()
+  iv.write('*RST')
+  iv.write(':SENS:FUNC "VOLT"')
+  iv.write(':SENS:VOLT:RANG:AUTO ON')
+  iv.write(':SENS:VOLT:RSEN ON')
+  iv.write(':SOUR:FUNC CURR')
+  iv.write(':SOUR:CURR:RANG 1')
+  iv.write(':SOUR:CURR:VLIM 10')
+  iv.write(':OUTP ON')
+  iv.write(f':SOUR:CURR {np.round(mA * 0.001, 3)}')
+  time.sleep(1)
+  print(float(iv.query(':READ?')), 'V')
+  print(float(pd.read(1, 1)), 'dBm')
+  # iv.write(':OUTP OFF')
+  iv.close()
+  pd.close()
+
+
 def voa(filname):
-  c = np.linspace(10, 320, 32)
-  d = np.linspace(301, 309, 9)
+  c = np.linspace(10, 300, 30)
+  d = np.linspace(301, 310, 10)
   x = np.unique(np.concatenate((c, d)))
   y = np.zeros_like(x)
   v = np.zeros_like(x)
@@ -91,16 +111,17 @@ def voa(filname):
   plt.ylabel('Output power (dBm)')
   plt.grid()
   plt.savefig(f'{filname}_watt.png')
-  plt.savefig(f'{filname}_current.png')
   plt.close()
   plt.figure(figsize=(10, 6))
   plt.plot(x, y)
   plt.xlabel('Current (mA)')
   plt.ylabel('Output power (dBm)')
   plt.grid()
+  plt.savefig(f'{filname}_current.png')
   plt.show()
 
 
 if __name__ == '__main__':
+  # set_voa(0)
   at = dt.datetime.now()
   voa(f'{cfg.path}/voa/10w_{at.strftime('%H%M%S')}')
