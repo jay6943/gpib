@@ -75,7 +75,7 @@ def set_voa(mA):
 
 
 def voa(filname):
-  c = np.linspace(10, 300, 30)
+  c = np.linspace(30, 300, 28)
   d = np.linspace(301, 310, 10)
   x = np.unique(np.concatenate((c, d)))
   y = np.zeros_like(x)
@@ -97,7 +97,7 @@ def voa(filname):
     v[i] = float(iv.query(':READ?'))
     time.sleep(0.4)
     y[i] = pd.read(1, 1)
-    print(f'{x[i]:3.0f} mA, {y[i]:10.3f} dBm, {v[i]:6.3f} V')
+    print(f'{x[i]:3.0f} mA, {v[i]:5.3f} V, {y[i]:8.3f} dBm')
   pd.close()
 
   iv.write(':OUTP OFF')
