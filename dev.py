@@ -333,8 +333,8 @@ class Yokogawa_AQ6370D_GPIB:
 class Yokogawa_AQ6370D:
   def __init__(self, command):
     self.device = Scpi('192.168.0.30', 1024)
-    self.device.query('open \"yokogawa\"')
-    self.device.query('coherent')
+    self.query('open \"yokogawa\"')
+    self.query('coherent')
 
     if command:
       self.write(command)
@@ -345,6 +345,9 @@ class Yokogawa_AQ6370D:
 
   def query(self, command):
     return self.device.query(command)
+
+  def read(self, command):
+    return self.device.read(command)
 
   def close(self):
     self.device.close()
