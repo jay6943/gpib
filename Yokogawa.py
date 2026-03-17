@@ -44,6 +44,34 @@ class AQ6370D:
     self.device.close()
 
 
+def OnPoints(points):
+  AQ6370D(f':SENS:SWE:POIN {points}')
+
+
+def OnCenter(center):
+  AQ6370D(f':SENS:WAV:CENT {center}NM')
+
+
+def OnSpan(span):
+  AQ6370D(f':SENS:WAV:SPAN {span}NM')
+
+
+def OnBandwidth(bandwidth):
+  AQ6370D(f':SENS:BAND:RES {bandwidth}NM')
+
+
+def OnRpos(rpos):
+  AQ6370D(f':DISP:TRAC:Y1:RPOS {rpos}DIV')
+
+
+def OnRlev(rlev):
+  AQ6370D(f':DISP:TRAC:Y1:RLEV {rlev}DBM')
+
+
+def OnPdiv(pdiv):
+  AQ6370D(f':DISP:TRAC:Y1:PDIV {pdiv}DB')
+
+
 def OnMax():
   AQ6370D(':CALC:MARK:MAX')
 

@@ -2,80 +2,11 @@ import os
 import sys
 import cfg
 import dat
-import socket
+import Yokogawa
 import numpy as np
 import PyQt5.QtGui as Qg
 import PyQt5.QtWidgets as Qw
 import matplotlib.pyplot as plt
-
-
-class Scpi:
-  def __init__(self, host, port):
-    self.socket = socket.socket()
-    self.socket.connect((host, port))
-
-  def write(self, command):
-    self.socket.sendall(bytearray(f'{command}\n', 'utf-8'))
-
-  def query(self, command):
-    self.write(command)
-    return self.socket.recv(1024).decode().strip()
-
-  def read(self, command):
-    self.write(command)
-    return self.socket.recv(32768).decode().strip()
-
-  def close(self):
-    self.socket.close()
-
-
-class Yokogawa_AQ6370D:
-  def __init__(self, command):
-    self.device = Scpi('192.168.0.30', 1024)
-    self.query('open \"yokogawa\"')
-    self.query('coherent')
-
-    if command:
-      self.write(command)
-      self.close()
-
-  def write(self, command):
-    self.device.write(command)
-
-  def query(self, command):
-    return self.device.query(command)
-
-  def read(self, command):
-    return self.device.read(command)
-
-  def close(self):
-    self.device.close()
-
-
-def OnMax():
-  Yokogawa_AQ6370D(':CALC:MARK:MAX')
-
-
-def OnMin():
-  Yokogawa_AQ6370D(':CALC:MARK:MIN')
-
-
-def OnMarkCenter():
-  Yokogawa_AQ6370D(':CALC:MARK:SCEN')
-
-
-def OnContinuous():
-  osa = Yokogawa_AQ6370D(False)
-  osa.write(':INIT:SMOD REP')
-  osa.write(':INIT:IMM')
-  osa.close()
-
-
-def OnSingle():
-  osa = Yokogawa_AQ6370D(False)
-  osa.write(':INIT:SMOD SING')
-  osa.write(':INIT:IMM')
-  osa.close()
 
 
 class Optical_Spectrum_Analizer(Qw.QMainWindow):
@@ -90,7 +21,7 @@ class Optical_Spectrum_Analizer(Qw.QMainWindow):
     self.setWindowIcon(Qg.QIcon('../doc/jk.png'))
     self.setGeometry(500, 500, 290, 490)
 
-    osa = Yokogawa_AQ6370D(False)
+    osa = Yokogawa.AQ6370D(False)
     center = float(osa.query(':SENS:WAV:CENT?')) * 1e9
     span = float(osa.query(':SENS:WAV:SPAN?')) * 1e9
     res = float(osa.query(':SENS:BAND:RES?')) * 1e9
@@ -116,12 +47,12 @@ class Optical_Spectrum_Analizer(Qw.QMainWindow):
 
     dat.Qbutton(self, self.OnGet, 'Get', 0, 0, 120)
     dat.Qbutton(self, self.OnSave, 'Save', 130, 0, 120)
-    dat.Qbutton(self, OnContinuous, 'Continuous', 0, 340, 120)
-    dat.Qbutton(self, OnSingle, 'Stop', 130, 340, 120)
+    dat.Qbutton(self, Yokogawa.OnContinuous, 'Continuous', 0, 340, 120)
+    dat.Qbutton(self, Yokogawa.OnSingle, 'Stop', 130, 340, 120)
 
-    dat.Qbutton(self, OnMax, 'Max', 0, 380, 120)
-    dat.Qbutton(self, OnMin, 'Min', 130, 380, 120)
-    dat.Qbutton(self, OnMarkCenter, 'Mark to Center', 0, 420, 120)
+    dat.Qbutton(self, Yokogawa.OnMax, 'Max', 0, 380, 120)
+    dat.Qbutton(self, Yokogawa.OnMin, 'Min', 130, 380, 120)
+    dat.Qbutton(self, Yokogawa.OnMarkCenter, 'Mark to Center', 0, 420, 120)
     dat.Qbutton(self, self.OnLevel, 'Ref. to Peak', 130, 420, 120)
 
     self.saving = dat.Qcheck(self, 'Save w/o show', 10, 30, 120)
@@ -130,40 +61,28 @@ class Optical_Spectrum_Analizer(Qw.QMainWindow):
     self.setSwitch = 1
     self.figure.setChecked(True)
 
-    Yokogawa_AQ6370D(f':SENS:SWE:POIN {self.m.text()}')
+    Yokogawa.OnPoints(self.m.text())
 
   def OnCenter(self):
-    osa = Yokogawa_AQ6370D(False)
-    osa.write(f':SENS:WAV:CENT {self.center.text()}NM')
-    osa.close()
+    Yokogawa.OnCenter(self.center.text())
 
   def OnSpan(self):
-    osa = Yokogawa_AQ6370D(False)
-    osa.write(f':SENS:WAV:SPAN {self.span.text()}NM')
-    osa.close()
+    Yokogawa.OnSpan(self.span.text())
 
   def OnBandwidth(self):
-    osa = Yokogawa_AQ6370D(False)
-    osa.write(f':SENS:BAND:RES {self.bandwidth.text()}NM')
-    osa.close()
+    Yokogawa.OnBandwidth(self.bandwidth.text())
 
   def OnSensitivity(self):
-    osa = Yokogawa_AQ6370D(False)
-    osa.write(f':DISP:TRAC:Y1:RPOS {self.sensitivity.text()}DIV')
-    osa.close()
+    Yokogawa.OnRpos(self.sensitivity.text())
 
   def OnReference(self):
-    osa = Yokogawa_AQ6370D(False)
-    osa.write(f':DISP:TRAC:Y1:RLEV {self.reference.text()}DBM')
-    osa.close()
+    Yokogawa.OnRlev(self.reference.text())
 
   def OnDivision(self):
-    osa = Yokogawa_AQ6370D(False)
-    osa.write(f':DISP:TRAC:Y1:PDIV {self.division.text()}DB')
-    osa.close()
+    Yokogawa.OnPdiv(self.division.text())
 
   def OnLevel(self):
-    osa = Yokogawa_AQ6370D(False)
+    osa = Yokogawa.AQ6370D(False)
     osa.write(':CALC:MARK:MAX')
     y = float(osa.query(':CALC:MARK:Y?'))
     osa.close()
@@ -172,7 +91,7 @@ class Optical_Spectrum_Analizer(Qw.QMainWindow):
     self.OnReference()
 
   def OnGet(self):
-    osa = Yokogawa_AQ6370D(False)
+    osa = Yokogawa.AQ6370D(False)
     osa.write(f':SENS:SWE:POIN {self.m.text()}')
     osa.write(':INIT:SMOD SING')
     osa.write(':INIT:IMM')
