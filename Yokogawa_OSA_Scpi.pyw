@@ -19,7 +19,7 @@ class Optical_Spectrum_Analizer(Qw.QMainWindow):
 
     self.setWindowTitle('Yokogawa AQ6370D')
     self.setWindowIcon(Qg.QIcon('../doc/jk.png'))
-    self.setGeometry(500, 500, 290, 490)
+    self.setGeometry(500, 500, 290, 550)
 
     osa = Yokogawa.AQ6370D(False)
     center = float(osa.query(':SENS:WAV:CENT?')) * 1e9
@@ -29,8 +29,8 @@ class Optical_Spectrum_Analizer(Qw.QMainWindow):
     pdiv = float(osa.query(':DISP:TRAC:Y1:PDIV?'))
     osa.close()
 
-    dat.Qlabel(self, 'Number of Points', 20, 50, 110)
-    self.m = dat.Qedit(self, '1001', 130, 60, 120)
+    dat.Qlabel(self, 'Points', 10, 35, 40)
+    self.m = dat.Qedit(self, '1001', 55, 45, 90)
     self.center = dat.Qedit(self, str(center), 0, 100, 120)
     self.span = dat.Qedit(self, str(span), 0, 140, 120)
     self.bandwidth = dat.Qedit(self, str(res), 0, 180, 120)
@@ -55,11 +55,15 @@ class Optical_Spectrum_Analizer(Qw.QMainWindow):
     dat.Qbutton(self, Yokogawa.OnMarkCenter, 'Mark to Center', 0, 420, 120)
     dat.Qbutton(self, self.OnLevel, 'Ref. to Peak', 130, 420, 120)
 
-    self.saving = dat.Qcheck(self, 'Save w/o show', 10, 30, 120)
-    self.figure = dat.Qcheck(self, 'Save figure', 150, 30, 120)
+    dat.Qlabel(self, 'Y min', 0, 445, 120)
+    dat.Qlabel(self, 'Y max', 130, 445, 120)
+    self.ymin = dat.Qedit(self, '-80', 0, 480, 120)
+    self.ymax = dat.Qedit(self, '0', 130, 480, 120)
+
+    self.saving = dat.Qcheck(self, 'Save figure', 160, 45, 100)
 
     self.setSwitch = 1
-    self.figure.setChecked(True)
+    self.saving.setChecked(True)
 
     Yokogawa.OnPoints(self.m.text())
 
@@ -110,26 +114,22 @@ class Optical_Spectrum_Analizer(Qw.QMainWindow):
 
     xc = float(self.center.text())
     dx = float(self.span.text())
-    yr = float(self.reference.text())
-    dy = float(self.division.text())
 
     plt.close()
     plt.figure(dpi=150)
     plt.plot(self.x, self.y)
     plt.xlabel('Wavelength (nm)')
     plt.ylabel('Output (dBm)')
-    plt.xlim(xc - dx * 0.5, xc + dx * 0.5)
-    plt.ylim(yr - dy * 10, yr)
+    plt.xlim(round(xc - dx * 0.5, 3), round(xc + dx * 0.5, 3))
+    plt.ylim(float(self.ymin.text()), float(self.ymax.text()))
     plt.grid()
     plt.show()
-
-    if self.saving.isChecked(): self.OnSave()
 
   def OnSave(self):
     fp = Qw.QFileDialog.getSaveFileName(self, '', cfg.path, '*.dat')
     if fp[0]:
       np.savetxt(fp[0], np.array([self.x, self.y]).transpose())
-      if self.figure.isChecked():
+      if self.saving.isChecked():
         plt.savefig(f'{os.path.splitext(fp[0])[0]}.png')
 
 

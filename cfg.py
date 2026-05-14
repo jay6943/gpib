@@ -1,2 +1,2 @@
-path = '../../data/SiN'
+path = 'D:/data/SiN'
 circ = r'$^{\circ}$'
