@@ -2,7 +2,6 @@ import cfg
 import dev
 import time
 import numpy as np
-import datetime as dt
 import matplotlib.pyplot as plt
 
 
@@ -20,7 +19,7 @@ def sweep():
   iv.write('SENS:VOLT:RSEN ON')
   iv.write('SOUR:FUNC CURR')
   iv.write('SOUR:CURR:RANG 0.1')
-  iv.write('SOUR:CURR:VLIM 10')
+  iv.write('SOUR:CURR:VLIM 3')
   iv.write(f'SOUR:SWE:CURR:LIN {start}, {stop}, {num}, 0.1')
   iv.write('INIT')
   iv.write('*WAI')
@@ -37,7 +36,7 @@ def injection():
   iv.write('SENS:VOLT:RSEN ON')
   iv.write('SOUR:FUNC CURR')
   iv.write('SOUR:CURR:RANG 0.1')
-  iv.write('SOUR:CURR:VLIM 10')
+  iv.write('SOUR:CURR:VLIM 3')
   iv.write('SOUR:CURR 0.05')
   iv.write('OUTP ON')
   data = iv.query('READ?')
@@ -45,13 +44,6 @@ def injection():
   iv.close()
 
   print(data, len(data))
-
-
-def detector():
-  pd = dev.Keysight_81630B_photodiode()
-  for _ in range(10):
-    print(pd.fetch(1, 1))
-  pd.close()
 
 
 def set_voa(mA):
@@ -63,7 +55,7 @@ def set_voa(mA):
   iv.write(':SENS:VOLT:RSEN ON')
   iv.write(':SOUR:FUNC CURR')
   iv.write(':SOUR:CURR:RANG 1')
-  iv.write(':SOUR:CURR:VLIM 10')
+  iv.write(':SOUR:CURR:VLIM 3')
   iv.write(':OUTP ON')
   iv.write(f':SOUR:CURR {np.round(mA * 0.001, 3)}')
   time.sleep(1)
@@ -74,7 +66,7 @@ def set_voa(mA):
   pd.close()
 
 
-def voa(path):
+def voa(filename):
   a = np.arange(50.0, 140.0, 10.0)
   b = np.arange(145.0, 155.0, 1.0)
   x = np.unique(np.concatenate((a, b)))
@@ -88,7 +80,7 @@ def voa(path):
   iv.write(':SENS:VOLT:RSEN ON')
   iv.write(':SOUR:FUNC CURR')
   iv.write(':SOUR:CURR:RANG 1')
-  iv.write(':SOUR:CURR:VLIM 10')
+  iv.write(':SOUR:CURR:VLIM 3')
   iv.write(':OUTP ON')
 
   pd = dev.Keysight_81630B_photodiode()
@@ -103,28 +95,25 @@ def voa(path):
   iv.write(':OUTP OFF')
   iv.close()
 
-  p = x * v
-  at = dt.datetime.now().strftime('%m-%d-%H%M%S')
   data = np.array([x, y, v]).transpose()
-  np.savetxt(f'{path}/{at}.dat', data)
-  plt.figure(figsize=(10, 6))
-  plt.plot(p, y)
-  plt.plot([p[0], p[-1]], [y[0] - 20, y[0] - 20], '--')
+  np.savetxt(f'{filename}-iv.dat', data)
+
+  plt.figure(dpi=150)
+  plt.plot(x * v, y)
   plt.xlabel('Power (mW)')
   plt.ylabel('Output power (dBm)')
   plt.grid()
-  plt.savefig(f'{path}/{at}-watt.png')
+  plt.savefig(f'{filename}-watt.png')
   plt.close()
-  plt.figure(figsize=(10, 6))
+
+  plt.figure(dpi=150)
   plt.plot(x, y)
-  plt.plot([x[0], x[-1]], [y[0] - 20, y[0] - 20], '--')
   plt.xlabel('Current (mA)')
   plt.ylabel('Output power (dBm)')
   plt.grid()
-  plt.savefig(f'{path}/{at}-current.png')
+  plt.savefig(f'{filename}-current.png')
   plt.show()
 
 
 if __name__ == '__main__':
-  # set_voa(0)
-  voa('D:/data/SiN/EI-SIN-WG-R2-TV26-001/voa')
+  voa(f'{cfg.path}/EI-SIN-WG-R2-TV26-001/voa/400')
