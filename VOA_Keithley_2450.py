@@ -67,8 +67,8 @@ def set_voa(mA):
 
 
 def voa(filename):
-  a = np.arange(50.0, 140.0, 10.0)
-  b = np.arange(145.0, 155.0, 1.0)
+  a = np.arange(100.0, 140.0, 2.0)
+  b = np.arange(140.0, 170.0, 2.0)
   x = np.unique(np.concatenate((a, b)))
   y = np.zeros_like(x)
   v = np.zeros_like(x)
@@ -98,15 +98,7 @@ def voa(filename):
   data = np.array([x, y, v]).transpose()
   np.savetxt(f'{filename}-iv.dat', data)
 
-  plt.figure(dpi=150)
-  plt.plot(x * v, y)
-  plt.xlabel('Power (mW)')
-  plt.ylabel('Output power (dBm)')
-  plt.grid()
-  plt.savefig(f'{filename}-watt.png')
-  plt.close()
-
-  plt.figure(dpi=150)
+  plt.figure(figsize=(10, 6))
   plt.plot(x, y)
   plt.xlabel('Current (mA)')
   plt.ylabel('Output power (dBm)')
@@ -114,6 +106,14 @@ def voa(filename):
   plt.savefig(f'{filename}-current.png')
   plt.show()
 
+  plt.figure(figsize=(10, 6))
+  plt.plot(x * v, y)
+  plt.xlabel('Power (mW)')
+  plt.ylabel('Output power (dBm)')
+  plt.grid()
+  plt.savefig(f'{filename}-watt.png')
+  plt.close()
+
 
 if __name__ == '__main__':
-  voa(f'{cfg.path}/EI-SIN-WG-R2-TV26-001/voa/400')
+  voa(f'{cfg.path}/EI-SIN-WG-R2-TV26-001/amzi/2/2')
