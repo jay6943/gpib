@@ -66,6 +66,7 @@ class Optical_Spectrum_Analizer(Qw.QMainWindow):
     self.saving.setChecked(True)
 
     Yokogawa.OnPoints(self.m.text())
+    Yokogawa.OnContinuous()
 
   def OnCenter(self):
     Yokogawa.OnCenter(self.center.text())
