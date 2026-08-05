@@ -9,7 +9,6 @@ import matplotlib.pyplot as plt
 
 
 class Power_Monitoring(Qw.QMainWindow):
-
   def __init__(self):
     super().__init__()
 
@@ -22,7 +21,6 @@ class Power_Monitoring(Qw.QMainWindow):
 
   def start(self):
     pd = dev.Keysight_81630B_photodiode()
-
     y = np.ones(101) * pd.fetch(1, 1)
 
     plt.ion()
@@ -46,6 +44,12 @@ class Power_Monitoring(Qw.QMainWindow):
 
     plt.close()
     pd.close()
+
+
+def Scpi_test():
+  pd = dev.Scpi('192.168.0.25', 5025)
+  print(float(pd.query('FETCH1:CHAN1:POW?')))
+  pd.close()
 
 
 if __name__ == '__main__':

@@ -10,7 +10,6 @@ import matplotlib.pyplot as plt
 
 
 class Optical_Spectrum_Analizer(Qw.QMainWindow):
-
   def __init__(self):
     super().__init__()
 

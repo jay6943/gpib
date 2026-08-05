@@ -6,7 +6,6 @@ import PyQt5.QtWidgets as Qw
 
 
 class Attenuator(Qw.QMainWindow):
-
   def __init__(self):
     super().__init__()
 

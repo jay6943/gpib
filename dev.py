@@ -513,3 +513,13 @@ def Scpi_pd_test():
   print(pd.query('*IDN?'))
   print(float(pd.query('FETCH1:CHAN1:POW?')))
   pd.close()
+
+
+def GPIB_pd_test():
+  pd = Keysight_81630B_photodiode()
+  print(pd.query('*IDN?'))
+  print(float(pd.query('FETCH1:CHAN1:POW?')))
+  pd.close()
+
+
+if __name__ == '__main__': Scpi_pd_test()
