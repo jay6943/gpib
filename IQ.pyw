@@ -21,7 +21,7 @@ class IQ_measurement(Qw.QMainWindow):
     self.phase = None
     self.address = 'TCPIP0::192.168.0.25::inst0::INSTR'
 
-    self.setGeometry(500, 500, 260, 490)
+    self.setGeometry(1600, 200, 260, 490)
     self.setWindowIcon(Qg.QIcon('../doc/jk.png'))
     self.setWindowTitle('IQ')
 
@@ -244,8 +244,7 @@ class IQ_measurement(Qw.QMainWindow):
     if fp[0]:
       data = np.array([self.t, self.x, self.y])
       np.savetxt(fp[0], data.transpose(), fmt='%.3f')
-      filename = os.path.splitext(fp)
-      plt.savefig(f'{filename[0]}.png')
+      plt.savefig(f'{fp[0][:-4]}.png')
 
 
 if __name__ == '__main__':

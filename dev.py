@@ -173,7 +173,7 @@ class Anritsu_MN9610A_attenuator:
 class Agilent_DSO1014A_oscilloscope:
   def __init__(self, command):
     rm = visa.ResourceManager()
-    self.device = rm.open_resource('USB0::0x0957::0x0588::CN50483638::INSTR')
+    self.device = rm.open_resource('USB0::0x0957::0x0588::CN50483638::0::INSTR')
 
     if command:
       self.write(command)
@@ -522,4 +522,6 @@ def GPIB_pd_test():
   pd.close()
 
 
-if __name__ == '__main__': Scpi_pd_test()
+if __name__ == '__main__':
+  search()
+  # Scpi_pd_test()
