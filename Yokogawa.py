@@ -1,4 +1,5 @@
 import socket
+import pyvisa as visa
 
 
 class Scpi:
@@ -23,9 +24,13 @@ class Scpi:
 
 class AQ6370D:
   def __init__(self, command):
-    self.device = Scpi('192.168.0.30', 1024)
-    self.query('open \"yokogawa\"')
-    self.query('coherent')
+    # self.device = Scpi('192.168.0.30', 1024)
+    # self.query('open \"yokogawa\"')
+    # self.query('coherent')
+    
+    rm = visa.ResourceManager()
+    self.device = rm.open_resource('GPIB0::5::INSTR')
+    self.device.timeout = 50000
 
     if command:
       self.write(command)
