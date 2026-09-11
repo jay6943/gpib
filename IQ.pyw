@@ -51,7 +51,7 @@ class IQ_measurement(Qw.QMainWindow):
     dat.Qbutton(self, self.OnMdl_Off, 'OFF', 190, 420, 30)
 
     dat.Qlabel(self, 'Phase error', 0, 30, 80)
-    dat.Qlabel(self, 'deg.', 190, 30, 40)
+    dat.Qlabel(self, 'deg.', 180, 30, 40)
     
     self.OnCH1 = dat.Qcheck(self, '', 104, 200, 15)
     self.OnCH2 = dat.Qcheck(self, '', 104, 240, 15)
@@ -207,11 +207,11 @@ class IQ_measurement(Qw.QMainWindow):
     A[4] = 1
 
     k = np.dot(B, np.linalg.pinv(A))
-    p = np.arcsin(np.sqrt(1 - k[0] * k[0] / k[1])) * 180 / np.pi
+    p = np.arcsin(np.sqrt(1 - k[0] * k[0] / k[1]))
     
-    if k[0] > 0: p = 180 - p
+    if k[0] > 0: p = 90 - np.rad2deg(p)
     
-    self.phase = str(round(p, 1))
+    self.phase = f'{abs(p):0.3f}'
     self.fit.setText(self.phase)
     self.OnDraw()
 

@@ -1,8 +1,6 @@
-import cfg
 import dev
 import time
 import numpy as np
-import matplotlib.pyplot as plt
 
 
 def set_wavelength(wavelength):
@@ -61,20 +59,11 @@ def get_data(path):
 
   print(f'Phase difference = {phase} degree')
 
-  plt.figure(dpi=150)
-  plt.scatter(x, y, c='b', s=5)
-  plt.axis('square')
-  plt.title(f'{phase}{cfg.circ}')
-  plt.gca().axes.xaxis.set_visible(False)
-  plt.gca().axes.yaxis.set_visible(False)
-  lim = np.max([np.abs(x), np.abs(y)])
-  plt.plot([0, 0], [-lim, lim], 'k:', linewidth='1')
-  plt.plot([-lim, lim], [0, 0], 'k:', linewidth='1')
-  plt.xlim(-lim, lim)
-  plt.ylim(-lim, lim)
-  plt.show()
-
-
 if __name__ == '__main__':
   # set_wavelength(1540)
-  get_data('D:/data/SiN/EI-SIN-400-R1-TV26-001/iq')
+  try:
+    while True:
+      get_data('D:/data/SiN/EI-SIN-400-R1-TV26-001/iq')
+      time.sleep(1)
+  except KeyboardInterrupt:
+    print('... done.')
