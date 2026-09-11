@@ -57,7 +57,7 @@ def get_data(path):
   k = np.dot(B, np.linalg.pinv(A))
   phase = np.arcsin(np.sqrt(1 - k[0] * k[0] / k[1]))
   if k[0] > 0: phase = np.pi - phase
-  phase = f'{np.rad2deg(phase):.1f}'
+  phase = f'{abs(np.rad2deg(phase) - 90):.1f}'
 
   print(f'Phase difference = {phase} degree')
 
